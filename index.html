@@ -298,6 +298,7 @@ table.sk.in{border-spacing:2px}
 .ghint{margin-top:10px;border-left:4px solid var(--gold);background:var(--info-bg);border-radius:0 8px 8px 0;padding:8px 12px;font-size:13px}
 .gside{position:sticky;top:calc(var(--abh,64px) + 8px);display:grid;gap:12px;min-width:0}
 @media (max-width:860px){.gside{position:static}}
+.gmk{display:inline-block;min-width:1.4em;padding:0 4px;border-radius:5px;background:var(--tint);border:1px solid var(--line);font-size:12px;font-weight:700;text-align:center}
 .fillph{font-size:12px;padding:3px 9px;margin-left:4px}
 .gtoc details>summary{cursor:pointer;font-size:13px;font-weight:700}
 .gtoc ol{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:2px}
@@ -522,6 +523,10 @@ body.v-doc #docv{display:block}
     <dl>
       <dt>ver. 2.0（2026-11-20）</dt>
       <dd><ul>
+        <li>かんたんガイドの6段目などで、−／＋ のボタン以外（欄の文字や余白）を押すと数が減っていく不具合を直した</li>
+        <li>調べることの種類と調査のグループを、生育の順（A 開花・生育ステージ → B 生育調査 → C 土壌 → D 病害虫・障害 → E 収量 → F 収穫物の品質 → G そのほか）にそろえ、7段目・8段目・区分の選ぶ欄に同じ記号を付けた。設計書の調査項目・記入表のシート・野帳のひな形もこの順</li>
+        <li>「備考」を調べる項目の候補から外した（声で野帳Pro で、調査中にメモ・除外の理由として入れる）。足した項目としては作れる</li>
+        <li>試験設計書の課題名の上に1行あけた</li>
         <li>かんたんガイドの右に目次（1〜10の段の名前）を置き、押すとその段へ移れるようにした。調査日の予定は「一定の間隔で」と「日付を決めて（収穫日など、間隔がそろわないとき）」を選べる（設計全体・調査のグループごと）。Excel の記入表は、1行目に日本語の見出し、2行目にRの列名（1行目を消すとRでそのまま読める形）。設計書の試験規模は、区の数・処理・反復などの統計的な規模だけにした（調査の点数・回数は調査項目と別紙に）。目的の案・ひな形の名前の薄い字を「欄に入れて直す」ボタンで生かせる</li>
         <li>調査のグループごとの調べ方：生育調査・収穫時調査・収量調査などのグループごとに、「1回／時期を変えて何回も」と「1区あたりの調査数」を決められる。野帳のひな形と記入表はグループごとにでき（Excel はグループごとのシート）、Rの雛形と設計書も、項目のグループの調べ方で作る</li>
         <li>設計書の欄を、設計書の上からの順に並べ直した：冒頭の欄（新規・継続、実施年次、予算区分、協力）、課題名（階層を上にも下にも足せる）、施肥管理（基肥・追肥・礼肥）・防除の欄、選んで入れる実施年次・予算区分・試験実施期間。設計書の試験方法に（１）〜の番号。足した調査項目の区分を選べる</li>
@@ -1809,18 +1814,31 @@ function guideFacs(G){
     return o; });
 }
 // 調べる項目の候補（調べることの種類ごと）。割合の項目を選んだら、その元になる数の項目（該当数・調べた数）は候補から外す（設計資料19 の 6.。割合の項目が2つのカウンターを持つため）
-function guidePurposes(G){ const ok=GUIDE_PURPOSES.map(p=>p[0]); const ps=(Array.isArray(G.purposes)?G.purposes:GUIDE_GOAL_PURPOSES[guideGoal(G)]).filter((p,i,a)=>ok.includes(p)&&a.indexOf(p)===i); return ps.length?ps:GUIDE_GOAL_PURPOSES[guideGoal(G)]; }
+// 調べることの種類は、生育の順に並べる（調査のグループの順 DOC_ITEM_GROUP と同じ。そのほかは最後）
+const GUIDE_P_ORDER=['phen','grow','soil','dis','yield','fq','other'];
+function guidePOrder(ps){ const r=p=>{ const i=GUIDE_P_ORDER.indexOf(p); return i<0?99:i; }; return ps.slice().sort((a,b)=>r(a)-r(b)); }
+// 候補に出さない項目：備考（声で野帳Pro で、調査中にメモ・除外の理由として入れる。ナビの項目にすると、すべての野帳の先頭近くに入って使いにくいため。2026-11-20）。足した項目としては作れる
+const GUIDE_HIDE_ITEMS=['備考'];
+function guideDictCandidates(p,crop){ return dictCandidates(p,crop).filter(c=>!GUIDE_HIDE_ITEMS.includes(c.name)); }
+function guidePurposes(G){ const ok=GUIDE_PURPOSES.map(p=>p[0]); const ps=(Array.isArray(G.purposes)?G.purposes:GUIDE_GOAL_PURPOSES[guideGoal(G)]).filter((p,i,a)=>ok.includes(p)&&a.indexOf(p)===i); return guidePOrder(ps.length?ps:GUIDE_GOAL_PURPOSES[guideGoal(G)]); }
+// 候補を、調べることの種類ごとに分ける。同じ項目が2つの種類にあるとき、どちらの種類に出すか（と初めにチェックが入るか）は、これまでどおり Pro の種類の順で先に出るほうで決め、
+// 並べる順だけを生育の順（guidePurposes）にする（並べ替えで、おまかせの項目が変わらないように）
+function guideCandAll(G){
+  const crop=guideCrop(G), ps=guidePurposes(G), home=new Map();
+  GUIDE_PURPOSES.map(p=>p[0]).filter(p=>ps.includes(p)).forEach(p=>guideDictCandidates(p,crop).forEach(c=>{ if(!home.has(c.name)) home.set(c.name,Object.assign({},c,{p})); }));
+  return ps.map(p=>({p, list:[...home.values()].filter(c=>c.p===p)}));
+}
 function guideItemNames(G){
-  const crop=guideCrop(G), ps=guidePurposes(G), cand=[]; ps.forEach(p=>dictCandidates(p,crop).forEach(c=>{ if(!cand.some(x=>x.name===c.name)) cand.push(c); }));
+  const cand=[]; guideCandAll(G).forEach(g=>g.list.forEach(c=>cand.push(c)));
   let names=Array.isArray(G.items) ? G.items.filter((n,i,a)=>cand.some(c=>c.name===n)&&a.indexOf(n)===i) : cand.filter(c=>c.on).map(c=>c.name);
   const used=guidePairUsed(names);
   return names.filter(n=>!used.has(n));
 }
 function guidePairUsed(names){ const s=new Set(); names.forEach(n=>{ const e=ITEM_DICT[n]; if(e&&e.kind==='prop'&&e.pair) e.pair.forEach(x=>s.add(x)); }); return s; }
 function guideCandidates(G){
-  const crop=guideCrop(G), ps=guidePurposes(G), sel=guideItemNames(G), used=guidePairUsed(sel), seen=new Set();
-  return ps.map(p=>({p, title:(GUIDE_PURPOSES.find(x=>x[0]===p)||[])[1]||p,
-    list:dictCandidates(p,crop).filter(c=>{ if(seen.has(c.name)) return false; seen.add(c.name); return true; }).map(c=>({name:c.name, kind:c.kind, checked:sel.includes(c.name), by:used.has(c.name)?sel.find(n=>{ const e=ITEM_DICT[n]; return e.kind==='prop'&&e.pair&&e.pair.includes(c.name); }):null}))}));
+  const sel=guideItemNames(G), used=guidePairUsed(sel);
+  return guideCandAll(G).map(({p,list})=>({p, title:(GUIDE_PURPOSES.find(x=>x[0]===p)||[])[1]||p,
+    list:list.map(c=>({name:c.name, kind:c.kind, checked:sel.includes(c.name), by:used.has(c.name)?sel.find(n=>{ const e=ITEM_DICT[n]; return e.kind==='prop'&&e.pair&&e.pair.includes(c.name); }):null}))}));
 }
 function guideItems(G){
   const crop=guideCrop(G), out=[];
@@ -1939,7 +1957,11 @@ function docScale(R){
 }
 // 調査項目の文の初期値（B′-7）：項目の辞書の種類（生育・収穫時の品質・収量など）でまとめて並べる。辞書にない項目は、そのあとに並べる。
 // 設計書の画面で書き換えた文（S.doc.itemsText）があれば、そちらを使う。解析には使わない
-const DOC_ITEM_GROUP=[['grow','生育調査'],['phen','開花・生育ステージの調査'],['dis','病害虫・障害の調査'],['fq','収穫時調査'],['yield','収量調査'],['soil','土壌調査']];
+// 調査のグループの順は、生育の順（開花・生育ステージ → 生育 → 土壌 → 病害虫 → 収量 → 収穫物の品質 → そのほか）。ガイドの7段目の「調べることの種類」も同じ順
+const DOC_ITEM_GROUP=[['phen','開花・生育ステージの調査'],['grow','生育調査'],['soil','土壌調査'],['dis','病害虫・障害の調査'],['yield','収量調査'],['fq','収穫時調査']];
+// 画面で、調べることの種類（7段目）と調査のグループ（8段目・区分の選ぶ欄）を結ぶ記号。設計書・野帳には出さない
+const GROUP_MARK={phen:'A', grow:'B', soil:'C', dis:'D', yield:'E', fq:'F', rest:'G', other:'G'};
+function grpMark(g){ return GROUP_MARK[g]?GROUP_MARK[g]+' ':''; }
 const DOC_ITEM_SKIP=['備考','採取日'];   // 設計書の調査項目の文には並べない（記入表・ひな形には出る）
 function docGrpOK(g){ return typeof g==='string'&&DOC_ITEM_GROUP.some(x=>x[0]===g); }
 function docItemGroup(name,crop){
@@ -1970,6 +1992,7 @@ function designDoc(R,lay,opt){
   // ---- 本体（B′-1：所の様式。見出しは本文と同じ字。項目名と中身を同じ行に書き、2行目以降はぶら下げ）----
   if(d.status) doc.head.push({t:'status', text:`【${d.status}】`});
   [['実施年次',d.nenji],['予算区分',d.budget],['協　　力',d.partner]].forEach(([k,v])=>{ if(v&&String(v).trim()) doc.head.push({t:'right', k, v:String(v).trim(), text:`${k}　${String(v).trim()}`}); });   // 右側に、行頭をそろえて置く（2行目以降は、項目名＋1字のところから）
+  doc.head.push({t:'blank', text:''});   // 課題名の上に1行あける
   d.tiers.forEach((t,i)=>doc.head.push({t:'tier', lv:i, k:t.label, v:B(t.value)}));   // 担当（d.person）は設計書に出さない（欄は残す）
   const para=(v,dflt)=>{ const t=(v&&String(v).trim())?String(v).trim():''; return (t?t.split(/\s*\n\s*/).filter(Boolean):[dflt]).map(x=>({t:'p', text:x, ind:1})); };
   const draft=(typeof guidePurposeDraft==='function')?guidePurposeDraft(s,R):'';
@@ -2070,7 +2093,7 @@ function docBlockHTML(b){
 }
 const DOC_WORD_BREAK='<br clear="all" style="page-break-before:always">';   // Word 用の改ページ（囲みに付けると、中の段落ごとに改ページされるため、1行だけ入れる）
 function docHeadHTML(doc){
-  const e=docEsc; return doc.head.map(h=>h.t==='status'?`<p class="ds">${e(h.text)}</p>`:(h.t==='right'?`<p class="dr">${e(h.text)}</p>`:`<p class="dtier" style="margin-left:${((h.lv+2+String(h.k).length)*10.5).toFixed(1)}pt;text-indent:-${((String(h.k).length+1)*10.5).toFixed(1)}pt">${e(h.k)}　${e(h.v)}</p>`)).join('')+'<p class="dgap">&nbsp;</p>';
+  const e=docEsc; return doc.head.map(h=>h.t==='blank'?'<p class="dgap">&nbsp;</p>':h.t==='status'?`<p class="ds">${e(h.text)}</p>`:(h.t==='right'?`<p class="dr">${e(h.text)}</p>`:`<p class="dtier" style="margin-left:${((h.lv+2+String(h.k).length)*10.5).toFixed(1)}pt;text-indent:-${((String(h.k).length+1)*10.5).toFixed(1)}pt">${e(h.k)}　${e(h.v)}</p>`)).join('')+'<p class="dgap">&nbsp;</p>';
 }
 function docHTML(doc,annex,word){
   const e=docEsc, sec=(s,m)=>`<section class="dsec${m?' dm':''}"><h3${m?' class="dmh"':''}>${e(s.h)}${s.inline!=null?'　'+e(s.inline):''}</h3>${s.blocks.map(docBlockHTML).join('')}</section>`;
@@ -2480,14 +2503,15 @@ function gSketch(R){
   const legend=R.design==='latin'?'':(R.nT<=12?(named.length?`<p class="hint sklg">${named.map(t=>`${esc(t.code)}＝${esc(t.name)}${t.ctrl?'（対照）':''}`).join('　')}</p>`:''):'<p class="hint sklg">記号の内訳は、「ざっくり案」の区割り図と、試験設計書の別紙1 に出ます。</p>');
   return `<div class="gsk">${head}<p class="hint">${esc(note)}</p><div class="tscroll"><table class="sk">${rows.join('')}</table></div>${legend}</div>`;
 }
-function grpOpts(sel){ return `<option value="">区分なし（最後に並べる）</option>`+DOC_ITEM_GROUP.map(x=>`<option value="${x[0]}"${sel===x[0]?' selected':''}>${esc(x[1])}</option>`).join(''); }
+function grpOpts(sel){ return DOC_ITEM_GROUP.map(x=>`<option value="${x[0]}"${sel===x[0]?' selected':''}>${esc(grpMark(x[0])+x[1])}</option>`).join('')+`<option value=""${docGrpOK(sel)?'':' selected'}>${esc(grpMark('rest'))}そのほか（区分なし。最後に並べる）</option>`; }
 function gStep7(G){
   const ps=guidePurposes(G), groups=guideCandidates(G), cus=Array.isArray(G.custom)?G.custom:[];
-  let h=`<div class="gsub" style="margin-top:4px;border-top:0;padding-top:0"><h4>① 調べることの種類 <span class="term">いくつでも</span></h4><div class="gchk">${GUIDE_PURPOSES.map(p=>`<label title="${esc(p[2])}"><input type="checkbox" data-p="${p[0]}"${ps.includes(p[0])?' checked':''}> ${esc(p[1])}</label>`).join('')}</div></div>
+  let h=`<div class="gsub" style="margin-top:4px;border-top:0;padding-top:0"><h4>① 調べることの種類 <span class="term">いくつでも</span></h4><div class="gchk">${guidePOrder(GUIDE_PURPOSES.map(p=>p[0])).map(k=>GUIDE_PURPOSES.find(p=>p[0]===k)).map(p=>`<label title="${esc(p[2])}"><input type="checkbox" data-p="${p[0]}"${ps.includes(p[0])?' checked':''}> <b class="gmk">${grpMark(p[0]).trim()}</b> ${esc(p[1])}</label>`).join('')}</div>
+      <p class="hint" style="margin:6px 0 0">A〜G の記号は、次の段の「調査のグループ」と、足した項目の「設計書での区分」の記号と同じです。</p></div>
     <div class="gsub"><h4>② 調べる項目 <span class="term">チェックした項目が、記入表と野帳の列になります</span></h4>`;
-  groups.forEach(g=>{ h+=`<p class="hint" style="margin:8px 0 4px">${esc(g.title)}</p><div class="gchk">${g.list.map(c=>`<label class="${c.by?'off':''}"><input type="checkbox" data-item="${esc(c.name)}"${c.checked?' checked':''}${c.by?' disabled':''}> ${esc(c.name)}${c.by?` <small>（「${esc(c.by)}」で数えます）</small>`:(c.kind==='note'?' <small>（メモ）</small>':'')}</label>`).join('')}</div>`; });
+  groups.forEach(g=>{ const gj=(DOC_ITEM_GROUP.find(x=>x[0]===g.p)||[])[1]; h+=`<p class="hint" style="margin:8px 0 4px"><b class="gmk">${grpMark(g.p).trim()}</b> ${esc(g.title)}${gj&&gj!==g.title?` <small>（${esc(gj)}）</small>`:''}</p><div class="gchk">${g.list.map(c=>`<label class="${c.by?'off':''}"><input type="checkbox" data-item="${esc(c.name)}"${c.checked?' checked':''}${c.by?' disabled':''}> ${esc(c.name)}${c.by?` <small>（「${esc(c.by)}」で数えます）</small>`:(c.kind==='note'?' <small>（メモ）</small>':'')}${(ig=>ig!==(g.p==='other'?'rest':g.p)?` <small>（→ ${esc(grpMark(ig)+surveyJP(ig))}）</small>`:'')((G.grp&&docGrpOK(G.grp[c.name])&&G.grp[c.name])||docItemGroup(c.name,guideCrop(G))||'rest')}</label>`).join('')}</div>`; });   // 野帳・設計書で別のグループに入る項目は、行き先の記号を添える
   h+=`</div><div class="gsub"><h4>③ 候補にない項目を足す <span class="term">任意</span></h4>
-    ${cus.length?`<div class="gchk" style="margin-bottom:8px">${cus.map((c,i)=>`<label>${esc(c.name)} <small>（${esc(KIND_JP[c.kind]||'')}${docGrpOK(c.grp)?'・'+esc(DOC_ITEM_GROUP.find(x=>x[0]===c.grp)[1]):''}）</small> <button type="button" class="btn ghost" style="padding:0 8px" data-act="delcustom" data-i="${i}" aria-label="${esc(c.name)}を外す">外す</button></label>`).join('')}</div>`:''}
+    ${cus.length?`<div class="gchk" style="margin-bottom:8px">${cus.map((c,i)=>`<label>${esc(c.name)} <small>（${esc(KIND_JP[c.kind]||'')}${docGrpOK(c.grp)?'・'+esc(grpMark(c.grp)+DOC_ITEM_GROUP.find(x=>x[0]===c.grp)[1]):''}）</small> <button type="button" class="btn ghost" style="padding:0 8px" data-act="delcustom" data-i="${i}" aria-label="${esc(c.name)}を外す">外す</button></label>`).join('')}</div>`:''}
     <div class="row2"><label class="f">項目の名前<input type="text" id="gCName" value="${esc(GTMP.cname)}" placeholder="例：着色歩合"></label>
     <label class="f">値の形<select id="gCKind">${KINDS.map(k=>`<option value="${k}"${GTMP.ckind===k?' selected':''}>${esc(KIND_JP[k])}</option>`).join('')}</select></label></div>
     <label class="f" style="margin-top:8px">設計書での区分 <small>設計書の「調査項目」で、どのまとまりに並べるか（あとから設計書の画面でも変えられます）</small><select id="gCGrp">${grpOpts(GTMP.cgrp)}</select></label>
@@ -2501,7 +2525,7 @@ function surveyFormHTML(){
   const cur=surveyClean(S.surveys), u=docUnit(R.s), ss='width:auto;padding:4px 6px', ns='width:5.5em;padding:4px 6px';
   return `<h4>調査のグループごとの調べ方 <span class="term">野帳のひな形と記入表は、グループごとにできます。変えたいところだけ入れます</span></h4>
     ${R.surveys.map(x=>{ const v=cur[x.g]||{}, p=x.plan||{};
-      return `<div class="svrow" data-sv="${x.g}"><div class="svh"><b>${esc(x.jp)}</b> <small>${esc(x.R.aItems.map(o=>o.name).join('、'))}</small></div>
+      return `<div class="svrow" data-sv="${x.g}"><div class="svh"><b><span class="gmk">${grpMark(x.g).trim()}</span> ${esc(x.jp)}</b> <small>${esc(x.R.aItems.map(o=>o.name).join('、'))}</small></div>
         <div class="svf"><label>調べ方 <select data-svk="times" style="${ss}" aria-label="${esc(x.jp)}の調べ方"><option value="">設計全体に合わせる（いまは${S.repeated?'何回も':'1回'}）</option><option value="once"${v.times==='once'?' selected':''}>このグループは1回</option><option value="repeat"${v.times==='repeat'?' selected':''}>このグループは時期を変えて何回も</option></select></label>
         <label>1${esc(u)}あたりの調査数 <input type="number" data-svk="sub" min="1" max="500" inputmode="numeric" style="${ns}" value="${v.sub||''}" placeholder="${x.sub||1}" aria-label="${esc(x.jp)}の1${esc(u)}あたりの調査数"></label>
         ${x.repeated?planFieldsHTML({sv:true, jp:x.jp, v:v.plan||null, ph:p, ss, ns}):''}</div></div>`; }).join('')}
@@ -2648,6 +2672,8 @@ function fillPhField(b){ return (b.closest('.gsub,.tplp')||document).querySelect
 function fillPh(b){ const f=fillPhField(b); if(!f||String(f.value).trim()||!f.placeholder) return; f.value=f.placeholder; f.dispatchEvent(new Event('input',{bubbles:true})); f.focus(); try{ f.setSelectionRange(f.value.length,f.value.length); }catch(e){} b.disabled=true; }
 document.addEventListener('click',e=>{ const b=e.target&&e.target.closest&&e.target.closest('button.fillph'); if(b){ e.stopPropagation(); fillPh(b); } },true);
 document.addEventListener('input',e=>{ const t=e.target; if(!t||!t.matches||!t.matches('input,textarea')) return; document.querySelectorAll('button.fillph').forEach(b=>{ const f=fillPhField(b); if(f===t) b.disabled=!!String(t.value).trim(); }); });
+// 枠（label）の文字や余白を押したとき、ブラウザは枠の中の最初の部品を押したことにする。枠の中に −／＋ のボタンがあると、押すたびに数が減っていたので、枠の中の入力欄に移るだけにする
+document.addEventListener('click',e=>{ const t=e.target; if(!t||!t.closest) return; const l=t.closest('label'); if(!l||l.htmlFor||t.closest('button,input,select,textarea,a,summary')) return; if(!l.querySelector('button')) return; e.preventDefault(); const f=l.querySelector('input,select,textarea'); if(f) f.focus(); },true);
 // 段の目次（右の列。押すとその段へ移る。上の帯の番号と同じ動き）。スマホ幅では、たたんでおく
 const GTOC=['作物','確かめたいこと（目標）','比べるもの（処理）','処理のかけ方','場所とむら','試験の規模','調べる項目','調べる回数・年数','ざっくり案','設計書に載せること'];
 function gToc(st){
@@ -2754,8 +2780,8 @@ function guideChange(e){
   if(t.id==='gGrpSel'){ TPL.g=t.value; TPL.url=''; TPL.show=false; return renderGuide(); }
   if(t.closest('[data-sv]')){ planPick(t); G.surveys=surveyFormRead(gEl('guide')); guideCommit(); if(t.tagName==='SELECT') renderGuide(); else gRefreshNow(); return; }
   if(t.dataset.p){ const ps=guidePurposes(G), before=guideItemNames(G), p=t.dataset.p; const nx=t.checked?ps.concat(p):ps.filter(x=>x!==p);
-    if(!nx.length){ t.checked=true; return; } G.purposes=GUIDE_PURPOSES.map(x=>x[0]).filter(x=>nx.includes(x));
-    if(Array.isArray(G.items)&&t.checked) G.items=before.concat(dictCandidates(p,guideCrop(G)).filter(c=>c.on&&!before.includes(c.name)).map(c=>c.name));
+    if(!nx.length){ t.checked=true; return; } G.purposes=guidePOrder(GUIDE_PURPOSES.map(x=>x[0]).filter(x=>nx.includes(x)));
+    if(Array.isArray(G.items)&&t.checked) G.items=before.concat(guideDictCandidates(p,guideCrop(G)).filter(c=>c.on&&!before.includes(c.name)).map(c=>c.name));
     guideCommit(); return renderGuide(); }
   if(t.dataset.item){ const cur=guideItemNames(G), n=t.dataset.item; G.items=t.checked?cur.concat(n):cur.filter(x=>x!==n); guideCommit(); return renderGuide(); }
   if(t.dataset.hard!=null){ const i=+t.dataset.hard, h=Array.isArray(G.hard)?G.hard:[]; G.hard=t.checked?h.concat(i).sort():h.filter(x=>x!==i); guideCommit(); return gRefreshNow(); }
@@ -2801,7 +2827,7 @@ function docFormHTML(){
   if(R&&!R.empty){
     h+=`<div class="gsub"><h4>処理の内容 <span class="term">濃度・時期・方法など</span></h4>${S.factors.map((f,i)=>f.n>=2?`<p class="hint" style="margin:6px 0 2px">${esc(f.name||('要因'+LETTERS[i]))}</p>`+makeLabels(f,i).map((l,j)=>`<div class="row2" style="grid-template-columns:minmax(0,130px) minmax(0,1fr);margin-bottom:4px"><span style="font-size:13px;align-self:center">${esc(l)}</span><input type="text" data-desc="${i}_${j}" value="${esc((f.desc||[])[j]||'')}" placeholder="（記入）" aria-label="${esc(l)}の処理の内容"></div>`).join(''):'').join('')}</div>
       <div class="gsub"><h4>調査方法 <span class="term">項目ごと。入れた項目だけ、別紙4 の「項目の定義・調査方法」に載ります</span></h4>${R.items.filter(o=>!o.virtual).map((o,i)=>`<div class="row2" style="grid-template-columns:minmax(0,130px) minmax(0,1fr);margin-bottom:4px"><span style="font-size:13px;align-self:center">${esc(o.name)}</span><input type="text" data-meth="${i}" value="${esc(((S.doc||{}).methods||[])[i]||'')}" placeholder="（記入）" aria-label="${esc(o.name)}の調査方法"></div>`).join('')}</div>
-      ${R.items.some(o=>!o.virtual&&!DOC_ITEM_SKIP.includes(o.name))?`<details class="gsub" id="grpBox"${R.items.some(o=>!o.virtual&&!ITEM_DICT[o.name]&&!DOC_ITEM_SKIP.includes(o.name))?' open':''}><summary style="cursor:pointer;font-size:13px;font-weight:700">項目の区分（調査のグループ） <span class="term">設計書の「調査項目」のまとまりと、野帳を分けるグループ。候補にない項目・付け替えたい項目だけ選びます</span></summary>${R.items.filter(o=>!o.virtual&&!DOC_ITEM_SKIP.includes(o.name)).map(o=>`<div class="row2" style="grid-template-columns:minmax(0,130px) minmax(0,1fr);margin-bottom:4px"><span style="font-size:13px;align-self:center">${esc(o.name)}</span><select data-grp="${esc(o.key)}" aria-label="${esc(o.name)}の区分">${ITEM_DICT[o.name]?`<option value="">初めの区分（${esc(surveyJP(docItemGroup(o.name,R.s.crop||'none')||'rest'))}）</option>`+DOC_ITEM_GROUP.map(x=>`<option value="${x[0]}"${o.grp===x[0]?' selected':''}>${esc(x[1])}</option>`).join(''):grpOpts(o.grp||'')}</select></div>`).join('')}</details>`:''}
+      ${R.items.some(o=>!o.virtual&&!DOC_ITEM_SKIP.includes(o.name))?`<details class="gsub" id="grpBox"${R.items.some(o=>!o.virtual&&!ITEM_DICT[o.name]&&!DOC_ITEM_SKIP.includes(o.name))?' open':''}><summary style="cursor:pointer;font-size:13px;font-weight:700">項目の区分（調査のグループ） <span class="term">設計書の「調査項目」のまとまりと、野帳を分けるグループ。候補にない項目・付け替えたい項目だけ選びます</span></summary>${R.items.filter(o=>!o.virtual&&!DOC_ITEM_SKIP.includes(o.name)).map(o=>`<div class="row2" style="grid-template-columns:minmax(0,130px) minmax(0,1fr);margin-bottom:4px"><span style="font-size:13px;align-self:center">${esc(o.name)}</span><select data-grp="${esc(o.key)}" aria-label="${esc(o.name)}の区分">${ITEM_DICT[o.name]?`<option value="">初めの区分（${esc((g0=>grpMark(g0)+surveyJP(g0))(docItemGroup(o.name,R.s.crop||'none')||'rest'))}）</option>`+DOC_ITEM_GROUP.map(x=>`<option value="${x[0]}"${o.grp===x[0]?' selected':''}>${esc(grpMark(x[0])+x[1])}</option>`).join(''):grpOpts(o.grp||'')}</select></div>`).join('')}</details>`:''}
       <div class="gsub"><label class="f">調査項目の文 <small>設計書の「調査項目」にそのまま載ります。時期・間隔などを書き足せます（例：生育調査（肥大状況（10日ごと）、葉色（30日ごと））、収穫時調査（横径、縦径））。解析には使いません</small><textarea id="gditems" data-doc="1" rows="3">${esc(docItemsText(R))}</textarea></label>
       <div class="toolbar" style="margin-top:4px"><button type="button" class="btn ghost" data-act="itemsreset"${(S.doc&&S.doc.itemsText)?'':' disabled'}>初めの文に戻す（項目の一覧から作り直す）</button><span class="hint" style="margin:0">${(S.doc&&S.doc.itemsText)?'書き換えた文を使っています。項目を変えても、この文は変わりません。':'初めの文は、項目の種類（生育・収穫時など）ごとにまとめてあります。項目を変えると、文も変わります。'}</span></div></div>`;
   }
@@ -2852,7 +2878,7 @@ function tplPanelHTML(){
   const nodec=R.items.filter(x=>x.kind==='cont'&&x.dec==null&&!x.virtual).map(x=>x.name);
   return `<div class="tplp">
     <p class="hint">声で野帳Pro を使っている方向けです。音声で入力する列（調べる項目）と、先に分かっている列（区番号・処理など）の個体リストが入った調査を、Pro に作れます。測定値は入りません。Pro を使わないときは、記入表（Excel）で同じ記録が取れます。</p>
-    ${R0.surveys.length>1?`<label class="f" style="margin-bottom:8px">どの調査のひな形を作りますか <small>調査のグループごとに、ひな形を1つずつ作ります（${R0.surveys.length}つ）。選んで、それぞれ保存するか、Pro で開きます</small><select class="tplGrp">${R0.surveys.map(x=>`<option value="${x.g}"${SV.g===x.g?' selected':''}>${esc(x.jp)}（${esc(surveyNote(x,docUnit(R0.s)))}）</option>`).join('')}</select></label>`:''}
+    ${R0.surveys.length>1?`<label class="f" style="margin-bottom:8px">どの調査のひな形を作りますか <small>調査のグループごとに、ひな形を1つずつ作ります（${R0.surveys.length}つ）。選んで、それぞれ保存するか、Pro で開きます</small><select class="tplGrp">${R0.surveys.map(x=>`<option value="${x.g}"${SV.g===x.g?' selected':''}>${esc(grpMark(x.g)+x.jp)}（${esc(surveyNote(x,docUnit(R0.s)))}）</option>`).join('')}</select></label>`:''}
     <div class="row2"><label class="f">調査の名前 <small>Pro の調査一覧に出ます${R0.surveys.length>1?'（うしろに、調査のグループの名前が付きます）':''}</small><input type="text" class="tplName" value="${esc(o.name)}" placeholder="${esc(designName(S,o))}" maxlength="80"><button type="button" class="btn ghost fillph" data-fill=".tplName"${o.name?' disabled':''} style="margin-top:4px;justify-self:start">薄い字の名前を欄に入れて直す</button></label>
     <label class="f">個体リストの順番 <small>読み上げて回る順</small><select class="tplOrder"><option value="0"${o.snake?'':' selected'}>区番号の順</option><option value="1"${o.snake?' selected':''}>歩く順（区割り図の1行ごとに折り返す）</option></select></label></div>
     <p class="note tplWhat">項目 ${c.items}（音声で入力 ${c.meas}・事前入力 ${c.id}）、個体リスト ${c.list?c.list.toLocaleString()+'行':'なし'}${R.s.repeated?'、調査日ごとに記録（経時調査）'+(R.s.plan&&Array.isArray(R.s.plan.dates)&&R.s.plan.dates.length?`・調査日：${R.s.plan.dates.length}回（日付を指定。声で野帳Pro の予定には入れていないので、Pro の設定で調査日を入れます）`:(t.S.plan&&t.S.plan.on?`・予定：${t.S.plan.start} から ${t.S.plan.every}日ごとに${t.S.plan.count}回`:'')):''}。</p>
