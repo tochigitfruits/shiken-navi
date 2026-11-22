@@ -329,6 +329,11 @@ body.v-doc #docv{display:block}
 .tplp .tplHow{margin-top:8px;font-size:13px}.tplp .tplHow ul{margin:6px 0 0;padding-left:1.2em}.tplp .tplHow li{margin:3px 0}
 .svrow{border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-top:6px;background:var(--surface)}.svh small{color:var(--muted);overflow-wrap:anywhere}
 .svf{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin-top:6px;font-size:13px}.svf label{display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap}
+.svf label,.svo{max-width:100%;min-width:0}.svf select,.svf input{max-width:100%;min-width:0}.svd{max-width:100%}
+.svo{display:inline-flex;flex-wrap:wrap;gap:6px 12px;align-items:center}.svo2{padding-left:10px;border-left:3px solid var(--line)}.svo2l{color:var(--muted)}.svo3{display:block;width:100%;color:var(--muted)}
+.svd{margin:4px 0 0 14px;font-size:13px}.svd summary{cursor:pointer;color:var(--accent,inherit);display:inline-block;max-width:100%;box-sizing:border-box;list-style:none;border:1px solid currentColor;border-radius:6px;padding:4px 10px;margin:2px 0}.svd summary::-webkit-details-marker{display:none}.svd summary::before{content:'▸ '}.svd[open] summary::before{content:'▾ '}.svd summary small{color:var(--muted)}
+.svi{border:1px dashed var(--line);border-radius:10px;padding:6px 10px;margin-top:6px;background:var(--surface)}.svsplit .note{margin:8px 0 0}
+.onm{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.onm select{width:auto}
 .tplbox{margin-top:14px;border-top:1px solid var(--line);padding-top:10px}.tplbox>summary{cursor:pointer}
 #fileMsg{margin:10px 0 0;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
 .docbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
@@ -468,6 +473,9 @@ body.v-doc #docv{display:block}
       <label class="f">試験年数
         <select id="years"><option value="single">単年</option><option value="same">複数年（同じ樹・区で継続）</option><option value="new">複数年（毎年植え直し・配置し直し）</option></select></label>
     </div>
+    <div class="row2" style="margin-top:10px">
+      <label class="f">何を数えますか<small>1単位の中で調べるもの（2つ以上調べるとき）。グループ・項目ごとに変えるときは、Q5 の下の欄で</small><span class="onm" id="subNameBox"></span></label><span></span>
+    </div>
     <p class="hint" style="margin:12px 0 6px">数値データで、検出できる差の目安を出す場合（どちらも空欄可）</p>
     <div class="row2">
       <label class="f">ばらつきの目安 CV（%）<small>過去の同種試験の区平均の変動係数</small><input type="number" id="cv" min="0.1" max="200" step="0.1" placeholder="例 10"></label>
@@ -514,15 +522,20 @@ body.v-doc #docv{display:block}
 </div>
 <div class="wrap">
 <footer>
-  <div><b>試験設計ナビ ver. 2.0（2026-11-20）</b>　栃木県農業総合研究センター 果樹研究室</div>
+  <div><b>試験設計ナビ ver. 2.0（2026-11-22）</b>　栃木県農業総合研究センター 果樹研究室</div>
   <div>判定は、結果欄の「根拠と参照」の文献に沿った標準的な提案です。ナビの答えは出発点です。最終的な設計と解析方法は、試験設計書の段階で、共同研究者や統計の担当者と確かめると安心です。対象範囲外の試験（結果欄の最後を参照）も、同じように相談すると進め方が決まります。このツールの結果を使って生じた損害について、作成者は責任を負いません。</div>
   <div>「根拠と参照」の文献は、ナビの判断のよりどころを示すものです。ナビの説明は要約なので、設計書や論文で根拠として挙げるときは、必ず原典に当たって、該当する箇所を確かめます。</div>
   <div>問い合わせ先：栃木県農業総合研究センター果樹研究室</div>
   <div>例題の名前と数値はすべて架空です。入力した内容はブラウザの中だけで処理され、端末の外には送られません（入力の保存先はこの端末のブラウザです。設計ファイル・野帳のひな形は、この端末にファイルとして保存されます。ひな形のリンクは、押したときにブラウザが声で野帳Pro のページを開くもので、ひな形の中身はサーバーには送られません）。</div>
   <details><summary>変更履歴</summary>
     <dl>
-      <dt>ver. 2.0（2026-11-20）</dt>
+      <dt>ver. 2.0（2026-11-22）</dt>
       <dd><ul>
+        <li>1区（樹）で何個体かを調べる「あり／なし」「数」は、区ごとに数えて（何個中何個、合計と調べた数）から解析するようにした（区のばらつきがあると、個体ごとの混合モデルは差がなくても有意になりやすいため）。程度・段階はこれまでどおり</li>
+        <li>調査の単位：区の中で調べるもの（果実・新梢・葉など）を2段まで（例：樹3本 × 果実10個）、調査のグループ・項目ごとに持てるようにした。数値は樹ごと・区ごとに平均、あり／なし・数は区ごとに数え、段階は区と樹を変量効果にして解析する。項目ごとに1回／何回も・調査日の予定も変えられ、調べ方の違う項目は別の野帳・記入表に分かれる。入力は、ガイドの6段目（何を数えますか）・8段目と詳しい画面の「調査のグループごとの調べ方」（調査の単位・項目ごとに変える）</li>
+        <li>反復のない設計（検定なし）で2段に調べる数値のまとめ方は、樹ごとの平均の幅（区の中のばらつき）を示すようにした。1区に1個体の「あり／なし」で区の変量効果を入れない設計は、解析の名前を「ロジスティック回帰」とした（「区を変量効果」と書いていた）</li>
+        <li>反復のない設計（検定なし）で、何回も調べる表・複数年の設計のまとめ方は、処理ごとの値・図・表を調査時期ごと・年ごとに分けて出すようにした（時期や年をまたいで平均しない）。分割区法で1区に1個体の「あり／なし」は、解析の名前と説明に、大区画を変量効果に入れることを書くようにした</li>
+        <li>日付を決めた調査日を、声で野帳Pro の予定（日付の一覧）に入れて渡すようにした</li>
         <li>かんたんガイドの6段目などで、−／＋ のボタン以外（欄の文字や余白）を押すと数が減っていく不具合を直した</li>
         <li>調べることの種類と調査のグループを、生育の順（A 開花・生育ステージ → B 生育調査 → C 土壌 → D 病害虫・障害 → E 収量 → F 収穫物の品質 → G そのほか）にそろえ、7段目・8段目・区分の選ぶ欄に同じ記号を付けた。設計書の調査項目・記入表のシート・野帳のひな形もこの順</li>
         <li>「備考」を調べる項目の候補から外した（声で野帳Pro で、調査中にメモ・除外の理由として入れる）。足した項目としては作れる</li>
@@ -561,7 +574,7 @@ body.v-doc #docv{display:block}
 <script>
 /*LOGIC-START*/
 'use strict';
-const VERSION='2.0', VERSION_DATE='2026-11-20';
+const VERSION='2.0', VERSION_DATE='2026-11-22';
 const LETTERS='ABCDEFGH';
 const MAX_COMBO=400;          // 全組合せを作る上限（これを超えると直交表または要因の絞り込みを求める）
 const L9=[[1,1,1,1],[1,2,2,2],[1,3,3,3],[2,1,2,3],[2,2,3,1],[2,3,1,2],[3,1,3,2],[3,2,1,3],[3,3,2,1]];
@@ -754,6 +767,7 @@ function errDF(design,r,ctx){
   return 0;
 }
 function splitMainDF(r,a){ return (r-1)*(a-1); }
+function plotRE0(R){ return !!(R&&R.s&&(R.s.repeated||R.years==='same')); }   // 1区1点の あり／なし などで、雛形（rcode）に区の変量効果（(1 | plot)）が入るか。rcode の plotRE と同じ判定（設計資料34 の 3.）
 function mixed0(s,design,years){ return design==='split' || s.repeated || years==='same' || years==='new'; }
 
 // ---------- 解析の段階と助言（設計資料07） ----------
@@ -932,6 +946,9 @@ function computeOne(s,inner,ext){
 
   // ---- 反復の単位・調査数・測定の型 ----
   const sub=s.sub||1;
+  // 調査の単位（設計資料31 の 3.・4.）：区の下に0〜2段。s.obs（表の obs。compute が渡す）がなければ、1区あたりの調査数（sub）から読み替える。段階・誤差の自由度・あと一歩は obs を見ない
+  const OBS=Array.isArray(s.obs)?(obsClean(s.obs,obsDefName(s))||[]):obsFromSub(s), two=OBS.length>=2, U=obsUnitJP(s);
+  items.forEach(o=>{ if(o.kind==='note'||hasDen(o.kind)) return; const e=(s._iobs&&s._iobs[o.key])||OBS; o.eobs=e.map(x=>({...x})); o.fill=e.map(x=>x.n); });
   if(s.unit==='fruit'){
     warn('果実・葉1個ずつを反復にできるのは、その1個ずつに別々に処理をかけた場合です。樹や区に処理をかけた場合は、同じ樹の果実どうしは似るので、果実を何個測っても、樹が1本なら処理の差は確かめられません（擬似反復：Hurlbert 1984）。その場合は、反復の単位を樹・区にして、果実は「1単位あたりの調査数」に入れると、正しく検定できます。');
     SUMMARY.push({title:'樹（区）に処理をかけ、果実だけを複数測った場合のまとめ方', how:['樹（区）ごとの平均と、果実間のばらつきを示す','果実間のばらつきは「その樹の中のばらつき」と明記する'], dont:['果実を反復にした検定（擬似反復：Hurlbert 1984）']});
@@ -940,8 +957,13 @@ function computeOne(s,inner,ext){
     if(r<2) warn('ハウス1棟（圃場1枚）に1処理だけの設計では、処理の差とハウスの差を分けられません（交絡）。');
     else info(`反復の単位はハウス（圃場）です。${N}棟（枚）が必要です。棟数に限りがある場合は、ハウスを大区画とした分割区法にすると、少ない棟数で組めます。`);
   }
-  if(sub>1 && (resp.includes('cont')||resp.includes('date'))) info(`1単位から${sub}点を調べる数値データは、単位ごとに平均して1点にしてから解析します（擬似反復を避けるため）。Rの雛形にはこの手順を入れています。${tgt(['cont','date'])}`);
-  if(sub>1 && resp.some(t=>t==='binary'||t==='count'||t==='ord')) info(`1単位から${sub}点を調べる「あり／なし・数・程度」のデータは、区（樹）を変量効果に入れた混合モデルで解析します（擬似反復を避けるため）。${tgt(['binary','count','ord'])}`);
+  if(sub>1 && (resp.includes('cont')||resp.includes('date'))) info(two?`1${U}で${obsTxt(OBS)}を調べる数値データは、${OBS[0].name}ごと、ついで${U}ごとに平均して、${U}に1つの値にしてから解析します（擬似反復を避けるため）。Rの雛形にはこの手順を入れています。${tgt(['cont','date'])}`:`1単位から${sub}点を調べる数値データは、単位ごとに平均して1点にしてから解析します（擬似反復を避けるため）。Rの雛形にはこの手順を入れています。${tgt(['cont','date'])}`);
+  // あり／なし・数は、段の数によらず、区（×調査時期・年）ごとに数えてから解析する（設計資料32 の 1.：D7′、設計資料31 の D4）。程度・段階は個体ごとの混合モデル（2段は区と区の中の上の段を変量効果：D5）
+  if(sub>1 && resp.some(t=>t==='binary'||t==='count')) info(two?`1${U}で${obsTxt(OBS)}を調べる「あり／なし・数」のデータは、${U}ごとに数えて（何個中何個、合計と調べた数）から解析します（擬似反復を避けるため）。Rの雛形にはこの手順を入れています。${tgt(['binary','count'])}`:`1単位から${sub}点を調べる「あり／なし・数」のデータは、区（樹）ごとに数えて（何個中何個、合計と調べた数）から解析します（擬似反復を避けるため）。Rの雛形にはこの手順を入れています。${tgt(['binary','count'])}`);
+  if(sub>1 && resp.includes('ord')) info(two?`1${U}で${obsTxt(OBS)}を調べる「程度・段階」のデータは、${U}と${OBS[0].name}を変量効果に入れた混合モデルで解析します（擬似反復を避けるため）。${tgt(['ord'])}`:`1単位から${sub}点を調べる「程度・段階」のデータは、区（樹）を変量効果に入れた混合モデルで解析します（擬似反復を避けるため）。${tgt(['ord'])}`);
+  { const fd=aItems.filter(o=>o.eobs&&o.eobs.length); if(fd.length>1 && fd.some(o=>!obsEq(o.eobs,OBS))){   // 同じ表で、項目によって調べる数が違う（設計資料31 の D8）
+    const mins=[...new Set(fd.filter(o=>!obsEq(o.eobs,OBS)).map(o=>o.eobs[o.eobs.length-1].n))];
+    info(`この表は、項目によって調べる数が違います（${fd.map(o=>`${o.name}：${two?obsTxt(o.eobs):o.eobs[0].n+obsCounter(o.eobs[0].name)}`).join('、')}）。少ない項目は、${!two&&mins.length===1?`1〜${mins[0]}番だけに書きます。`:'その数までの番号の行だけに書きます。'}`); } }
   if(propNoDen.length && sub<=1) info(`割合データは「分母（調べた数）」が必要です。「1単位あたりの調査数」に分母を入れると、雛形に反映されます。（対象：${propNoDen.map(o=>o.name).join('・')}）`);
   if(rateNoDen.length && sub<=1) info(`1単位あたりの数は「調べた数」が必要です。項目の「調べた数（割る数）の決め方」で、決まった数を入れるか「区ごとに数えて書く」を選ぶと、記入表と雛形に反映されます。（対象：${rateNoDen.map(o=>o.name).join('・')}）`);
   if(resp.includes('rate')){
@@ -986,15 +1008,18 @@ function computeOne(s,inner,ext){
     // 固定効果のパラメータ数（概算）。混合GLMMで多すぎると計算に長時間かかる・収束しない
     let p = design==='oa' ? F.reduce((q,f)=>q+f.n-1,0)+inter.length : (k<=2 ? T-1 : F.reduce((q,f)=>q+f.n-1,0)+F.reduce((q,f,i)=>q+F.slice(i+1).reduce((u,g)=>u+(f.n-1)*(g.n-1),0),0));
     if(s.repeated) p*=3; if(multiY) p*=2;
-    const glmm = resp.some(t=>t!=='cont'&&t!=='date'&&t!=='rate') && (mixed0(s,design,years) || (sub>1 && resp.some(t=>t==='binary'||t==='count'||t==='ord')));
+    const glmm = resp.some(t=>t!=='cont'&&t!=='date'&&t!=='rate') && (mixed0(s,design,years) || (sub>1 && resp.includes('ord')));   // 1区で複数個体の あり／なし・数は、区ごとに数えるので、ここでは数えない（設計資料32 の 1.4）
     if(glmm && p>40) warn(`割合・数・程度のデータを混合モデル（GLMM）で解析する雛形は、推定する係数が約${p}個と多く、計算に数分〜数十分かかったり収束しなかったりします。要因を絞る、まず交互作用を減らしたモデルから始める、などを共同研究者や統計の担当者と相談すると進めやすくなります。`);
     // 割合・数・あり／なしを混合モデルで解析するときの読み方（設計資料16 の 2.）
-    const glmmK=aItems.filter(o=>(o.kind==='prop'&&!noRE)||((o.kind==='count'||o.kind==='binary')&&(!noRE||sub>1))||(o.kind==='ord'&&sub>1)).map(o=>o.name);
+    const glmmK=aItems.filter(o=>(o.kind==='prop'&&!noRE)||((o.kind==='count'||o.kind==='binary')&&!noRE)||(o.kind==='ord'&&sub>1)).map(o=>o.name);
     if(glmmK.length && level!=='C') info(`割合・数・あり／なし・段階を混合モデルで解析する検定（χ²検定）は、反復が少ないと、P値が実際より小さめに出やすい性質があります。P値が0.05に近いときは、処理ごとの値の表や図と合わせて読むと、言いすぎを避けられます。（対象：${glmmK.join('・')}）`);
   }
 
   // 1区に1つの数を quasi-Poisson のF検定で解析するときの読み方（設計資料16 の 1.4）
-  if(resp.includes('count') && noRE && sub<=1 && level!=='C') info(`数のデータは、区ごとのばらつきの大きさをデータから見積もって検定します。数えた数が0〜数個と少ないとき、または区ごとのばらつきがとても大きいときは、P値がやや小さめに出ることがあります。P値が0.05に近いときは、処理ごとの値の表や図と合わせて読むと、言いすぎを避けられます。${tgt(['count'])}`);
+  if(resp.includes('count') && noRE && level!=='C') info(`数のデータは、区ごとのばらつきの大きさをデータから見積もって検定します。数えた数が0〜数個と少ないとき、または区ごとのばらつきがとても大きいときは、P値がやや小さめに出ることがあります。P値が0.05に近いときは、処理ごとの値の表や図と合わせて読むと、言いすぎを避けられます。${tgt(['count'])}`);
+
+  // 割合（何個中何個・区ごとに数える あり／なし）を quasi-binomial のF検定で解析するときの読み方（設計資料32 の 1.4）
+  { const pq=aItems.filter(o=>o.kind==='prop'||(o.kind==='binary'&&sub>1)); if(pq.length && noRE && level!=='C') info(`割合のデータは、区ごとのばらつきの大きさをデータから見積もって検定します。「あり」がほとんど出ない（多くの区で0個になる）ときは、P値が小さめに出ることがあります。P値が0.05に近いときは、処理ごとの値の表や図と合わせて読むと、言いすぎを避けられます。（対象：${pq.map(o=>o.name).join('・')}）`); }
 
   // ---- 解析の名前 ----
   const regF=F.filter(f=>f.reg);
@@ -1006,12 +1031,19 @@ function computeOne(s,inner,ext){
   else if(cond==='twoway'){ anaJP='繰り返しのない二元配置分散分析（主効果のみ）'; anaEN='two-way analysis of variance without replication (main effects only)'; }
   else { anaJP=WAYJP[k]+'分散分析'; anaEN=WAYEN[k]+' analysis of variance'; }
   if(!hasCont && !(regF.length && k===1)){
-    const g={prop:'一般化線形モデル（二項分布）',binary:'ロジスティック回帰',count:'一般化線形モデル（ポアソン分布）',ord:'順序ロジスティック回帰'}[resp[0]];
+    const g={prop:'一般化線形モデル（二項分布）',binary:sub>1?'一般化線形モデル（二項分布）':'ロジスティック回帰',count:'一般化線形モデル（ポアソン分布）',ord:'順序ロジスティック回帰'}[resp[0]];   // 1区で複数個体の あり／なし は、区ごとに数えた割合と同じ名前（設計資料32 の 1.4）
     anaJP=(design==='oa'?'直交表に基づく':(cond==='twoway'?'繰り返しのない二元配置（主効果のみ）の':WAYJP[k]+'の'))+g; anaEN='a generalized linear model';
   }
   if(design==='rcbd' && r>1) anaJP+='（ブロックを含む）';
   if(design==='latin') anaJP+='（行・列を含む）';
   if(mixed) anaJP+='・混合モデル';
+  // 解析方法の文のあとに足す文（設計資料31 の 5.、設計資料32 の 1.4）：1区内の複数の調査値の扱い
+  const anaAdd={jp:[], en:[]};
+  if(sub>1){ const lo=OBS[OBS.length-1];
+    if(two && (resp.includes('cont')||resp.includes('date'))){ anaAdd.jp.push(`1${U}内の複数の調査値は、${OBS[0].name}ごと、ついで${U}ごとに平均し、${U}の値を解析に用いた。`); anaAdd.en.push(`Values measured on multiple ${obsEN(OBS,1,true)} were averaged within each ${obsEN(OBS,0)} and then within each plot; plot means were used for the analysis.`); }
+    if(resp.includes('binary')||resp.includes('count')){ anaAdd.jp.push(`1${U}内の個体ごとの記録は、${U}ごとに集計して解析に用いた。`); anaAdd.en.push(`Records on individual ${obsEN(OBS,OBS.length-1,true)} were totalled for each plot before the analysis.`); }
+    if(two && resp.includes('ord')){ anaAdd.jp.push(`${U}および${U}内の${OBS[0].name}を変量効果とした。`); anaAdd.en.push(`Plot and ${obsEN(OBS,0)} within plot were included as random effects.`); }
+  }
   const cmpNames=[...new Set(cmp.map(c=>({tukey:'Tukey法',dunnett:'Dunnett法',two:'2区の比較（F検定＝t検定）',reg:'回帰（傾き・R²）',oa:'要因効果の比較'}[c.m])))];
 
   // ---- 検出できる差（数値データ・CV入力時。条件つきの解析 reg・twoway では出さない） ----
@@ -1101,6 +1133,7 @@ function computeOne(s,inner,ext){
     }
     if(houseOne) NEXT.push({kind:'tip', pri:4, t:'ハウス（圃場）をブロックにして、その中を区分けすると、検定できるようになります。年を変えて繰り返すと、年を反復にできます。'});
     if(s.unit==='fruit') NEXT.push({kind:'tip', pri:4, t:'樹や区に処理をかけた試験では、果実10個を1樹から取るより、5個ずつ2樹から取るほうが、処理の差を確かめられます。'});
+    if(two) NEXT.push({kind:'tip', pri:4, t:`同じ手間なら、1${OBS[0].name}あたりの${OBS[1].name}を増やすより、${U}の中の${OBS[0].name}の数を増やすほうが、${U}の値が安定します。処理の差を確かめる力は、これまでどおり${U}（反復）の数で決まります。`});   // 設計資料31 の D10（数字は出さない）
     if(design==='crd' && (s.unit==='tree'||s.unit==='plot') && level!=='A') NEXT.push({kind:'tip', pri:8, t:'場所によるむらがありそうなら、ブロックに分けて並べる（乱塊法）と、むらの分を取り除いて比べられます。'});
   }
   NEXT.sort((x,y)=>(x.pri||9)-(y.pri||9));
@@ -1111,7 +1144,7 @@ function computeOne(s,inner,ext){
   const ordBlock = design==='latin' ? 'latin' : (blockedO ? ((multiY || r>=3) ? 'random' : 'fixed') : 'none');
   const ordMixed = ordBlock==='random' || ordBlock==='latin' || design==='split' || !!s.repeated || years==='same' || sub>1;
   return {level, levelTitle:LEVEL_JP[level], levelBy, can:CAN, cannot:CANNOT, next, summary:SUMMARY, assume:ASSUME, cond, Epure, noRE, houseOne,
-    ordBlock, ordMixed, s, F, k, T, design, oa, treats, nT, r, N, E, Emain, Elv, dfT, a, b, mainF, subF, inter, resp, items, aItems, sub, years, cmp, cmpNames, anaJP, anaEN, mixed, W, regF, hasCont, power};
+    ordBlock, ordMixed, s, F, k, T, design, oa, treats, nT, r, N, E, Emain, Elv, dfT, a, b, mainF, subF, inter, resp, items, aItems, sub, obs:OBS, anaAdd, years, cmp, cmpNames, anaJP, anaEN, mixed, W, regF, hasCont, power};
 }
 
 // ---------- 乱数と区割り ----------
@@ -1131,36 +1164,85 @@ function itemSurvey(o,crop){ if(typeof docGrpOK!=='function') return SURVEY_REST
 function planDatesClean(a){ if(!Array.isArray(a)) return null; const ok=d=>{ if(!/^\d{4}-\d{2}-\d{2}$/.test(d)) return false; const t=new Date(d+'T00:00:00Z'); return !isNaN(t)&&t.toISOString().slice(0,10)===d; };
   return [...new Set(a.map(x=>String(x==null?'':x).trim()).filter(ok))].sort().slice(0,60); }
 function planWithDates(o,src){ if(!o||!src||!Array.isArray(src.dates)) return o; const d=planDatesClean(src.dates); o.dates=d; if(d.length){ o.start=d[0]; o.count=d.length; } else o.start=''; return o; }
-function surveyClean(v){
+function planClean(x){ const e=Math.floor(+x.every), c=Math.floor(+x.count); return planWithDates({start:/^\d{4}-\d{2}-\d{2}$/.test(String(x.start||''))?x.start:'', every:e>=1&&e<=365?e:7, count:c>=2&&c<=60?c:5}, x); }
+// def：調査の単位の名前が空のときに入れる名前（obsDefName）
+function surveyClean(v,def){
   const out={}; if(!v||typeof v!=='object') return out;
   Object.keys(v).slice(0,20).forEach(g=>{ const x=v[g]; if(!(g===SURVEY_REST||(typeof docGrpOK==='function'&&docGrpOK(g)))||!x||typeof x!=='object') return; const o={};
     if(x.times==='once'||x.times==='repeat') o.times=x.times;
-    if(x.plan&&typeof x.plan==='object'){ const e=Math.floor(+x.plan.every), c=Math.floor(+x.plan.count); o.plan=planWithDates({start:/^\d{4}-\d{2}-\d{2}$/.test(String(x.plan.start||''))?x.plan.start:'', every:e>=1&&e<=365?e:7, count:c>=2&&c<=60?c:5}, x.plan); }
+    if(x.plan&&typeof x.plan==='object') o.plan=planClean(x.plan);
     const n=Math.floor(+x.sub); if(x.sub!=null&&x.sub!==''&&n>=1&&n<=500) o.sub=n;
+    { const ob=obsClean(x.obs,def); if(ob) o.obs=ob; }
     if(Object.keys(o).length) out[g]=o; });
   return out;
 }
-// 項目（判定で整えたもの）を、グループに分ける。メモの項目は、同じ区分のグループがあればそこへ、なければ全部のグループへ（備考など）
+// ---------- 調査の単位（設計資料31 の 3.）と、項目ごとの調べ方（設計資料32 の 2.：D9′）----------
+// obs＝[{name, n}, …]：区の下に0〜2段（0段＝区に1つの値、1段＝「果実10個」、2段＝「樹3本 × 果実10個」）。グループ s.surveys[g].obs・項目 s.items[i].obs に持てる（設計全体は s.sub と s.subName）
+// 項目の調べ方：s.items[i].times（'once'|'repeat'）・s.items[i].plan（グループの plan と同じ形）。省略＝グループに合わせる。分母つきの項目・メモは obs を持たない
+const OBS_NMAX=500;
+const OBS_COUNTER={'樹':'本','果実':'個','新梢':'本','葉':'枚','枝':'本','花そう':'個','株':'株','茎':'本','花房':'房','穂':'本','本':'本','花':'輪','個体':'個体','地点':'地点'};
+const OBS_EN={'樹':['tree','trees'],'果実':['fruit','fruits'],'新梢':['shoot','shoots'],'葉':['leaf','leaves'],'枝':['branch','branches'],'花そう':['flower cluster','flower clusters'],'株':['plant','plants'],'茎':['stem','stems'],'花房':['truss','trusses'],'穂':['panicle','panicles'],'本':['stem','stems'],'花':['flower','flowers'],'個体':['individual','individuals'],'地点':['point','points']};
+function obsDefName(s){ return (s&&(s.crop==='fruit'||(!s.crop&&s.unit==='tree')))?'果実':'株'; }   // これまでの名前（記入表の「果実番号」「株番号」と同じ決まり）
+function obsUnitJP(s){ return {tree:'樹',pot:'ポット',house:'棟',fruit:'果実'}[s&&s.unit]||'区'; }   // 実験の単位の名前（文の「区」）
+function obsCounter(name){ return OBS_COUNTER[name]||'個'; }
+function obsTxt(o){ return o.map(x=>x.name+x.n+obsCounter(x.name)).join(' × '); }   // 「樹3本 × 果実10個」
+function obsEN(o,i,pl){ const e=OBS_EN[o[i].name]; return e?e[pl?1:0]:(i?'subunit':'unit')+(pl?'s':''); }
+function obsEq(a,b){ return JSON.stringify(a||[])===JSON.stringify(b||[]); }
+function obsProd(o){ return (o||[]).reduce((p,x)=>p*x.n,1); }
+// 整える：配列でないものは null（指定なし）。先頭の2段だけ・n は 1〜500（n=1 の段は捨てる）・名前は1〜10字（空なら def）・2段で名前が同じなら2段目を捨てる・積は500まで
+function obsClean(v,def){ if(!Array.isArray(v)) return null; def=def||'株'; const out=[];
+  v.slice(0,2).forEach(x=>{ if(!x||typeof x!=='object') return; const n=Math.floor(+x.n); if(x.n==null||x.n===''||!(n>=1&&n<=OBS_NMAX)||n===1) return;
+    const name=String(x.name==null?'':x.name).replace(/[\t\n\r]/g,' ').trim().slice(0,10)||def; if(out.length&&out[0].name===name) return; out.push({name,n}); });
+  if(out.length===2&&out[0].n*out[1].n>OBS_NMAX){ const n2=Math.floor(OBS_NMAX/out[0].n); if(n2>=2) out[1].n=n2; else out.pop(); }
+  return out; }
+function obsFromSub(s){ const n=Math.floor(+(s&&s.sub))||1; return n>=2?[{name:String(s.subName==null?'':s.subName).replace(/[\t\n\r]/g,' ').trim().slice(0,10)||obsDefName(s), n}]:[]; }
+// 項目の調査の単位・調べ方を整える（設計ファイル・ガイドの答えの読み込み、判定で同じ）
+function itemWayClean(x,def,kind){ const o={}; if(!x||typeof x!=='object'||kind==='note') return o;
+  if(!hasDen(kind)){ const ob=obsClean(x.obs,def); if(ob) o.obs=ob; }
+  if(x.times==='once'||x.times==='repeat') o.times=x.times;
+  if(x.plan&&typeof x.plan==='object') o.plan=planClean(x.plan);
+  return o; }
+function obsSpec(s){ return !!(s&&((s.subName!=null&&String(s.subName).trim())||Object.values(s.surveys&&typeof s.surveys==='object'?s.surveys:{}).some(x=>x&&Array.isArray(x.obs))||(Array.isArray(s.items)&&s.items.some(it=>it&&(Array.isArray(it.obs)||it.times!=null||it.plan!=null))))); }
+function planWord(rep,plan){ if(!rep) return '1回'; if(plan&&Array.isArray(plan.dates)) return '日付を指定'; return plan&&plan.every?`${plan.every}日ごと`:'何回も'; }
+// 項目（判定で整えたもの）を、グループに分け、グループの中を表（調査票）に分ける（設計資料31 の 4.、設計資料32 の 2.）。
+//   表＝グループ × 調査の単位の名前の並び × 調べ方（1回か何回もか、何回ものときは予定）。予定が1字でも違えば別の表。並びは 0段 → 1段 → 2段、同じ段数は項目の並び順
+//   メモの項目は、同じ区分のグループがあればその最初の表へ、なければ全部の表へ（備考など）。分母つきの項目は、グループの調査の単位の表へ（区に1行）
+//   返す：[{g, tab, jp, obs, repeated, plan, sub, items, iobs（項目ごとの有効な obs）, fillDiff（表の中で項目の obs が違う）}]。表が1つのグループは tab＝g・jp＝グループの名前（これまでと同じ）
 function surveyPlan(s,items){
-  const crop=s.crop||'none', sv=surveyClean(s.surveys), by={}, order=(typeof DOC_ITEM_GROUP!=='undefined'?DOC_ITEM_GROUP.map(x=>x[0]):[]).concat([SURVEY_REST]);
+  const crop=s.crop||'none', def=obsDefName(s), sv=surveyClean(s.surveys,def), by={}, order=(typeof DOC_ITEM_GROUP!=='undefined'?DOC_ITEM_GROUP.map(x=>x[0]):[]).concat([SURVEY_REST]);
   items.filter(o=>o.kind!=='note').forEach(o=>{ const g=itemSurvey(o,crop); (by[g]=by[g]||[]).push(o); });
-  const gs=order.filter(g=>by[g]), multi=gs.length>1, common=[];
-  items.filter(o=>o.kind==='note').forEach(o=>{ const g=itemSurvey(o,crop); if(g!==SURVEY_REST&&by[g]) by[g].push(o); else common.push(o); });
-  return gs.map(g=>{ const x=sv[g]||{}, repeated=x.times==='repeat'?true:(x.times==='once'?false:!!s.repeated);
-    const keys=new Set(by[g].concat(common).map(o=>o.key));
-    return {g, jp:surveyJP(g), repeated, plan:repeated?(x.plan||s.plan||null):null, sub:x.sub||((multi&&SURVEY_PER_PLOT.includes(g))?1:(s.sub||null)), own:!!sv[g], items:items.filter(o=>keys.has(o.key))}; });
+  const gs=order.filter(g=>by[g]), multi=gs.length>1, common=[], gnote={};
+  items.filter(o=>o.kind==='note').forEach(o=>{ const g=itemSurvey(o,crop); if(g!==SURVEY_REST&&by[g]) (gnote[g]=gnote[g]||[]).push(o); else common.push(o); });
+  const U=obsUnitJP(s), out=[];
+  gs.forEach(g=>{ const x=sv[g]||{}, repeated=x.times==='repeat'?true:(x.times==='once'?false:!!s.repeated), plan=repeated?(x.plan||s.plan||null):null;
+    const sub0=x.sub||((multi&&SURVEY_PER_PLOT.includes(g))?1:(s.sub||null)), gObs=x.obs||obsFromSub({...s, sub:sub0});
+    const tabs=[];
+    by[g].forEach((o,idx)=>{ const w=itemWayClean(o,def,o.kind), ob=w.obs||gObs, rep=w.times==='repeat'?true:(w.times==='once'?false:repeated), pl=rep?(w.plan||(w.times==='repeat'&&!repeated?(x.plan||s.plan||null):plan)||null):null;
+      const k=JSON.stringify([ob.map(v=>v.name), rep, pl]); let t=tabs.find(t=>t.k===k);
+      if(!t){ t={k, first:idx, repeated:rep, plan:pl, obs:null, items:[], iobs:{}}; tabs.push(t); }
+      t.items.push(o); if(!hasDen(o.kind)){ t.iobs[o.key]=ob; t.obs=t.obs?t.obs.map((v,i)=>({name:v.name, n:Math.max(v.n,ob[i].n)})):ob.map(v=>({...v})); } });
+    tabs.forEach(t=>{ if(!t.obs) t.obs=gObs.map(v=>({...v})); t.fillDiff=Object.values(t.iobs).some(v=>!obsEq(v,t.obs)); });
+    tabs.sort((a,b)=>a.obs.length-b.obs.length||a.first-b.first);
+    const many=tabs.length>1, unitL=t=>t.obs.length?t.obs.map(v=>v.name).join('×'):U+'ごと', way=t=>JSON.stringify([t.repeated,t.plan]), wDiff=new Set(tabs.map(way)).size>1;
+    const names=tabs.map(t=>unitL(t)+(wDiff?'・'+planWord(t.repeated,t.plan):''));
+    names.forEach((n,i)=>{ if(names.indexOf(n)!==i||names.lastIndexOf(n)!==i){ const t=tabs[i]; names[i]=n+(t.repeated&&t.plan&&!Array.isArray(t.plan.dates)?`に${t.plan.count}回`:''); } });
+    { const cnt={}, k={}; names.forEach(n=>cnt[n]=(cnt[n]||0)+1); names.forEach((n,i)=>{ if(cnt[n]>1){ k[n]=(k[n]||0)+1; names[i]=n+'・その'+k[n]; } }); }
+    tabs.forEach((t,i)=>{ const keys=new Set(t.items.concat(i===0?(gnote[g]||[]):[]).concat(common).map(o=>o.key)), same0=obsEq(t.obs,obsFromSub({...s, sub:sub0}));
+      out.push({g, tab:many?g+'.'+(i+1):g, jp:many?`${surveyJP(g)}（${names[i]}）`:surveyJP(g), obs:t.obs, repeated:t.repeated, plan:t.plan, sub:same0?sub0:obsProd(t.obs), items:items.filter(o=>keys.has(o.key)), iobs:t.iobs, fillDiff:t.fillDiff}); }); });
+  return out;
 }
 function compute(s,inner){
   const R0=computeOne(s,inner); if(inner||!R0||R0.empty||R0.tooMany) return R0;
-  const P=surveyPlan(R0.s,R0.items.filter(o=>!o.virtual)), s0=R0.s, same=p=>!!p.repeated===!!s0.repeated&&(p.sub||1)===(s0.sub||1)&&JSON.stringify(p.plan||null)===JSON.stringify((s0.repeated&&s0.plan)||null);
-  const strip=o=>{ const x={...o}; delete x.col; delete x.per; if(x.den) x.den={...x.den}; return x; };
-  const sOf=(p,its)=>{ const t={...s0, repeated:p.repeated, plan:p.plan, sub:p.sub}; delete t.surveys; if(its) t.items=its.map(strip); return t; };
+  const P=surveyPlan(R0.s,R0.items.filter(o=>!o.virtual)), s0=R0.s, gObs=obsFromSub(s0);
+  const same=p=>!!p.repeated===!!s0.repeated&&(p.sub||1)===(s0.sub||1)&&JSON.stringify(p.plan||null)===JSON.stringify((s0.repeated&&s0.plan)||null)&&obsEq(p.obs,gObs)&&!p.fillDiff;   // 調査の単位（名前も）が設計全体と同じ・表の中で項目の数がそろう
+  const strip=o=>{ const x={...o}; delete x.col; delete x.per; delete x.eobs; delete x.fill; if(x.den) x.den={...x.den}; return x; };
+  const sOf=(p,its)=>{ const t={...s0, repeated:p.repeated, plan:p.plan, sub:p.sub}; delete t.surveys; if(!obsEq(p.obs,obsFromSub(t))) t.obs=p.obs; if(p.fillDiff) t._iobs=p.iobs; if(its) t.items=its.map(strip); return t; };
   if(P.length<=1){
-    if(!P.length||same(P[0])){ R0.surveys=[{g:P.length?P[0].g:SURVEY_REST, jp:P.length?P[0].jp:surveyJP(SURVEY_REST), repeated:!!s0.repeated, plan:(s0.repeated&&s0.plan)||null, sub:R0.sub, R:R0}]; return R0; }
-    const R1=computeOne(sOf(P[0]),false); R1.surveys=[{g:P[0].g, jp:P[0].jp, repeated:P[0].repeated, plan:P[0].plan, sub:R1.sub, R:R1}]; return R1;
+    if(!P.length||same(P[0])){ R0.surveys=[{g:P.length?P[0].g:SURVEY_REST, tab:P.length?P[0].tab:SURVEY_REST, jp:P.length?P[0].jp:surveyJP(SURVEY_REST), obs:R0.obs, repeated:!!s0.repeated, plan:(s0.repeated&&s0.plan)||null, sub:R0.sub, R:R0}]; return R0; }
+    const R1=computeOne(sOf(P[0]),false); R1.surveys=[{g:P[0].g, tab:P[0].tab, jp:P[0].jp, obs:R1.obs, repeated:P[0].repeated, plan:P[0].plan, sub:R1.sub, R:R1}]; return R1;
   }
   const taken=[]; R0.items.forEach(o=>{ if(o.kind!=='note'){ taken.push(o.rv); if(o.den) taken.push(o.den.rv); if(o.per) taken.push(o.per); } });
-  const G=P.map(p=>{ const Rg=computeOne(sOf(p,p.items),false,{taken}); return {g:p.g, jp:p.jp, repeated:p.repeated, plan:p.plan, sub:Rg.sub, R:Rg}; });
+  const G=P.map(p=>{ const Rg=computeOne(sOf(p,p.items),false,{taken}); return {g:p.g, tab:p.tab, jp:p.jp, obs:Rg.obs, repeated:p.repeated, plan:p.plan, sub:Rg.sub, R:Rg}; });
   if(P.every(same)){ R0.surveys=G; return R0; }   // 調べ方がどのグループも同じ：全体の判定はこれまでどおり（野帳・記入表だけがグループごと）
   // 調べ方がグループで違う：いちばん手前の段階のグループを土台に、注意・できること・あと一歩を合わせる
   const base=G.slice().sort((a,b)=>LEVEL_RANK[a.R.level]-LEVEL_RANK[b.R.level])[0].R, uniq=(arr,key)=>{ const seen=new Set(); return arr.filter(x=>{ const k=key(x); if(seen.has(k)) return false; seen.add(k); return true; }); };
@@ -1242,12 +1324,18 @@ function rcode(R,item){
   const blocked = (design==='rcbd'||design==='oa'||design==='split') && R.r>1;   // 1反復ならブロック項は入れない
   const multi = years==='same'||years==='new';
   const rv=item.rv, yv=type==='rate'?item.per:rv, num=type==='cont'||type==='date'||type==='rate';   // yv：モデルの左辺に使う列（rate は区ごとに計算した値）
-  const indiv = sub>1 && (type==='binary'||type==='count'||type==='ord');
+  const OB=R.obs||[], two=OB.length>=2, U=obsUnitJP(s);
+  const indiv = sub>1 && type==='ord';   // 個体ごとの行のまま解析するのは、程度・段階だけ（設計資料32 の 1.）
+  // 1区で複数個体の あり／なし・数：区（×時期・年）ごとに数えてから、割合（何個中何個）・数の手順にかける（設計資料32 の 1.：D7′、設計資料31 の 5.）
+  const agg = sub>1 && (type==='binary'||type==='count'), et = agg ? (type==='binary'?'prop':'count') : type;
+  const nv = agg ? (()=>{ let c='n_'+rv; const busy=new Set(STRUCT_COLS.concat(F.map(f=>f.v),['sub1'])); while(busy.has(c)) c+='_n'; return c; })() : null;
+  const off = agg && et==='count' ? ' + offset(log('+nv+'))' : '', eoff = agg && et==='count' ? ', offset = 0' : '';
   // ランダム効果
   const rand=[];
   if(design==='split') rand.push('(1 | '+(multi&&years==='new'?'year:':'')+'block:'+mainF.map(f=>f.v).join(':')+')');
-  const plotRE = s.repeated || years==='same' || indiv || (multi && s.repeated);
+  const plotRE = plotRE0(R) || indiv;   // 区の変量効果：何回も調べる・同じ区で複数年（plotRE0）、個体ごとの段階
   if(plotRE) rand.push(years==='new' ? '(1 | year:plot)' : '(1 | plot)');
+  if(indiv && two) rand.push(years==='new' ? '(1 | year:plot:sub1)' : '(1 | plot:sub1)');   // 2段の段階：区と、区の中の上の段（樹）を変量効果に（設計資料31 の D5）
   const useMixed=rand.length>0;
   // 固定効果
   let trt;
@@ -1260,8 +1348,8 @@ function rcode(R,item){
   else if(s.repeated) trt='('+trt+') * time';
   else if(multi) trt='('+trt+') * year';
   const nuis=[]; if(blocked) nuis.push(multi?'year:block':'block'); if(design==='latin') nuis.push('row','col');
-  const rhs=nuis.concat([trt]).join(' + ')+(rand.length?' + '+rand.join(' + '):'');
-  const lhs= type==='prop' ? `cbind(${rv}, ${item.den.rv} - ${rv})` : yv;
+  const rhs=nuis.concat([trt]).join(' + ')+off+(rand.length?' + '+rand.join(' + '):'');
+  const lhs= et==='prop' ? `cbind(${rv}, ${agg?nv:item.den.rv} - ${rv})` : yv;
   const alpha=s.alpha==='0.01'?', alpha = 0.01':'';
 
   L.push(`# ===== 試験設計ナビ ver.${VERSION} の雛形：${DESIGN[design].jp}／${item.name}（${RESP[type].jp}） =====`);
@@ -1283,6 +1371,7 @@ function rcode(R,item){
   if(blocked) L.push('d$block <- factor(d$block)');
   if(design==='latin') L.push('d$row <- factor(d$row); d$col <- factor(d$col)');
   L.push('d$plot <- factor(d$plot)');
+  if(indiv && two) L.push('d$sub1 <- factor(d$sub1)   # '+OB[0].name+'番号');
   if(s.repeated) L.push('d$time <- factor(d$time)   # 調査時期');
   if(multi) L.push('d$year <- factor(d$year)');
   if(type==='ord') L.push(item.levels ? `d$${rv} <- factor(d$${rv}, levels = c(${item.levels.map(q).join(', ')}), ordered = TRUE)   # 段階（この並びの順）。表記が違う値は欠測になる` : `d$${rv} <- factor(d$${rv}, ordered = TRUE)   # 程度（0 < 1 < 2 …）`);
@@ -1295,10 +1384,23 @@ function rcode(R,item){
     L.push(`d <- d[!is.na(d$${yv}), ]`);
     L.push('');
   }
+  const keys=['plot'].concat(blocked?['block']:[]).concat(design==='latin'?['row','col']:[]).concat(F.map(f=>f.v)).concat(s.repeated?['time']:[]).concat(multi?['year']:[]);
   if(sub>1 && (type==='cont'||type==='date')){
-    const keys=['plot'].concat(blocked?['block']:[]).concat(design==='latin'?['row','col']:[]).concat(F.map(f=>f.v)).concat(s.repeated?['time']:[]).concat(multi?['year']:[]);
-    L.push(`# 1区（樹）あたり${sub}点の調査値を、区ごとの平均1点にまとめる（擬似反復を避ける）`);
-    L.push(`d <- aggregate(${rv} ~ ${keys.join(' + ')}, data = d, FUN = mean)`);
+    if(two){
+      L.push(`# 1${U}あたり ${obsTxt(OB)} の調査値を、${OB[0].name}ごと、ついで${U}ごとに平均して、${U}に1つの値にまとめる（擬似反復を避ける）`);
+      L.push(`d <- aggregate(${rv} ~ ${keys.concat(['sub1']).join(' + ')}, data = d, FUN = mean)   # ${OB[0].name}ごとの平均（空欄は除いて平均）`);
+      L.push(`d <- aggregate(${rv} ~ ${keys.join(' + ')}, data = d, FUN = mean)   # ${U}ごとの平均`);
+    } else {
+      L.push(`# 1区（樹）あたり${sub}点の調査値を、区ごとの平均1点にまとめる（擬似反復を避ける）`);
+      L.push(`d <- aggregate(${rv} ~ ${keys.join(' + ')}, data = d, FUN = mean)`);
+    }
+    L.push('');
+  }
+  if(agg){
+    if(type==='binary') L.push(`# 1${U}あたり ${obsTxt(OB)} の「あり／なし」を、${U}ごとに数える：調べた数（${nv}）のうち、ありの数（${rv}）`);
+    else L.push(`# 1${U}あたり ${obsTxt(OB)} の数を、${U}ごとに合計する：調べた数（${nv}）と、数の合計（${rv}）`);
+    L.push(`d <- d[!is.na(d$${rv}), ]; d$${nv} <- 1   # 空欄（欠測）の個体は数えない`);
+    L.push(`d <- aggregate(cbind(${rv}, ${nv}) ~ ${keys.join(' + ')}, data = d, FUN = sum)   # ここから下は、${type==='binary'?'割合（何個中何個）':'1区に1つの数'}の雛形と同じ手順`);
     L.push('');
   }
   if(type==='ord'){
@@ -1391,23 +1493,23 @@ function rcode(R,item){
     if(useMixed) L.push('# 「boundary (singular) fit」と出ても続けてよい（変量効果のばらつきがほぼ0という意味）');
     L.push(useMixed?'anova(m, type = 2)             # 分散分析表（Satterthwaite法のF検定）':'Anova(m, type = 2)             # 分散分析表（欠測で不釣り合いでも使える Type II）');
     L.push(useMixed?'plot(m); qqnorm(resid(m)); qqline(resid(m))   # 残差の確認':'par(mfrow = c(2, 2)); plot(m)  # 残差の確認（形・外れ値）');
-  } else if(type==='prop'||type==='binary'||type==='count'){
-    const fam=type==='count'?'poisson':'binomial';
+  } else if(et==='prop'||et==='binary'||et==='count'){
+    const fam=et==='count'?'poisson':'binomial';
     // 1区に1つの割合・数（変量効果のないモデル）：ばらつきの大きさ（過分散）をデータから見積もる quasi 系のモデルとF検定にする（設計資料16 の 1.）
-    const quasi=!useMixed && type!=='binary';
+    const quasi=!useMixed && et!=='binary';
     if(quasi){
       L.push(`m <- glm(${lhs} ~ ${rhs}, family = quasi${fam}, data = d)   # 区ごとのばらつきの大きさを、データから見積もる`);
       L.push('Anova(m, type = 2, test.statistic = "F")   # 分散分析表（F検定）');
-      L.push(`summary(m)$dispersion          # ばらつきの大きさ：1 なら${type==='count'?'ポアソン':'二項'}分布どおり。1 より大きいほど、区ごとのばらつきが大きい（検定はこの値を織り込み済み）`);
+      L.push(`summary(m)$dispersion          # ばらつきの大きさ：1 なら${et==='count'?'ポアソン':'二項'}分布どおり。1 より大きいほど、区ごとのばらつきが大きい（検定はこの値を織り込み済み）`);
       edf=', df = df.residual(m)';
     } else {
     L.push(useMixed?`m <- glmer(${lhs} ~ ${rhs}, family = ${fam}, data = d)`:`m <- glm(${lhs} ~ ${rhs}, family = ${fam}, data = d)`);
     if(useMixed) L.push('# 「boundary (singular) fit」は続けてよい。「failed to converge」が出たら glmer(..., control = glmerControl(optimizer = "bobyqa")) を試す');
     L.push(useMixed?'Anova(m, type = 2)             # Wald χ²検定':'Anova(m, type = 2)             # 尤度比χ²検定');
     }
-    if(type!=='binary' && !quasi){
+    if(et!=='binary' && !quasi){
       L.push('sum(residuals(m, type = "pearson")^2) / df.residual(m)   # 過分散の確認：1を大きく超える（目安1.5以上）なら↓');
-      if(type==='prop') L.push(useMixed?'# d$obs <- factor(seq_len(nrow(d))); m <- update(m, . ~ . + (1 | obs)); Anova(m, type = 2)   # 観測レベルの変量効果を追加':`# m <- glm(${lhs} ~ ${rhs}, family = quasibinomial, data = d); Anova(m, type = 2, test.statistic = "F")`);
+      if(et==='prop') L.push(useMixed?'# d$obs <- factor(seq_len(nrow(d))); m <- update(m, . ~ . + (1 | obs)); Anova(m, type = 2)   # 観測レベルの変量効果を追加':`# m <- glm(${lhs} ~ ${rhs}, family = quasibinomial, data = d); Anova(m, type = 2, test.statistic = "F")`);
       else L.push(useMixed?`# m <- glmer.nb(${lhs} ~ ${rhs}, data = d); Anova(m, type = 2)   # 負の二項分布`:`# m <- MASS::glm.nb(${lhs} ~ ${rhs}, data = d); Anova(m, type = 2)   # 負の二項分布`);
     }
     emmType=', type = "response"';
@@ -1418,17 +1520,17 @@ function rcode(R,item){
   if(by) L.push(`# 時期・年との交互作用が有意なら、「${by.slice(3)}」ごとの比較（下の行）で結論を書く`);
   R.cmp.forEach(c=>{
     const f=c.f;
-    if(c.m==='oa'){ L.push(`emmeans(m, ~ ${f.v}${emmType}${edf})   # ${f.name}の水準別の推定値（要因効果図の元）`); return; }
+    if(c.m==='oa'){ L.push(`emmeans(m, ~ ${f.v}${emmType}${eoff}${edf})   # ${f.name}の水準別の推定値（要因効果図の元）`); return; }
     if(c.m==='reg'){ L.push(`summary(m)   # ${f.name}は量：係数（傾き）とその検定を読む。水準どうしの比較はしない`); return; }
-    if(c.m==='two'){ L.push(`pairs(emmeans(m, ~ ${f.v}${edf}))   # ${f.name}は2水準：分散分析表のP値と同じ判断になる`); return; }
-    if(c.m==='dunnett'){ L.push(`contrast(emmeans(m, ~ ${f.v}${edf}), method = "trt.vs.ctrl", ref = ${c.ref+1}${emmType})   # ${f.name}：対照（${f.labels[c.ref]}）との比較＝Dunnett法`); return; }
-    L.push(`cld(emmeans(m, ~ ${f.v}${emmType}${edf}), Letters = letters${alpha})   # ${f.name}：Tukey法と文字表記`);
+    if(c.m==='two'){ L.push(`pairs(emmeans(m, ~ ${f.v}${eoff}${edf}))   # ${f.name}は2水準：分散分析表のP値と同じ判断になる`); return; }
+    if(c.m==='dunnett'){ L.push(`contrast(emmeans(m, ~ ${f.v}${eoff}${edf}), method = "trt.vs.ctrl", ref = ${c.ref+1}${emmType})   # ${f.name}：対照（${f.labels[c.ref]}）との比較＝Dunnett法`); return; }
+    L.push(`cld(emmeans(m, ~ ${f.v}${emmType}${eoff}${edf}), Letters = letters${alpha})   # ${f.name}：Tukey法と文字表記`);
   });
   if(by){
     const c=R.cmp.find(c=>c.m==='tukey'||c.m==='dunnett'||c.m==='two');
     if(c){
-      if(c.m==='dunnett') L.push(`contrast(emmeans(m, ~ ${c.f.v}${by}${edf}), method = "trt.vs.ctrl", ref = ${c.ref+1}${emmType})`);
-      else L.push(`cld(emmeans(m, ~ ${c.f.v}${by}${emmType}${edf}), Letters = letters${alpha})`);
+      if(c.m==='dunnett') L.push(`contrast(emmeans(m, ~ ${c.f.v}${by}${eoff}${edf}), method = "trt.vs.ctrl", ref = ${c.ref+1}${emmType})`);
+      else L.push(`cld(emmeans(m, ~ ${c.f.v}${by}${emmType}${eoff}${edf}), Letters = letters${alpha})`);
     }
   }
   if(R.k>=2 && design!=='oa' && R.cond!=='twoway'){
@@ -1436,12 +1538,12 @@ function rcode(R,item){
     if(iA>=0 && iB>=0){
       const A=F[iA], B=F[iB], cA=R.cmp[iA];
       L.push(`# ${A.name}×${B.name}の交互作用が有意なら、${B.name}${B.reg?'の平均的な値':'の水準ごと'}に${A.name}を比べる（単純主効果）`);
-      if(cA.m==='dunnett') L.push(`contrast(emmeans(m, ~ ${A.v} | ${B.v}${edf}), method = "trt.vs.ctrl", ref = ${cA.ref+1}${emmType})`);
-      else L.push(`cld(emmeans(m, ~ ${A.v} | ${B.v}${emmType}${edf}), Letters = letters${alpha})`);
+      if(cA.m==='dunnett') L.push(`contrast(emmeans(m, ~ ${A.v} | ${B.v}${eoff}${edf}), method = "trt.vs.ctrl", ref = ${cA.ref+1}${emmType})`);
+      else L.push(`cld(emmeans(m, ~ ${A.v} | ${B.v}${emmType}${eoff}${edf}), Letters = letters${alpha})`);
     }
   }
   if(design==='oa') L.push('# 各要因で最もよい水準を組み合わせたものが「最適条件の候補」。確認試験で必ず検証する');
-  if(emmType) L.push('# type = "response"：割合・数の尺度で表示（検定はロジット・対数の尺度で行われる）'+(edf?'。df = df.residual(m)：比較にも、分散分析表と同じ誤差の自由度を使う':''));
+  if(emmType) L.push('# type = "response"：割合・数の尺度で表示（検定はロジット・対数の尺度で行われる）'+(eoff?'。offset = 0：1個あたりの数で表示':'')+(edf?'。df = df.residual(m)：比較にも、分散分析表と同じ誤差の自由度を使う':''));
   if(R.cmp.some(c=>c.m==='dunnett')) L.push('# Dunnett法のP値は "dunnettx"（Dunnett法の近似）で調整。厳密計算は adjust = "mvt"');
   if(s.alpha==='0.01' && R.cmp.some(c=>c.m!=='tukey')) L.push('# 有意水準1%：P値は 0.01 を基準に読む');
   return L.join('\n');
@@ -1450,7 +1552,7 @@ function rcode(R,item){
 // ---------- まとめ方のコード（段階C：検定をかけられない設計。07 の 2.・3.）----------
 // 検定のコードは出さない。処理ごとの値の表と、1点ずつ打つ図だけを出す
 function summaryCode(R,item){
-  const {F,s,sub}=R, type=item.kind, rv=item.rv, L=[], fs=F.map(f=>f.v).join(' + '), grp=F.length>1?`interaction(${F.map(f=>'d$'+f.v).join(', ')}, sep = " × ")`:`d$${F[0].v}`;
+  const {F,s,sub}=R, OB=R.obs||[], type=item.kind, rv=item.rv, L=[], fs=F.map(f=>f.v).join(' + '), grp=F.length>1?`interaction(${F.map(f=>'d$'+f.v).join(', ')}, sep = " × ")`:`d$${F[0].v}`;
   L.push(`# ===== 試験設計ナビ ver.${VERSION} の雛形：まとめ方（検定なし）／${item.name}（${RESP[type].jp}） =====`);
   L.push(`# この設計は、${R.houseOne?'1つの処理が1棟（1枚）だけで、処理の差と場所の差を分けられない':'反復がなく、偶然のばらつきの大きさを見積もれない'}ため、検定のコードは出していません。`);
   L.push('# 処理ごとの値を表と図（1点ずつ）にまとめます。有意差の記号（a, b）や P値は付けません。');
@@ -1462,27 +1564,36 @@ function summaryCode(R,item){
   L.push(`stopifnot(!anyNA(d[c(${F.map(f=>q(f.v)).join(', ')})]))   # 止まったら：CSVの水準名がこの表記と違う`);
   L.push('');
   const stat='function(v) c(n = length(v), mean = mean(v), min = min(v), max = max(v))';
+  // 何回も調べる表は調査時期（time）ごと、複数年の設計は年（year）ごとに分けて出す（設計資料36 の 2.。ツールの決め）
+  const TY=(s.repeated?['time']:[]).concat(R.years==='same'||R.years==='new'?['year']:[]);
+  const tyAdd=TY.map(c=>' + '+c).join(''), tyNote=TY.length?'   # '+(TY.length===2?'調査時期・年':(TY[0]==='time'?'調査時期':'年'))+'ごと':'';
+  const grpTY=TY.length?`interaction(${F.map(f=>'d$'+f.v).concat(TY.map(c=>'d$'+c)).join(', ')}, sep = " × ")`:grp;
   if(type==='cont'||type==='date'||type==='count'||type==='rate'){
     let y=rv;
     if(type==='rate'){ y=item.per; L.push(`# 1単位あたりの数：${item.name} ＝ 数えた数（${rv}）÷ ${item.den.name}（${item.den.rv}）を、区ごとに計算する`);
       L.push(`d$${y} <- ifelse(d$${item.den.rv} > 0, d$${rv} / d$${item.den.rv}, NA)   # 調べた数が0の区は欠測`); L.push(`d <- d[!is.na(d$${y}), ]`); }
-    L.push(`# ---- 処理ごとの値（n＝値の数、mean＝平均、min〜max＝${sub>1&&type!=='rate'?'区の中の':''}ばらつきの幅） ----`);
-    L.push(`aggregate(${y} ~ ${fs}, data = d, FUN = ${stat})`);
-    L.push('# ---- 図：1点ずつ打つ ----');
-    L.push(`stripchart(d$${y} ~ ${grp}, vertical = TRUE, pch = 16, method = "jitter", las = 2, ylab = ${q(item.name)})`);
+    const two2=OB.length>=2 && (type==='cont'||type==='date');   // 2段：樹ごとの平均まで（設計資料34 の 2.：処理ごとの値＝樹ごとの平均の平均、幅＝樹ごとの平均の最小〜最大）
+    if(two2){ const U=obsUnitJP(s), keys=['plot'].concat(F.map(f=>f.v)).concat(TY);
+      const tyJP=TY.map(c=>c==='time'?'調査時期':'年').map(x=>'×'+x).join('');
+      L.push(`# 1${U}あたり ${obsTxt(OB)} の調査値を、${OB[0].name}${tyJP}ごとに平均する（${OB[0].name}ごとの平均の平均は、${U}の平均と同じ値）`);
+      L.push(`d <- aggregate(${rv} ~ ${keys.concat(['sub1']).join(' + ')}, data = d, FUN = mean)   # ${OB[0].name}ごとの平均`); }
+    L.push(`# ---- 処理ごとの値（n＝${two2?`値のある${OB[0].name}の数`:"値の数"}、mean＝平均、min〜max＝${two2?`区の中のばらつき（${OB[0].name}ごとの平均の最小〜最大）`:(sub>1&&type!=='rate'?'区の中のばらつきの幅':'ばらつきの幅')}） ----`);
+    L.push(`aggregate(${y} ~ ${fs}${tyAdd}, data = d, FUN = ${stat})${tyNote}`);
+    L.push(`# ---- 図：1点ずつ打つ${two2?`（${OB[0].name}ごとの平均）`:''} ----`);
+    L.push(`stripchart(d$${y} ~ ${grpTY}, vertical = TRUE, pch = 16, method = "jitter", las = 2, ylab = ${q(item.name)})`);
   } else if(type==='prop'){
     L.push('# ---- 処理ごとの割合（該当数の合計 ÷ 調べた数の合計） ----');
-    L.push(`t1 <- aggregate(cbind(${rv}, ${item.den.rv}) ~ ${fs}, data = d, FUN = sum); t1$prop <- t1$${rv} / t1$${item.den.rv}; t1`);
+    L.push(`t1 <- aggregate(cbind(${rv}, ${item.den.rv}) ~ ${fs}${tyAdd}, data = d, FUN = sum); t1$prop <- t1$${rv} / t1$${item.den.rv}; t1${tyNote}`);
     L.push('# ---- 図：区ごとの割合を1点ずつ打つ ----');
     L.push(`d <- d[!is.na(d$${rv}) & !is.na(d$${item.den.rv}) & d$${item.den.rv} > 0, ]`);
-    L.push(`stripchart(d$${rv} / d$${item.den.rv} ~ ${grp}, vertical = TRUE, pch = 16, method = "jitter", las = 2, ylab = ${q(item.name)})`);
+    L.push(`stripchart(d$${rv} / d$${item.den.rv} ~ ${grpTY}, vertical = TRUE, pch = 16, method = "jitter", las = 2, ylab = ${q(item.name)})`);
   } else if(type==='binary'){
     L.push('# ---- 処理ごとの「あり」の数と割合（n＝調べた数、yes＝ありの数、prop＝割合） ----');
-    L.push(`aggregate(${rv} ~ ${fs}, data = d, FUN = function(v) c(n = length(v), yes = sum(v), prop = mean(v)))`);
+    L.push(`aggregate(${rv} ~ ${fs}${tyAdd}, data = d, FUN = function(v) c(n = length(v), yes = sum(v), prop = mean(v)))${tyNote}`);
   } else {
     L.push('# ---- 処理ごとの段階の分布（表） ----');
     if(item.levels) L.push(`d$${rv} <- factor(d$${rv}, levels = c(${item.levels.map(q).join(', ')}))   # 段階（この並びの順）`);
-    F.forEach(f=>L.push(`xtabs(~ ${f.v} + ${rv}, data = d)   # ${f.name}`));
+    F.forEach(f=>L.push(`xtabs(~ ${f.v} + ${rv}${tyAdd}, data = d)   # ${f.name}${tyNote?'（'+tyNote.replace('   # ','')+'）':''}`));
   }
   L.push('# 結果は「〜の傾向がみられた」「予備的な結果」として書く');
   return L.join('\n');
@@ -1498,18 +1609,23 @@ function dataRows(R,lay){
   if(design==='latin') cols.push('row','col');
   F.forEach(f=>cols.push(f.v));
   if(s.repeated) cols.push('time');
-  const perObs = sub>1 && aItems.some(o=>!o.den);
+  const perObs = sub>1 && aItems.some(o=>!o.den), OB=R.obs||[], two=perObs&&OB.length>=2;
+  if(two) cols.push('sub1');   // 2段：上の段（樹）の番号、下の段（果実）の番号（設計資料31 の 6.）
   if(perObs) cols.push('sample');
   const rc=[]; items.forEach(o=>{ rc.push(o.col); if(o.den) rc.push(o.den.rv); });
   const allCols=cols.concat(rc), rows=[];
   const yrs=multi?[2026,2027]:[null], times=s.repeated?[1,2,3]:[null];
+  const n1=two?OB[0].n:1, n2=perObs?(two?OB[1].n:sub):1;
   for(const y of yrs) for(const p of plots) for(const tm of times){
-    for(let k=1;k<=(perObs?sub:1);k++){
+    for(let a=1;a<=n1;a++) for(let k=1;k<=n2;k++){
       if(rows.length>=20000) break;
       const o={plot:p.no}; if(y) o.year=y; if('block' in p) o.block=p.block; if(p.row){ o.row=p.row; o.col=p.col; }
-      F.forEach((f,fi)=>o[f.v]=f.labels[p.t.lv[fi]]); if(tm) o.time=tm; if(perObs) o.sample=k;
+      F.forEach((f,fi)=>o[f.v]=f.labels[p.t.lv[fi]]); if(tm) o.time=tm; if(two) o.sub1=a; if(perObs) o.sample=k;
+      const first=a===1&&k===1, skip=[];
       items.forEach(it=>{ o[it.col]='';
-        if(it.den){ const dn=it.den; o[dn.rv]=(!perObs||k===1) ? (dn.count?'':(dn.fixed>0?dn.fixed:(sub>1?sub:''))) : ''; } });
+        if(it.den){ const dn=it.den; o[dn.rv]=(!perObs||first) ? (dn.count?'':(dn.fixed>0?dn.fixed:(sub>1?sub:''))) : ''; }
+        else if(perObs && it.fill && it.fill.length && ((two?it.fill[0]<a||it.fill[1]<k:it.fill[0]<k))) skip.push(it.col); });   // 点数が少ない項目：その番号は書かない（空欄。Excel では灰色）
+      if(skip.length) o._skip=skip;
       rows.push(o);
     }
   }
@@ -1517,10 +1633,10 @@ function dataRows(R,lay){
 }
 function toTSV(cols,rows){ return [cols.join('\t')].concat(rows.map(r=>cols.map(c=>String(r[c]??'').replace(/[\t\n]/g,' ')).join('\t'))).join('\n'); }
 // ---------- 項目の辞書（05_guide_design.md の 7.）----------
-// このファイルは tools/make_dict.js が作る（直接編集しない）。元：声で野帳Pro 4.9.4 のガイドの項目表（GD_ITEMS）＋ tools/item_map.js
+// このファイルは tools/make_dict.js が作る（直接編集しない）。元：声で野帳Pro 4.9.5 のガイドの項目表（GD_ITEMS）＋ tools/item_map.js
 //   kind：ナビの値の形／pt：Pro での種類（num・count・date・choice・multi・text。null＝ナビ側で足した項目）／rv：Rの列名／dec：小数の桁／unit：単位の目安／allow：入力できる値／
 //   opts：候補（作物ごとに違うときは {作物:[…]}）／levels：段階として扱う候補の順序／den・def・pair：ナビ側で足した割合の組（pair＝ひな形での2つのカウンターの名前）
-const DICT_PRO_VERSION='4.9.4';
+const DICT_PRO_VERSION='4.9.5';
 const GUIDE_PURPOSES=[["fq","果実・収穫物の品質","大きさ・重さ・糖度・色など（収穫時に1回）"],["grow","生育調査","草丈・新梢長・葉数・果実の肥大などを調査日ごとに"],["yield","収量調査","収穫日・収穫数・重さ・等級"],["dis","病害虫・障害の発生","発病程度・発病数・害虫の種類と数"],["phen","開花・生育ステージ","発芽・開花・収穫などの日付"],["soil","土壌・サンプルの採取記録","地点・深さ・採取日・pH・EC など"],["other","そのほか（自分で項目を作る）","番号とメモだけから始める"]];
 const GUIDE_CROPS=[["fruit","果樹",["ナシ","リンゴ","モモ","ブドウ","カキ","ウメ","クリ","ブルーベリー"]],["veg","果菜類",["トマト","イチゴ","キュウリ","ナス","ピーマン","メロン"]],["leaf","葉茎菜・根菜類",["ホウレンソウ","キャベツ","レタス","ネギ","タマネギ","ダイコン"]],["grain","水稲・麦・大豆",["水稲","小麦","大麦","大豆","そば"]],["flower","花き",["キク","バラ","カーネーション","リンドウ","トルコギキョウ"]],["none","作物を決めない",[]]];
 const ITEM_DICT={
@@ -1877,7 +1993,10 @@ function guideToState(G,base){
   s.crop=crop; s.cropName=String(G.cropName==null?'':G.cropName).trim();
   s.plan=repeated?planWithDates({start:/^\d{4}-\d{2}-\d{2}$/.test(p.start||'')?p.start:'', every:int(p.every,1,365)||7, count:int(p.count,2,60)||5}, p):null;
   s.doc=guideDoc(G.doc);
-  { const v=surveyClean(G.surveys); if(Object.keys(v).length) s.surveys=v; else delete s.surveys; }
+  const defN=obsDefName(s);
+  if(G.subName!=null&&String(G.subName).trim()) s.subName=String(G.subName).replace(/[\t\n\r]/g,' ').trim().slice(0,10); else delete s.subName;   // 1段目の名前（設計資料31 の 3.）
+  { const v=surveyClean(G.surveys,defN); if(Object.keys(v).length) s.surveys=v; else delete s.surveys; }
+  if(G.item&&typeof G.item==='object') s.items.forEach(o=>{ const w=itemWayClean(G.item[o.name],defN,o.kind); delete o.obs; delete o.times; delete o.plan; Object.assign(o,w); });   // 項目ごとの調査の単位・調べ方（G.item＝{項目の名前:{obs, times, plan}}。設計資料32 の 2.）
   return s;
 }
 function guideDoc(d){
@@ -1929,7 +2048,7 @@ function guidePurposeDraft(s,R){
 // 文はここ（判定ロジックの区間）で作り、画面・印刷・Word・コピーは同じ中身を出す。調査項目は1つの文に並べる（項目名だけ／単位も入れる、を設計書の画面で選ぶ）。項目の定義・調査方法は、入れてあるときだけ別紙4 の最後に並べる。
 // 表の罫線は、縦線なし・上は二重線・見出しの下と表の下に細い線（区割り図だけは格子）。セルごとに書くので、画面・印刷・Word で同じになる。注意（別紙3）は削らない。助言の文は compute() が作ったものをそのまま使う
 const DOC_BLANK='（記入）';
-function respModel(t,R){ const q=R&&R.noRE; return {cont:'分散分析（一般線形モデル）', date:'通し日に直して分散分析', prop:q?'二項型の一般化線形モデル（ロジスティック回帰。ばらつきの大きさはデータから見積もる：quasi-binomial）':'二項分布の一般化線形混合モデル（ロジスティック回帰）', binary:'ロジスティック回帰（区を変量効果）', count:q&&R.sub<=1?'ポアソン型の一般化線形モデル（ばらつきの大きさはデータから見積もる：quasi-Poisson）':'ポアソン分布の一般化線形混合モデル（過分散なら負の二項分布）', ord:'順序ロジスティック回帰（累積リンクモデル）。ブロックは変量効果、検定は尤度比検定', rate:'区ごとに「数えた数÷調べた数」を計算して分散分析'}[t]; }
+function respModel(t,R){ const q=R&&R.noRE; return {cont:'分散分析（一般線形モデル）', date:'通し日に直して分散分析', prop:q?'二項型の一般化線形モデル（ロジスティック回帰。ばらつきの大きさはデータから見積もる：quasi-binomial）':'二項分布の一般化線形混合モデル（ロジスティック回帰）', binary:R&&R.sub>1?(q?'区ごとに数えて、二項型の一般化線形モデル（ロジスティック回帰。ばらつきの大きさはデータから見積もる：quasi-binomial）':'区ごとに数えて、二項分布の一般化線形混合モデル（ロジスティック回帰）'):(R&&R.design==='split'?(plotRE0(R)?'ロジスティック回帰（大区画と区を変量効果）':'ロジスティック回帰（大区画を変量効果）'):(plotRE0(R)?'ロジスティック回帰（区を変量効果）':'ロジスティック回帰')), count:(R&&R.sub>1?'区ごとに合計して、':'')+(q?'ポアソン型の一般化線形モデル（ばらつきの大きさはデータから見積もる：quasi-Poisson）':'ポアソン分布の一般化線形混合モデル（過分散なら負の二項分布）'), ord:'順序ロジスティック回帰（累積リンクモデル）。ブロックは変量効果'+(R&&(R.obs||[]).length>=2?`、${obsUnitJP(R.s)}と${obsUnitJP(R.s)}の中の${R.obs[0].name}も変量効果`:'')+'、検定は尤度比検定', rate:'区ごとに「数えた数÷調べた数」を計算して分散分析'}[t]; }
 function docUnit(s){ return {tree:'樹',pot:'ポット',house:'棟',fruit:'個'}[s.unit]||'区'; }
 // 予定の言い方：一定の間隔＝「10日ごとに8回」、日付を決めた予定＝「3回（日付を指定）」。どちらでもないときは空
 function planJP(plan){ if(!plan) return ''; if(Array.isArray(plan.dates)) return plan.dates.length?`${plan.dates.length}回（日付を指定）`:''; return plan.every?`${plan.every}日ごとに${plan.count}回`:''; }
@@ -1975,7 +2094,11 @@ function docItemsDefault(R,withUnit){
   const its=R.items||normItems(R.s).items, nm=o=>o.name+(withUnit&&o.unit?`（${o.unit}）`:''), grp={}, rest=[];
   its.filter(o=>!DOC_ITEM_SKIP.includes(o.name)).forEach(o=>{ const g=docGrpOK(o.grp)?o.grp:docItemGroup(o.name,R.s.crop||'none'); if(g) (grp[g]=grp[g]||[]).push(nm(o)); else rest.push(nm(o)); });
   const when=g=>{ const x=(R.surveys||[]).find(v=>v.g===g); const j=x&&x.repeated?planJP(x.plan):''; return j?`：${j}`:''; };   // 何回も調べるグループは、間隔と回数を添える（書き換えられる）
-  return DOC_ITEM_GROUP.filter(([g])=>grp[g]).map(([g,jp])=>`${jp}（${grp[g].join('、')}${when(g)}）`).concat(rest).join('、');
+  // グループの中で表（調査票）が分かれるとき：表ごとに項目を並べ、調査の単位（「1樹あたり新梢5本」「樹に1つ」）と調べ方を添える（設計資料31 の 6.）。表どうしは「／」で区切る
+  const tabs=g=>(R.surveys||[]).filter(v=>v.g===g), U=obsUnitJP(R.s);
+  const split=g=>{ const T=tabs(g), by=T.map(()=>[]); its.filter(o=>!DOC_ITEM_SKIP.includes(o.name)).forEach(o=>{ const gg=docGrpOK(o.grp)?o.grp:docItemGroup(o.name,R.s.crop||'none'); if(gg!==g) return; const i=T.findIndex(v=>v.R.items.some(q=>q.key===o.key)); by[i<0?0:i].push(nm(o)); });
+    return T.map((v,i)=>by[i].length?`${by[i].join('、')}（${(v.obs||[]).length?`1${U}あたり${obsTxt(v.obs)}`:`${U}に1つ`}）${v.repeated&&planJP(v.plan)?'：'+planJP(v.plan):(v.repeated?'：何回も':'')}`:'').filter(Boolean).join('／'); };
+  return DOC_ITEM_GROUP.filter(([g])=>grp[g]).map(([g,jp])=>tabs(g).length>1?`${jp}（${split(g)}）`:`${jp}（${grp[g].join('、')}${when(g)}）`).concat(rest).join('、');
 }
 function docItemsText(R){ const d=R.s.doc||{}, t=String(d.itemsText||'').replace(/\s*\n\s*/g,'').trim(); return t||docItemsDefault(R,d.itemStyle==='unit'); }
 // 解析方法の文（論文の文例と同じ内容を、これから行う形に直す）
@@ -2043,7 +2166,8 @@ function designDoc(R,lay,opt){
   const A2={h:'別紙2　解析方法', blocks:[{t:'p', text:`解析の段階：${R.levelTitle}${R.levelBy&&R.levelBy.length>1?'（'+R.levelBy.map(b=>`${b.target}＝${LEVEL_JP[b.level]}、誤差の自由度${b.E}`).join('／')+'）':(R.tooMany?'':`（誤差の自由度${R.E}）`)}。`}]};
   if(!R.tooMany){
     A2.blocks.push({t:'p', text:docPlanJP(R)});
-    if(R.level!=='C') A2.blocks.push({t:'table', head:(R.split?['調査']:[]).concat(['項目','値の形','解析']), rows:R.aItems.map(o=>{ const sv=surveyOf(R,o); return (R.split?[sv?sv.jp:'']:[]).concat([o.name, RESP[o.kind].jp, respModel(o.kind,sv?sv.R:R)]); })},
+    const obU=obsSpec(s)||(R.surveys||[]).some(x=>x.tab!==x.g), U=obsUnitJP(s);   // 調査の単位を指定した設計：表に「調査の単位」の列（設計資料31 の 6.）
+    if(R.level!=='C') A2.blocks.push({t:'table', head:(R.split?['調査']:[]).concat(['項目']).concat(obU?['調査の単位']:[]).concat(['値の形','解析']), rows:R.aItems.map(o=>{ const sv=surveyOf(R,o), oo=sv?(sv.R.aItems.find(q=>q.key===o.key)||o):o; return (R.split?[sv?sv.jp:'']:[]).concat([o.name]).concat(obU?[oo.eobs&&oo.eobs.length?`${obsTxt(oo.eobs)}／${U}`:`${U}に1つ`]:[]).concat([RESP[o.kind].jp, respModel(o.kind,sv?sv.R:R)]); })},
       {t:'p', text:`比較の方法：${R.cmpNames.join('／')}。有意水準：${s.alpha==='0.01'?'1%':'5%'}。`});
     else A2.blocks.push({t:'p', text:'結果は、処理ごとの値を表と図（1点ずつ）で示して整理する。有意差の記号（a, b）や P値は付けない。'});
     if(R.assume.length) A2.blocks.push({t:'ul', items:R.assume.map(t=>'条件：'+t+'結果にも、この条件を添える。')});
@@ -2064,7 +2188,7 @@ function designDoc(R,lay,opt){
     opt.record==='pro'?'声で野帳Pro の野帳のひな形（試験設計ナビで作成）を使い、音声で記録する。':'記入表（試験設計ナビで作成。区番号と処理を入れた表）に記録する。',
     '測れなかった値（欠測）は空欄のままにする（0 を入れない）。',
     '除外する個体・区は、消さずに、理由を備考（声で野帳Pro では除外の理由）に書く。',
-    '区番号は、別紙1の配置のとおりに付ける。処理の名前は、この設計書と同じ表記にする。'].concat((R.surveys&&R.surveys.length>1)?['記録は、調査のグループごとに分ける：'+R.surveys.map(x=>`${x.jp}（${x.repeated?(planJP(x.plan)||'時期を変えて何回も'):'1回'}、1${docUnit(s)}${x.sub>1?`あたり${x.sub}点`:'に1つの値'}）`).join('、')+'。']:[])}]});
+    '区番号は、別紙1の配置のとおりに付ける。処理の名前は、この設計書と同じ表記にする。'].concat((R.surveys&&R.surveys.length>1)?[(R.surveys.some(x=>x.tab!==x.g)?'記録は、調査の表（野帳）ごとに分ける：':'記録は、調査のグループごとに分ける：')+R.surveys.map(x=>`${x.jp}（${x.repeated?(planJP(x.plan)||'時期を変えて何回も'):'1回'}、1${docUnit(s)}${obsSpec(s)||x.tab!==x.g?((x.obs||[]).length?`あたり${obsTxt(x.obs)}`:'に1つの値'):(x.sub>1?`あたり${x.sub}点`:'に1つの値')}）`).join('、')+'。']:[])}]});
   const defs=its.map((o,i)=>[o.name,[o.def,meth[i]].filter(x=>x&&String(x).trim()).map(x=>String(x).trim()).join('。')]).filter(x=>x[1]);
   if(defs.length) doc.annex[doc.annex.length-1].blocks.push({t:'h', text:'項目の定義・調査方法'},{t:'ul', items:defs.map(x=>`${x[0]}：${x[1]}`)});
   doc.annex.push({h:'付　作成の記録', blocks:[{t:'p', text:`試験設計ナビ 一般版 ver. ${VERSION}（${VERSION_DATE}）で作成。作成日：${opt.today||''}。${opt.file?'設計ファイル：'+opt.file+'。':''}`}]});
@@ -2153,7 +2277,7 @@ function proCols(R){
   const uniq=n=>{ n=String(n==null?'':n).replace(/[\t\n\r]/g,' ').trim().slice(0,54)||'項目'; let c=n, j=2; while(names.has(c)) c=n+'（'+(j++)+'）'; names.add(c); return c; };
   const uid=v=>{ let c=/^[A-Za-z][A-Za-z0-9_]{0,34}$/.test(v||'')?v:'c'+(ids.size+1), b=c, j=2; while(ids.has(c)) c=b+'_'+(j++); ids.add(c); return c; };
   const add=(to,id,name,type,role,nav,ex)=>to.push(Object.assign({id:uid(id), name:uniq(name), type, role, nav}, ex||{}));
-  const perObs=sub>1 && aItems.some(o=>!o.den);
+  const perObs=sub>1 && aItems.some(o=>!o.den), OB=R.obs||obsFromSub(s);
   add(idc,'plot','区番号','num','id',{role:'plot'},{dec:0});
   if(design==='rcbd'||design==='oa'||design==='split') add(idc,'block','ブロック','num','id',{role:'block'},{dec:0});
   if(design==='latin'){ add(idc,'row','行','num','id',{role:'row'},{dec:0}); add(idc,'col','列','num','id',{role:'col'},{dec:0}); }
@@ -2162,7 +2286,8 @@ function proCols(R){
     const decs=f.labels.map(l=>isNum(l)?((String(l).split('.')[1]||'').length):9), dec=Math.max.apply(null,decs), num=f.kind==='quant'&&dec<=4;   // 数値として持つのは、量の要因で、全水準が小数4桁までの数のとき（Pro の小数の桁は 0〜4）
     add(idc,f.v,f.name,num?'num':'text','id',{role:'factor',v:f.v},num?{dec}:{});
   });
-  if(perObs) add(idc,'sample',(s.crop==='fruit'||(!s.crop&&s.unit==='tree'))?'果実番号':'株番号','num','id',{role:'sample'},{dec:0});
+  if(perObs && OB.length>=2) add(idc,'sub1',OB[0].name+'番号','num','id',{role:'sub1'},{dec:0});   // 2段：上の段（樹）の番号（設計資料31 の 6.）
+  if(perObs) add(idc,'sample',(OB.length?OB[OB.length-1].name:obsDefName(s))+'番号','num','id',{role:'sample'},{dec:0});
   let memo=0;
   items.forEach(o=>{
     const p=o.pro||{}, opts=Array.isArray(p.opts)?p.opts.map(String):[], nav={role:'meas', key:o.key, kind:o.kind};
@@ -2194,14 +2319,14 @@ function proPlotOrder(R,lay,snake){
 }
 // 個体リスト（事前入力の列の値）。1区で何個も測るときは 区×番号。調べた数（決まった数）は、各区の1行目だけに入れる（記入表と同じ）
 function proList(R,lay,C,snake){
-  const {F,sub,aItems}=R, perObs=sub>1 && aItems.some(o=>!o.den), rows=[];
+  const {F,sub,aItems}=R, perObs=sub>1 && aItems.some(o=>!o.den), rows=[], OB=R.obs||[], two=perObs&&OB.length>=2, n1=two?OB[0].n:1, n2=perObs?(two?OB[1].n:sub):1;
   const fcol=C.filter(c=>c.nav.role==='factor'), den=C.filter(c=>c.nav.role==='den'&&c.role==='id'), has=r=>C.some(c=>c.nav.role===r);
   proPlotOrder(R,lay,snake).forEach(p=>{
-    for(let k=1;k<=(perObs?sub:1);k++){
+    for(let a=1;a<=n1;a++) for(let k=1;k<=n2;k++){
       const o={plot:p.no}; if(has('block')) o.block=p.block; if(has('row')){ o.row=p.row; o.col=p.col; } if(has('main')) o.main=String(p.mainLabel).slice(0,100);
       fcol.forEach(c=>{ const fi=F.findIndex(f=>f.v===c.nav.v), l=F[fi].labels[p.t.lv[fi]]; o[c.id]=c.type==='num'?+l:String(l).slice(0,100); });
-      if(perObs) o.sample=k;
-      if(k===1) den.forEach(c=>{ o[c.id]=c.nav.fixed; });
+      if(two) o.sub1=a; if(perObs) o.sample=k;
+      if(a===1&&k===1) den.forEach(c=>{ o[c.id]=c.nav.fixed; });
       rows.push(o);
     }
   });
@@ -2213,8 +2338,8 @@ function proTemplate(R,lay,opt){
   const S0={name, items:C.slice(0,PRO_ITEM_MAX).map(c=>{ const it={id:c.id, name:c.name, type:c.type, role:c.role};
     if(c.type==='num') it.dec=c.dec||0; if(c.step) it.step=c.step; if(c.options&&c.options.length) it.options=c.options.slice(0,200).map(v=>String(v).slice(0,60)); if(c.allow) it.allow=String(c.allow).slice(0,200); return it; }), ts:!!s.repeated, dir:'row'};
   if(s.repeated){ S0.outFmt='long';   // 何回も調べる：調査日ごとに記録し、縦持ち（R用）で書き出す
-    // 日付を決めた予定（plan.dates）：Pro の予定の「日付の一覧」の形が確かめられるまでは、予定は入れず（on:false・初回の日なし）、回数だけ渡す
-    if(s.plan&&Array.isArray(s.plan.dates)) S0.plan={on:false, mode:'every', start:'', every:Math.max(1,Math.min(365,Math.floor(+s.plan.every)||7)), count:Math.max(0,Math.min(200,s.plan.dates.length)), until:'', list:[], time:'', alarms:['eve','morn']};
+    // 日付を決めた予定（plan.dates）：Pro の予定の「日付の一覧」（mode:"list"。予定日は list そのもの）で渡す（設計資料31 の 9.）。start・count は最初の日と日付の数（Pro で「間隔で」に切り替えたときのため）。日付がまだないときは on:false・list:[]
+    if(s.plan&&Array.isArray(s.plan.dates)){ const L=planDatesClean(s.plan.dates); S0.plan={on:L.length>0, mode:'list', start:L[0]||'', every:Math.max(1,Math.min(365,Math.floor(+s.plan.every)||7)), count:L.length, until:'', list:L, time:'', alarms:['eve','morn']}; }
     else if(s.plan){ const ok=isYMD(s.plan.start); S0.plan={on:ok, mode:'every', start:ok?s.plan.start:'', every:Math.max(1,Math.min(365,Math.floor(+s.plan.every)||7)), count:Math.max(0,Math.min(200,Math.floor(+s.plan.count)||0)), until:'', list:[], time:'', alarms:['eve','morn']}; } }
   const t={app:PRO_TPL_APP, v:1, ver:`試験設計ナビ 一般版 ver. ${VERSION}（${VERSION_DATE}）`, name, S:S0};
   const rows=proList(R,lay,C,!!opt.snake);
@@ -2238,7 +2363,8 @@ function designPlots(R,lay){
 }
 function designCols(R){
   const out=proCols(R).map(c=>{ const n=c.nav, it=n.key?R.items.find(o=>o.key===n.key):null, o={rv:n.role==='note'?null:c.id, name:c.name, role:n.role==='plot'?'id':n.role};
-    if(it){ o.kind=it.kind; o.item=it.name; o.sheet=it.col; if(it.dec!=null) o.dec=it.dec; if(it.unit) o.unit=it.unit; if(it.levels) o.levels=it.levels.slice(); if(it.allow) o.allow=it.allow; if(it.def) o.def=it.def; if(it.den) o.den=it.den.rv; if(it.per) o.per=it.per; }
+    if(it){ o.kind=it.kind; o.item=it.name; o.sheet=it.col; if(it.dec!=null) o.dec=it.dec; if(it.unit) o.unit=it.unit; if(it.levels) o.levels=it.levels.slice(); if(it.allow) o.allow=it.allow; if(it.def) o.def=it.def; if(it.den) o.den=it.den.rv; if(it.per) o.per=it.per;
+      if(it.eobs && !obsEq(it.eobs,R.obs)) o.obs=it.eobs.map(x=>({...x})); }   // 表と調べる数が違う項目だけ（設計資料31 の 6.）
     if(n.role==='den'){ const of=R.items.find(x=>x.key===n.of); o.of=of?of.rv:null; if(n.fixed!=null) o.fixed=n.fixed; }
     return o; });
   if(R.s.repeated) out.push({rv:'time', name:'調査日', role:'time'});
@@ -2251,10 +2377,11 @@ function designFile(S,G,seed,R,lay,opt){
   if(R&&!R.empty){
     f.result=R.tooMany?{tooMany:true, level:R.level}:{design:R.design, r:R.r, N:R.N, E:R.E, level:R.level, assume:(R.assume||[]).slice()};
     if(!R.tooMany&&lay){ f.plots=designPlots(R,lay);
-      if(R.surveys&&R.surveys.length>1){   // 調査のグループが2つ以上：対応表は全グループの分（どのグループの列かを survey に）。グループごとの調べ方を surveys に
-        f.cols=R.surveys.flatMap(x=>designCols(x.R).map(c=>({...c, survey:x.g})));
-        f.surveys=R.surveys.map(x=>({id:x.g, name:x.jp, repeated:!!x.repeated, plan:x.plan?{...x.plan}:null, sub:x.sub, level:x.R.level}));
-      } else f.cols=designCols(R); }
+      const ob=obsSpec(S)||(R.surveys||[]).some(x=>x.tab!==x.g);   // 調査の単位・項目ごとの調べ方を指定した設計：表ごとに、グループ（group）と調査の単位（obs）も書く（設計資料31 の 6.）
+      if(R.surveys&&R.surveys.length>1){   // 調査の表が2つ以上：対応表は全部の表の分（どの表の列かを survey に。値は表の記号 tab）。表ごとの調べ方を surveys に
+        f.cols=R.surveys.flatMap(x=>designCols(x.R).map(c=>({...c, survey:x.tab})));
+        f.surveys=R.surveys.map(x=>Object.assign({id:x.tab, name:x.jp}, ob?{group:x.g, obs:(x.obs||[]).map(v=>({...v}))}:{}, {repeated:!!x.repeated, plan:x.plan?{...x.plan}:null, sub:x.sub, level:x.R.level}));
+      } else { f.cols=designCols(R); if(ob&&R.surveys&&R.surveys.length) f.surveys=R.surveys.map(x=>({id:x.tab, name:x.jp, group:x.g, obs:(x.obs||[]).map(v=>({...v})), repeated:!!x.repeated, plan:x.plan?{...x.plan}:null, sub:x.sub, level:x.R.level})); } }
   }
   return f;
 }
@@ -2270,6 +2397,8 @@ function designClean(S){
     maxPlots:int(S.maxPlots,2,5000), cols:int(S.cols,1,40), alpha:pick(S.alpha,['0.05','0.01'],'0.05'), cv:num(S.cv,0,1000), target:num(S.target,0,1000)};
   o.factors=arr(S.factors).filter(f=>f&&typeof f==='object').slice(0,8).map(f=>{ const n=int(f.n,1,12)||2, c=int(f.ctrl,0,n-1), x={name:str(f.name,200), kind:f.kind==='quant'?'quant':'qual', n, labelsText:str(f.labelsText,2000), ctrl:(f.ctrl===''||f.ctrl==null||c==null)?'':String(c), hard:!!f.hard};
     if(Array.isArray(f.desc)) x.desc=f.desc.slice(0,n).map(d=>str(d,500)); return x; });
+  const defN=obsDefName({crop:S.crop!=null?pick(S.crop,['fruit','veg','leaf','grain','flower','none'],'none'):undefined, unit:o.unit});   // 調査の単位の名前が空のときの名前
+  if(S.subName!=null&&String(S.subName).trim()) o.subName=str(S.subName,40).replace(/[\t\n\r]/g,' ').trim().slice(0,10);
   o.items=arr(S.items).filter(it=>it&&typeof it==='object').slice(0,MAX_ITEMS).map(it=>{ const x={key:str(it.key,20).replace(/[^\w]/g,''), name:str(it.name,200), kind:pick(it.kind,KINDS,'note'), rv:it.rv==null?null:str(it.rv,40)};
     const d=int(it.dec,0,6); if(d!=null) x.dec=d; ['unit','allow','def'].forEach(k=>{ if(it[k]!=null&&it[k]!=='') x[k]=str(it[k],300); });
     if(Array.isArray(it.levels)) x.levels=it.levels.slice(0,50).map(v=>str(v,60));
@@ -2277,12 +2406,13 @@ function designClean(S){
     if(it.den&&typeof it.den==='object') x.den={rv:it.den.rv==null?'':str(it.den.rv,40), name:str(it.den.name,200), fixed:int(it.den.fixed,1,100000), count:!!it.den.count};
     if(it.pro&&typeof it.pro==='object'){ const p=it.pro; x.pro={type:p.type==null?null:pick(p.type,['num','text','choice','date','multi','count'],null)}; if(p.dict) x.pro.dict=1; const st=num(p.step,0,1000); if(st) x.pro.step=st;
       if(Array.isArray(p.opts)) x.pro.opts=p.opts.slice(0,200).map(v=>str(v,60)); if(Array.isArray(p.pair)) x.pro.pair=p.pair.slice(0,2).map(v=>str(v,60)); }
+    Object.assign(x, itemWayClean(it,defN,x.kind));   // 項目ごとの調査の単位・調べ方（設計資料31 の 3.、設計資料32 の 2.）
     return x; });
   if(S.crop!=null) o.crop=pick(S.crop,['fruit','veg','leaf','grain','flower','none'],'none'); if(S.cropName!=null) o.cropName=str(S.cropName,200);
   if(S.plan&&typeof S.plan==='object') o.plan=planWithDates({start:isYMD(S.plan.start)?S.plan.start:'', every:int(S.plan.every,1,365)||7, count:int(S.plan.count,2,60)||5}, S.plan);
   if(S.doc&&typeof S.doc==='object') o.doc=(typeof guideDoc==='function')?guideDoc(S.doc):undefined; if(o.doc===undefined) delete o.doc;
   if(S.rec==='pro'||S.rec==='sheet') o.rec=S.rec;
-  { const v=surveyClean(S.surveys); if(Object.keys(v).length) o.surveys=v; }
+  { const v=surveyClean(S.surveys,obsDefName(o)); if(Object.keys(v).length) o.surveys=v; }
   if(S.tpl&&typeof S.tpl==='object') o.tpl={name:str(S.tpl.name,80), snake:!!S.tpl.snake};
   return o;
 }
@@ -2300,7 +2430,10 @@ function guideClean(G){
   g.times=pick(G.times,['once','repeat']); g.years=pick(G.years,['single','same','new']); g.cmp=pick(G.cmp,['auto','all','control','trend','screen']);
   g.plan=(G.plan&&typeof G.plan==='object')?planWithDates({start:isYMD(G.plan.start)?G.plan.start:'', every:int(G.plan.every,1,365), count:int(G.plan.count,1,60)}, G.plan):null;
   g.doc=(G.doc&&typeof G.doc==='object')?guideDoc(G.doc):null;
-  { const v=surveyClean(G.surveys); g.surveys=Object.keys(v).length?v:null; }
+  const defN=obsDefName({crop:g.crop||'none'});
+  { const v=surveyClean(G.surveys,defN); g.surveys=Object.keys(v).length?v:null; }
+  if(G.subName!=null&&String(G.subName).trim()) g.subName=str(G.subName,40).replace(/[\t\n\r]/g,' ').trim().slice(0,10);   // 調査の単位（設計資料31 の 3.）。答えたときだけ持つ
+  if(G.item&&typeof G.item==='object'&&!Array.isArray(G.item)){ const o={}; Object.keys(G.item).slice(0,MAX_ITEMS*2).forEach(k=>{ const w=itemWayClean(G.item[k],defN,'cont'); if(Object.keys(w).length) o[str(k,60)]=w; }); if(Object.keys(o).length) g.item=o; }   // 項目ごとの調査の単位・調べ方（設計資料32 の 2.）
   if(G.grp&&typeof G.grp==='object'){ const o={}; Object.keys(G.grp).slice(0,200).forEach(k=>{ if(docGrpOK(G.grp[k])) o[str(k,60)]=G.grp[k]; }); g.grp=Object.keys(o).length?o:null; }
   return g;
 }
@@ -2315,7 +2448,7 @@ function designRead(o){
 }
 // Pro のCSVを読むRの雛形の、読み込みの行（03 の 7.）。その項目の解析に使う列だけを、項目の名前からRの列名に付け替える
 function proReadCode(R,item){
-  const s=R.s, C=proCols(R), use=C.filter(c=>['plot','block','row','col','factor','sample'].includes(c.nav.role)||c.nav.key===item.key||c.nav.of===item.key);
+  const s=R.s, C=proCols(R), use=C.filter(c=>['plot','block','row','col','factor','sub1','sample'].includes(c.nav.role)||c.nav.key===item.key||c.nav.of===item.key);
   const L=[], map=use.map(c=>[c.name,c.id]); if(s.repeated) map.push(['調査日','time']);
   L.push('d <- read.csv("data.csv", fileEncoding = "UTF-8-BOM", check.names = FALSE)   # 声で野帳Pro の書き出し'+(s.repeated?'（縦持ち〔R用〕のCSV）':'（その日のCSV）')+'を data.csv として保存');
   L.push(`.nm <- c(${map.map(([n,v])=>q(n)+' = '+q(v)).join(', ')})   # CSVの見出し（声で野帳Pro の項目の名前）＝ Rの列名`);
@@ -2479,9 +2612,16 @@ function gStep6(G){
   return `<p class="hint">空欄のままにすると「おまかせ」になります。おまかせの数は、検定までできる最小の数です。</p>
     <label class="f">1つの処理を、何${esc(u)}に？ <small>反復の数。同じ処理をかける${esc(u)}の数</small>${gStp('gReps',G.reps,'おまかせ'+(R&&R.r?'（'+R.r+'）':''),u,1,20)}</label>
     <label class="f" style="margin-top:12px">1${esc(u)}から、何個調べますか？ <small>${esc(info.subJP)}の数。1つだけなら 1</small>${gStp('gSub',G.sub,'おまかせ（'+(S.sub||1)+'）','個',1,500)}</label>
+    <label class="f" style="margin-top:12px">何を数えますか？ <small>1${esc(u)}の中で調べるもの（2つ以上調べるとき）。記入表の「◯◯番号」の名前になります。グループ・項目ごとに変えるときは、8段目で</small><span class="onm">${subNameHTML(S,'gSubName')}</span></label>
     <label class="f" style="margin-top:12px">使える${esc(u)}の数に、上限はありますか？ <small>なければ空欄</small>${gStp('gMax',G.maxPlots,'上限なし',u,2,5000)}</label>
     <div class="ghint" id="gHint">${esc(guideHint(R))}</div><div id="gSketch">${gSketch(R)}</div>`;
 }
+// 設計全体の「何を数えますか」（1段目の名前。設計資料31 の 7.）。選ぶ欄（候補＋「そのほか（書く）」）と書く欄。id＝選ぶ欄の id（書く欄は id＋'Tx'）
+function subNameHTML(s,id){ const cands=obsCands(s), name=String(s.subName||'').trim()||obsDefName(s), inC=cands.includes(name);
+  return `<select id="${id}" style="width:auto;padding:6px 8px" aria-label="何を数えますか">${cands.map(c=>`<option${c===name?' selected':''}>${esc(c)}</option>`).join('')}<option value="_"${inC?'':' selected'}>そのほか（書く）</option></select> <input type="text" id="${id}Tx" maxlength="10" value="${inC?'':esc(name)}" placeholder="例：主枝" style="width:8em"${inC?' hidden':''} aria-label="何を数えますか（書く）">`; }
+// 選ぶ欄・書く欄から名前を読む。これまでの名前（果実・株）と同じなら null（指定なし：これまでと同じ設計）
+function subNameRead(s,id){ const e=document.getElementById(id); if(!e) return undefined; const tx=document.getElementById(id+'Tx'), v=e.value==='_'?String(tx?tx.value:'').replace(/[\t\n\r]/g,' ').trim().slice(0,10):e.value; return (!v||v===obsDefName(s))?null:v; }
+function subNameToggle(t,id){ if(!t||t.id!==id) return false; const tx=document.getElementById(id+'Tx'); if(!tx) return false; if(t.value==='_'){ tx.hidden=false; tx.focus(); return !tx.value.trim(); } tx.hidden=true; tx.value=''; return false; }
 // 並べる前の模式図（G6）。数は判定の結果 R から取る（画面側で数を作らない）。1行＝1つのまとまり（ブロック）、中に処理を入力の順に並べる
 function gSketch(R){
   if(!R||R.empty||R.tooMany) return '';
@@ -2519,18 +2659,69 @@ function gStep7(G){
     <p class="hint" style="margin-top:8px">値の形：測った数値（重さ・長さ・糖度）／何個中何個（発病葉率など）／数えた数／段階（0〜4、階級・等級）／日付／あり・なし／メモ（解析には使わない）。単位や列名は、詳しい画面で直せます。</p></div>`;
   return h;
 }
-// ---- 調査のグループごとの調べ方（設計資料28）：グループが2つ以上あるときだけ出す。ガイドの8段目と、詳しい画面の測定項目の下で同じもの ----
+// ---- 調査のグループごとの調べ方（設計資料28）と、調査の単位・項目ごとの調べ方（設計資料31 の 7.、設計資料32 の 2.）----
+// ガイドの8段目と、詳しい画面の測定項目の下で同じもの。グループが1つの設計でも出す（F1）。
+// グループの行（data-sv＝グループ）：調べ方・調査の単位（合わせる／区に1つ／いくつか調べる＋2段目）・調査日の予定。
+// その下の「項目ごとに変える」（たたんである。data-svd）：項目の行（data-svi＝項目の key）ごとに、調査の単位と調べ方。分母つきの項目は調べ方だけ、メモは出さない
+const OBS_CANDS={fruit:['樹','果実','新梢','葉','枝','花そう'], veg:['株','果実','葉','茎','花房'], leaf:['株','葉'], grain:['株','穂','茎'], flower:['株','本','花','葉'], none:['株','個体','地点']};   // 名前の候補（設計資料31 の 3.。K1）
+function obsCands(s){ const c=s&&OBS_CANDS[s.crop]?s.crop:(obsDefName(s)==='果実'?'fruit':'none'), u=obsUnitJP(s), d=obsDefName(s), a=OBS_CANDS[c].filter(x=>x!==u); if(d!==u&&!a.includes(d)) a.unshift(d); return a; }   // 実験の単位と同じ名前は外す（設計資料31 の 1.）
+function obsDefN(s){ const n=Math.floor(+(s&&s.sub)); return n>=2?n:(GUIDE_CROP_INFO[s&&GUIDE_CROP_INFO[s.crop]?s.crop:'none']||{sub:5}).sub; }   // 「いくつか調べる」を選んだときに入れておく数（設計全体の調査数。1のときは、ガイドのおまかせの数）
+function obsShow(o,U){ return (o&&o.length)?obsTxt(o):`${U}に1つ`; }
+// グループの有効な調査の単位（surveyPlan の gObs と同じ決まり）
+function svGroupObs(s,g,multi){ const x=surveyClean(s.surveys,obsDefName(s))[g]||{}; return x.obs||obsFromSub({...s, sub:x.sub||((multi&&SURVEY_PER_PLOT.includes(g))?1:(s.sub||null))}); }
+function svGroupWay(s,g){ const x=surveyClean(s.surveys,obsDefName(s))[g]||{}, rep=x.times==='repeat'?true:(x.times==='once'?false:!!s.repeated); return {rep, plan:rep?(x.plan||s.plan||null):null}; }
+function svWayJP(w){ return w.rep?(planJP(w.plan)||'何回も'):'1回'; }
+// 名前の欄：選ぶ欄（候補＋「そのほか（書く）」）と、書く欄（「そのほか」のときだけ見せる）。k＝'' か '2'（2段目）
+function obsNameHTML(k,name,cands,lab){ const inC=cands.includes(name);
+  return `<select data-svk="oname${k}" style="width:auto;padding:4px 6px" aria-label="${esc(lab)}の名前">${cands.map(c=>`<option${c===name?' selected':''}>${esc(c)}</option>`).join('')}<option value="_"${inC?'':' selected'}>そのほか（書く）</option></select><input type="text" data-svk="onametx${k}" maxlength="10" value="${inC?'':esc(name)}" placeholder="例：主枝" style="width:7em;padding:4px 6px"${inC?' hidden':''} aria-label="${esc(lab)}の名前（書く）">`; }
+// 調査の単位の欄（グループの行・項目の行で同じ形）。mode：''（合わせる）／'one'（区に1つ）／'some'（いくつか調べる）
+function obsFieldsHTML(o){ const {s,mode,obs,inh,lab,item}=o, U=obsUnitJP(s), cands=obsCands(s), ns='width:5em;padding:4px 6px';
+  let h=`<label>調査の単位 <select data-svk="omode" style="width:auto;padding:4px 6px" aria-label="${esc(lab)}の調査の単位"><option value="">${item?'グループに合わせる':(o.perPlot?'初めの値のまま':'設計全体に合わせる')}（いまは ${esc(obsShow(inh,U))}）</option><option value="one"${mode==='one'?' selected':''}>${esc(U)}に1つの値</option><option value="some"${mode==='some'?' selected':''}>${esc(U)}の中で、自由に設定する</option></select></label>`;
+  if(mode!=='some') return h;
+  const l1=obs[0]||{name:obsDefName(s), n:obsDefN(s)}, l2=obs[1];
+  h+=`<span class="svo"><label>何を ${obsNameHTML('',l1.name,cands,lab)}</label><label>いくつ <input type="number" data-svk="sub" min="2" max="500" inputmode="numeric" style="${ns}" value="${l1.n}" aria-label="${esc(lab)}の1${esc(U)}あたりの数"></label></span>`;
+  if(l2) h+=`<span class="svo svo2"><span class="svo2l">その1つ1つの中で</span><label>何を ${obsNameHTML('2',l2.name,cands.filter(c=>c!==l1.name),lab+'の2段目')}</label><label>いくつ <input type="number" data-svk="sub2" min="2" max="500" inputmode="numeric" style="${ns}" value="${l2.n}" aria-label="${esc(lab)}の2段目の数"></label><button type="button" class="btn ghost" data-svact="del2" style="padding:1px 8px">2段目を外す</button></span><small class="svo3">調査の単位は2段までです。3段目（例：1新梢の葉を3枚）は、その場で平均した値を1つ書くと、同じ表で記録できます。</small>`;
+  else h+=`<span class="svo"><button type="button" class="btn ghost" data-svact="add2" style="padding:1px 8px">＋ さらに、その1つ1つの中でいくつか調べる（2段目）</button></span>`;
+  return h; }
+// 保存している値から、欄の選び方（mode）と段を読む。グループは sub（これまでの持ち方）も読む
+function obsModeOf(s,v){ v=v||{}; if(Array.isArray(v.obs)) return v.obs.length?{mode:'some', obs:v.obs}:{mode:'one', obs:[]};
+  const n=Math.floor(+v.sub); if(v.sub!=null&&n>=1) return n>=2?{mode:'some', obs:obsFromSub({...s, sub:n})}:{mode:'one', obs:[]}; return {mode:'', obs:[]}; }
+function svItemsOf(R,g){ const seen=new Set(); return (R.surveys||[]).filter(x=>x.g===g).flatMap(x=>x.R.items).filter(o=>o.kind!=='note'&&!o.virtual&&!seen.has(o.key)&&seen.add(o.key)); }
+function svWayOf(it){ const w={}; if(!it) return w; if(Array.isArray(it.obs)) w.obs=it.obs; if(it.times==='once'||it.times==='repeat') w.times=it.times; if(it.plan&&typeof it.plan==='object') w.plan=it.plan; return w; }
+let SVOPEN=new Set();   // 「項目ごとに変える」を開いているグループ（作り直しても開いたまま）
 function surveyFormHTML(){
-  const R=gR(); if(!R||R.empty||R.tooMany||!R.surveys||R.surveys.length<2) return '';
-  const cur=surveyClean(S.surveys), u=docUnit(R.s), ss='width:auto;padding:4px 6px', ns='width:5.5em;padding:4px 6px';
-  return `<h4>調査のグループごとの調べ方 <span class="term">野帳のひな形と記入表は、グループごとにできます。変えたいところだけ入れます</span></h4>
-    ${R.surveys.map(x=>{ const v=cur[x.g]||{}, p=x.plan||{};
-      return `<div class="svrow" data-sv="${x.g}"><div class="svh"><b><span class="gmk">${grpMark(x.g).trim()}</span> ${esc(x.jp)}</b> <small>${esc(x.R.aItems.map(o=>o.name).join('、'))}</small></div>
-        <div class="svf"><label>調べ方 <select data-svk="times" style="${ss}" aria-label="${esc(x.jp)}の調べ方"><option value="">設計全体に合わせる（いまは${S.repeated?'何回も':'1回'}）</option><option value="once"${v.times==='once'?' selected':''}>このグループは1回</option><option value="repeat"${v.times==='repeat'?' selected':''}>このグループは時期を変えて何回も</option></select></label>
-        <label>1${esc(u)}あたりの調査数 <input type="number" data-svk="sub" min="1" max="500" inputmode="numeric" style="${ns}" value="${v.sub||''}" placeholder="${x.sub||1}" aria-label="${esc(x.jp)}の1${esc(u)}あたりの調査数"></label>
-        ${x.repeated?planFieldsHTML({sv:true, jp:x.jp, v:v.plan||null, ph:p, ss, ns}):''}</div></div>`; }).join('')}
-    <p class="hint" style="margin:6px 0 0">「設計全体に合わせる」と空欄の欄は、設計全体の値（1${esc(u)}あたりの調査数・調査日の予定）を使います。収穫日のように間隔がそろわないときは、「調査日の決め方」で「日付を決めて」を選ぶと、調査日を1日ずつ入れられます。収量調査・開花／生育ステージ・土壌調査は、1${esc(u)}に1つの値を書く形が初めの値です。同じ項目を2つのグループで調べるときは、名前を変えた項目を足します（例：横径（肥大））。</p>`;
+  const R=gR(); if(!R||R.empty||R.tooMany||!R.surveys||!R.surveys.length||!R.aItems.some(o=>!o.virtual)) return '';
+  const s=S, cur=surveyClean(s.surveys,obsDefName(s)), u=docUnit(R.s), ss='width:auto;padding:4px 6px', ns='width:5.5em;padding:4px 6px', gs=R.surveys.map(x=>x.g).filter((g,i,a)=>a.indexOf(g)===i), multi=gs.length>1;
+  return `<h4>調査のグループごとの調べ方 <span class="term">野帳のひな形と記入表は、グループ（調べ方が違うときは表）ごとにできます。変えたいところだけ入れます</span></h4>
+    ${gs.map(g=>{ const v=cur[g]||{}, jp=surveyJP(g), tabs=R.surveys.filter(y=>y.g===g), p=tabs.find(y=>y.plan)?tabs.find(y=>y.plan).plan:(s.plan||{}), its=svItemsOf(R,g), rep=v.times==='repeat'?true:(v.times==='once'?false:!!s.repeated);
+      const om=obsModeOf(s,v), inh=obsFromSub({...s, sub:(multi&&SURVEY_PER_PLOT.includes(g))?1:(s.sub||null)}), gob=svGroupObs(s,g,multi), gw=svGroupWay(s,g);
+      const byKey=k=>(s.items||[]).find(o=>o.key===k), nch=its.filter(o=>Object.keys(svWayOf(byKey(o.key))).length).length;
+      return `<div class="svgrp"><div class="svrow" data-sv="${g}"><div class="svh"><b><span class="gmk">${grpMark(g).trim()}</span> ${esc(jp)}</b> <small>${esc(its.map(o=>o.name).join('、'))}</small></div>
+        <div class="svf"><label>調べ方 <select data-svk="times" style="${ss}" aria-label="${esc(jp)}の調べ方"><option value="">設計全体に合わせる（いまは${S.repeated?'何回も':'1回'}）</option><option value="once"${v.times==='once'?' selected':''}>このグループは1回</option><option value="repeat"${v.times==='repeat'?' selected':''}>このグループは時期を変えて何回も</option></select></label>
+        ${obsFieldsHTML({s, mode:om.mode, obs:om.obs, inh, lab:jp, perPlot:multi&&SURVEY_PER_PLOT.includes(g)})}
+        ${rep?planFieldsHTML({sv:true, jp, v:v.plan||null, ph:p, ss, ns}):''}</div></div>
+        ${its.length?`<details class="svd" data-svd="${g}"${SVOPEN.has(g)?' open':''}><summary>項目ごとに自由に設定する${nch?`（${nch}項目を変更）`:''} <small>押すと開きます。項目ごとに、調査の単位・調べ方を変えられます</small></summary>
+          ${its.map(o=>{ const it=byKey(o.key)||{}, w=svWayOf(it), im=Array.isArray(w.obs)?(w.obs.length?{mode:'some', obs:w.obs}:{mode:'one', obs:[]}):{mode:'', obs:[]}, den=hasDen(o.kind), irep=w.times==='repeat'||(w.times==null&&gw.rep);
+            return `<div class="svi" data-svi="${esc(o.key)}" data-svn="${esc(o.name)}"><div class="svh"><b>${esc(o.name)}</b>${den?' <small>（調べた数が点数になる項目なので、調査の単位はグループの表に合わせます）</small>':''}</div><div class="svf">
+              ${den?'':obsFieldsHTML({s, mode:im.mode, obs:im.mode==='some'?im.obs:gob, inh:gob, lab:o.name, item:true})}
+              <label>調べ方 <select data-svk="times" style="${ss}" aria-label="${esc(o.name)}の調べ方"><option value="">グループに合わせる（いまは ${esc(svWayJP(gw))}）</option><option value="once"${w.times==='once'?' selected':''}>この項目は1回</option><option value="repeat"${w.times==='repeat'?' selected':''}>この項目は時期を変えて何回も</option></select></label>
+              ${w.times==='repeat'?planFieldsHTML({sv:true, jp:o.name, v:w.plan||null, ph:gw.plan||s.plan||{}, ss, ns}):''}</div></div>`; }).join('')}</details>`:''}</div>`; }).join('')}
+    <div class="svsplit">${svSplitHTML(R)}</div>
+    <p class="hint" style="margin:6px 0 0">「合わせる」と空欄の欄は、上の段の値（設計全体・グループ）を使います。収穫日のように間隔がそろわないときは、「調査日の決め方」で「日付を決めて」を選ぶと、調査日を1日ずつ入れられます。収量調査・開花／生育ステージ・土壌調査は、1${esc(u)}に1つの値を書く形が初めの値です。区の中でいくつ調べても、反復（区の数）は増えません。調査の単位や調べ方が違う項目は、別の野帳（表）になります。同じ項目を2つのグループで調べるときは、名前を変えた項目を足します（例：横径（肥大））。</p>`;
 }
+// 表が分かれるグループの一言（設計資料32 の 2.）。4つ以上のときは、まとめ方の一言も（数字「4」は画面の都合で、統計の目安ではない）
+function svSplitList(R){ const gs=(R&&R.surveys||[]).map(x=>x.g).filter((g,i,a)=>a.indexOf(g)===i); return gs.map(g=>({g, tabs:R.surveys.filter(x=>x.g===g)})).filter(x=>x.tabs.length>1); }
+function svSplitHTML(R){ return svSplitList(R).map(x=>`<p class="note">${esc(`${surveyJP(x.g)}は${x.tabs.length}つの野帳に分かれます：${x.tabs.map(t=>t.jp).join('、')}。`)}${x.tabs.length>=4?'<br>調べ方の違う項目が多いと、野帳が増えます。間隔の近い項目を同じ調べ方にそろえると、野帳をまとめられます。':''}</p>`).join(''); }
+// 書き直さずに、文字だけ合わせる（数・名前を打っている間）：表の分かれ方の一言、「合わせる（いまは …）」の文字、「（◯項目を変更）」
+function svLight(root){ if(!root) return; const R=gR(); if(!R||R.empty||R.tooMany) return; const sp=root.querySelector('.svsplit'); if(sp){ const h=svSplitHTML(R); if(sp.innerHTML!==h) sp.innerHTML=h; }
+  const gs=R.surveys.map(x=>x.g).filter((g,i,a)=>a.indexOf(g)===i), multi=gs.length>1, U=obsUnitJP(S);
+  gs.forEach(g=>{ const gob=svGroupObs(S,g,multi), gw=svGroupWay(S,g), d=root.querySelector(`[data-svd="${g}"]`); if(!d) return;
+    d.querySelectorAll('[data-svi]').forEach(r=>{ const a=r.querySelector('[data-svk="omode"] option[value=""]'), b=r.querySelector('[data-svk="times"] option[value=""]'); if(a) a.textContent=`グループに合わせる（いまは ${obsShow(gob,U)}）`; if(b) b.textContent=`グループに合わせる（いまは ${svWayJP(gw)}）`; });
+    const sm=d.querySelector('summary'), nch=[...d.querySelectorAll('[data-svi]')].filter(r=>Object.keys(svWayOf((S.items||[]).find(o=>o.key===r.dataset.svi))).length).length;
+    if(sm&&sm.firstChild) sm.firstChild.textContent=`項目ごとに自由に設定する${nch?`（${nch}項目を変更）`:''} `; }); }
+// 「そのほか（書く）」を選んだら書く欄を見せる（作り直さない）。候補を選んだら書く欄を隠す。書く欄を見せたときは true（まだ反映しない）
+function obsNameToggle(t){ const k=t&&t.dataset&&t.dataset.svk; if(k!=='oname'&&k!=='oname2') return false; const tx=t.parentNode.querySelector(`[data-svk="onametx${k==='oname2'?'2':''}"]`); if(!tx) return false;
+  if(t.value==='_'){ tx.hidden=false; tx.focus(); return !tx.value.trim(); } tx.hidden=true; tx.value=''; return false; }
 // 調査日の予定の欄（設計全体＝ガイドの8段目、グループの行で同じ形）。「一定の間隔で」＝初回の日・間隔・回数、「日付を決めて」＝調査日を1日ずつ（収穫日など）
 // o：{sv:グループの行か, jp:グループの名前, v:今の予定, ph:初めの値, ss, ns}。日付は、文字の欄（並べて書ける）と、日付を選ぶ欄（選ぶと文字の欄の末尾に足す）の2つで入れる
 function planFieldsHTML(o){
@@ -2547,26 +2738,59 @@ function planDatesParse(t){ const z=String(t==null?'':t).replace(/[０-９]/g,c=
   return planDatesClean(z.split(/[\s,，、;；]+/).map(x=>{ const m=/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/.exec(x); return m?`${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`:''; })); }
 function planDatesNote(d){ return d&&d.length?`${d.length}回（${d.length>4?d.slice(0,2).join('、')+' … '+d[d.length-1]:d.join('、')}）`:'まだ日付がありません（空欄でもかまいません。あとから入れられます）'; }
 // 日付を選ぶ欄：選んだ日を、同じ行の文字の欄の末尾に足して、選ぶ欄を空に戻す。足したら true
-function planPick(t){ if(!t||!(t.dataset.svk==='pick'||t.id==='gDatePick')||!t.value) return false; const box=t.closest('[data-sv]')||t.closest('#gPlanBox'), f=box&&box.querySelector('[data-svk="dates"],#gDates'); if(!f) return false;
+const SVROW='[data-sv],[data-svi]';
+function planPick(t){ if(!t||!(t.dataset.svk==='pick'||t.id==='gDatePick')||!t.value) return false; const box=t.closest(SVROW)||t.closest('#gPlanBox'), f=box&&box.querySelector('[data-svk="dates"],#gDates'); if(!f) return false;
   f.value=planDatesParse(f.value+' '+t.value).join('、'); t.value=''; planNoteSync(f); return true; }
-function planNoteSync(f){ const box=f.closest('[data-sv]')||f.closest('#gPlanBox'), n=box&&box.querySelector('.pdn'), d=planDatesParse(f.value); if(n) n.textContent=(!d.length&&f.dataset.inh)?planDatesNote(planDatesParse(f.dataset.inh))+'（設計全体のまま）':planDatesNote(d); }
-// 画面の欄から、グループごとの調べ方を読む（出ていないグループの分は、そのまま残す）
+function planNoteSync(f){ const box=f.closest(SVROW)||f.closest('#gPlanBox'), n=box&&box.querySelector('.pdn'), d=planDatesParse(f.value); if(n) n.textContent=(!d.length&&f.dataset.inh)?planDatesNote(planDatesParse(f.dataset.inh))+'（設計全体のまま）':planDatesNote(d); }
+// 行の調査日の予定を読む（グループの行・項目の行で同じ）。b＝引き継ぐ予定（上の段の予定）。予定を持たないときは undefined
+function svPlanRead(r,t,b){ const q=k=>{ const e=r.querySelector(`[data-svk="${k}"]`); return e?e.value:null; }, st=q('start'), ev=q('every'), ct=q('count'), pm=q('pmode'), ds=q('dates');
+  // 決め方：引き継いでいる決め方（pinh）のまま、何も入れていなければ、上の段の予定のまま（この行の予定を持たない）
+  const pe=r.querySelector('[data-svk="pmode"]'), inh=pe?pe.dataset.pinh:'', dl=ds==null?[]:planDatesParse(ds); b=b||{};
+  if(t!=='once'&&pm==='dates'){ if(dl.length||inh!=='dates') return {start:'', every:b.every||7, count:b.count||5, dates:dl}; }
+  else if(t!=='once'&&(st||ev||ct)) return {start:st||'', every:ev||b.every||7, count:ct||b.count||5};
+  else if(t!=='once'&&pm==='every'&&(inh==='dates'||(ds!=null&&st==null))) return {start:'', every:b.every||7, count:dl.length>=2?dl.length:(Array.isArray(b.dates)&&b.dates.length>=2?b.dates.length:(b.count||5))};   // 「日付を決めて」から「一定の間隔で」に替えたところ
+  return undefined; }
+// 行の調査の単位を読む。prev＝今の値（数を打っている途中で2未満・空のときは、今の値のまま）、dflt＝「いくつか調べる」を選んだばかりのときに入れる段。
+// 返す：undefined（合わせる）／[]（区に1つ）／[{name,n}…]
+function svObsRead(r,prev,dflt){ const q=k=>{ const e=r.querySelector(`[data-svk="${k}"]`); return e?e.value:null; }, m=q('omode'); if(m==null||m==='') return undefined; if(m==='one') return [];
+  if(q('sub')==null) return dflt.map(x=>({...x}));   // 選んだばかり（欄がまだない）
+  const nm=k=>{ const v=q('oname'+k); return v==='_'?String(q('onametx'+k)||'').trim():v; }, num=(k,i)=>{ const n=Math.floor(+q(k)); return n>=2&&n<=OBS_NMAX?n:((prev&&prev[i]&&prev[i].n)||(dflt[i]&&dflt[i].n)||2); };
+  const o=[{name:nm(''), n:num('sub',0)}]; if(q('sub2')!=null) o.push({name:nm('2'), n:num('sub2',1)}); return o; }
+// 画面の欄から、グループごとの調べ方を読む（出ていないグループの分は、そのまま残す）。
+// 調査の単位が「設計全体の名前で1段」か「区に1つ」のときは、これまでの持ち方（sub）で持つ（同じ判定になり、保存の形も変わらない）
 function surveyFormRead(root){
-  const out=surveyClean(S.surveys), rows=root?[...root.querySelectorAll('[data-sv]')]:[]; if(!rows.length) return null;
-  rows.forEach(r=>{ const q=k=>{ const e=r.querySelector(`[data-svk="${k}"]`); return e?e.value:null; }, o={}, t=q('times'), n=q('sub'), st=q('start'), ev=q('every'), ct=q('count'), pm=q('pmode'), ds=q('dates');
-    if(t==='once'||t==='repeat') o.times=t; if(n) o.sub=n;
-    // 決め方：引き継いでいる決め方（pinh）のまま、何も入れていなければ、設計全体の予定のまま（グループの予定を持たない）
-    const pe=r.querySelector('[data-svk="pmode"]'), inh=pe?pe.dataset.pinh:'', b=S.plan||{}, dl=ds==null?[]:planDatesParse(ds);
-    if(t!=='once'&&pm==='dates'){ if(dl.length||inh!=='dates') o.plan={start:'', every:b.every||7, count:b.count||5, dates:dl}; }
-    else if(t!=='once'&&(st||ev||ct)) o.plan={start:st||'', every:ev||b.every||7, count:ct||b.count||5};
-    else if(t!=='once'&&pm==='every'&&inh==='dates') o.plan={start:'', every:b.every||7, count:Array.isArray(b.dates)&&b.dates.length>=2?b.dates.length:(b.count||5)};
-    if(Object.keys(o).length) out[r.dataset.sv]=o; else delete out[r.dataset.sv]; });
-  return surveyClean(out);
+  const def=obsDefName(S), out=surveyClean(S.surveys,def), rows=root?[...root.querySelectorAll('[data-sv]')]:[]; if(!rows.length) return null;
+  rows.forEach(r=>{ const g=r.dataset.sv, q=k=>{ const e=r.querySelector(`[data-svk="${k}"]`); return e?e.value:null; }, o={}, t=q('times'), prev=out[g]||{};
+    if(t==='once'||t==='repeat') o.times=t;
+    const ob=svObsRead(r, obsModeOf(S,prev).obs, [{name:S.subName||def, n:obsDefN(S)}]);
+    if(ob){ const c=obsClean(ob,def)||[]; if(!c.length) o.sub=1; else if(c.length===1&&obsEq(c,obsFromSub({...S, sub:c[0].n}))) o.sub=c[0].n; else o.obs=c; }
+    const pl=svPlanRead(r,t,S.plan); if(pl) o.plan=pl;
+    if(Object.keys(o).length) out[g]=o; else delete out[g]; });
+  return surveyClean(out,def);
 }
-function surveySig(){ const R=gR(); return (R&&R.surveys&&R.surveys.length>1&&!R.tooMany)?R.surveys.map(x=>x.g+(x.repeated?'r':'o')+(x.plan&&Array.isArray(x.plan.dates)?'d':'')+x.R.aItems.map(o=>o.name).join('|')).join('/')+(S.repeated?'R':'O')+S.unit:''; }
+// 画面の欄から、項目ごとの調査の単位・調べ方を読む：{項目の key: {obs, times, plan}}（指定のない項目は {}）
+function surveyItemRead(root){
+  const rows=root?[...root.querySelectorAll('[data-svi]')]:[]; if(!rows.length) return null; const def=obsDefName(S), out={}, R=gR(), multi=R&&R.surveys?new Set(R.surveys.map(x=>x.g)).size>1:false;
+  rows.forEach(r=>{ const k=r.dataset.svi, it=(S.items||[]).find(o=>o.key===k)||{}, g=(r.closest('[data-svd]')||{dataset:{}}).dataset.svd, gob=svGroupObs(S,g,multi), gw=svGroupWay(S,g), q=x=>{ const e=r.querySelector(`[data-svk="${x}"]`); return e?e.value:null; }, t=q('times'), w={};
+    const ob=svObsRead(r, Array.isArray(it.obs)?it.obs:null, gob.length?gob:[{name:S.subName||def, n:obsDefN(S)}]); if(ob) w.obs=obsClean(ob,def)||[];
+    if(t==='once'||t==='repeat') w.times=t;
+    if(t==='repeat'){ const pl=svPlanRead(r,t,gw.plan||S.plan); if(pl) w.plan=pl; }
+    out[k]=itemWayClean(w,def,it.kind); });
+  return out;
+}
+// 項目ごとの調べ方を、入力（S.items）に入れる。ガイドの答え（G.item＝{項目の名前: …}）にも写す（出ていない項目の分は、そのまま残す）
+function surveyItemApply(v){ if(!v) return; const m=Object.assign({},(GD&&GD.G.item&&typeof GD.G.item==='object')?GD.G.item:{});
+  (S.items||[]).forEach(o=>{ if(!(o.key in v)) return; delete o.obs; delete o.times; delete o.plan; Object.assign(o,v[o.key]); const nm=String(o.name||'').trim(); if(nm){ if(Object.keys(v[o.key]).length) m[nm]=v[o.key]; else delete m[nm]; } });
+  if(GD) GD.G.item=Object.keys(m).length?m:null; }
+// 欄を作り直す合図：グループ・項目の顔ぶれ、選ぶ欄の選び方（合わせる／区に1つ／いくつか・段の数・1回／何回も・決め方）。名前と数は入れない（打っている間に作り直さない）
+function surveySig(){ const R=gR(); if(!R||R.empty||R.tooMany||!R.surveys||!R.surveys.length||!R.aItems.some(o=>!o.virtual)) return '';
+  // 予定は「いま効いている決め方」（間隔／日付）だけを見る（引き継いだ日付の欄に打ち始めても作り直さない）
+  const cur=surveyClean(S.surveys,obsDefName(S)), pm=p=>p?(Array.isArray(p.dates)?'d':'e'):'', om=v=>{ const x=obsModeOf(S,v); return x.mode+x.obs.length; }, gs=R.surveys.map(x=>x.g).filter((g,i,a)=>a.indexOf(g)===i);
+  return JSON.stringify([R.surveys.map(x=>[x.g, x.R.items.filter(o=>o.kind!=='note'&&!o.virtual).map(o=>o.key+':'+o.name+':'+o.kind)]), gs.map(g=>{ const w=svGroupWay(S,g), c=cur[g]||{}; return [g, c.times||'', w.rep?pm(w.plan||{}):'', om(c)]; }),
+    (S.items||[]).map(o=>{ const w=svWayOf(o), g=gs.find(g=>R.surveys.some(x=>x.g===g&&x.R.items.some(q=>q.key===o.key))), gw=g?svGroupWay(S,g):{}; return [o.key, w.times||'', w.times==='repeat'?pm(w.plan||gw.plan||S.plan||{}):'', w.obs?(w.obs.length?'some':'one')+w.obs.length:'']; }), S.repeated, S.unit, S.crop||'', S.sub||1, S.subName||'', S.years, (S.plan&&Array.isArray(S.plan.dates))?'d':'']); }
 // 野帳（ひな形・記入表）を作るグループ（選んでいるもの）
-function surveyCur(R){ const v=R.surveys||[]; return v.find(x=>x.g===TPL.g)||v[0]||null; }
-function surveyNote(x,u){ return `${x.repeated?(planJP(x.plan)||'何回も'):'1回'}・1${u}${x.sub>1?`あたり${x.sub}点`:'に1つ'}`; }
+function surveyCur(R){ const v=R.surveys||[]; return v.find(x=>x.tab===TPL.g)||v.find(x=>x.g===TPL.g)||v[0]||null; }   // 選ぶ欄の値は表の記号（tab。表が1つのグループは、グループの記号と同じ）
+function surveyNote(x,u,s){ return `${x.repeated?(planJP(x.plan)||'何回も'):'1回'}・1${u}${(x.obs||[]).length>=2||((s&&obsSpec(s)||x.tab!==x.g)&&(x.obs||[]).length)?`あたり${obsTxt(x.obs)}`:(x.sub>1?`あたり${x.sub}点`:'に1つ')}`; }   // 調査の単位を指定した設計は「1樹あたり新梢5本」（設計書の別紙4 と同じ決まり）
 function gStep8(G){
   const rep=G.times==='repeat'||(G.times==null&&guideGoal(G)===7), p=S.plan||{start:'',every:7,count:5};
   let h=`<div class="gopts c2">${gOpt('times','once','1回','収穫時など、1回だけ調べる',G.times==='once')}${gOpt('times','repeat','同じ樹・株を、時期を変えて何回も','生育調査・貯蔵中の変化など',G.times==='repeat')}</div><div class="gopts">${gOpt('times',null,gAny,guideGoal(G)===7?'何回も調べる形で進める':'1回調べる形で進める',G.times==null,true)}</div>`;
@@ -2638,7 +2862,7 @@ function gStep10(G){
 function gExit(G){
   const R=gR(), ok=R&&!R.empty&&!R.tooMany;
   return `<p class="hint">${R&&!R.empty?esc(R.levelTitle)+'。':''}できあがったものを、下から持ち帰れます。答えは、この端末のブラウザに保存されています。</p>
-    ${ok&&R.surveys.length>1?`<p class="note" id="gGrpBox">調査のグループが${R.surveys.length}つあります。野帳のひな形と記入表は、グループごとに作ります。<label style="display:inline-flex;gap:6px;align-items:center;margin-left:6px">作る調査：<select id="gGrpSel" style="width:auto;padding:4px 6px">${R.surveys.map(x=>`<option value="${x.g}"${surveyCur(R).g===x.g?' selected':''}>${esc(x.jp)}（${esc(surveyNote(x,docUnit(R.s)))}）</option>`).join('')}</select></label></p>`:''}
+    ${ok&&R.surveys.length>1?`<p class="note" id="gGrpBox">${R.surveys.some(x=>x.tab!==x.g)?`調査の表（野帳）が${R.surveys.length}つあります。野帳のひな形と記入表は、表ごとに作ります。`:`調査のグループが${R.surveys.length}つあります。野帳のひな形と記入表は、グループごとに作ります。`}<label style="display:inline-flex;gap:6px;align-items:center;margin-left:6px">作る調査：<select id="gGrpSel" style="width:auto;padding:4px 6px">${R.surveys.map(x=>`<option value="${x.tab}"${surveyCur(R).tab===x.tab?' selected':''}>${esc(grpMark(x.g)+x.jp)}（${esc(surveyNote(x,docUnit(R.s),R.s))}）</option>`).join('')}</select></label></p>`:''}
     <div class="gexit" id="gExit">
       <button type="button" class="bigbtn pri" data-nav="doc"><b>試験設計書を開く</b><span>印刷・PDF、Wordで開ける形、コピーで持ち帰れます。課題名や目的は、設計書の画面でも直せます</span></button>
       ${ok?`<button type="button" class="bigbtn" data-act="tplopen" aria-expanded="${TPL.open?'true':'false'}"><b>野帳のひな形を作る（声で野帳Pro）</b><span>声で野帳Pro を使っている方向け。項目と個体リスト（区番号・処理）が入った調査を、Pro に作れます</span></button>`:''}
@@ -2654,9 +2878,9 @@ function gNow(G){
   const R=gR(); if(!R||R.empty) return '';
   const crop=(GUIDE_CROPS.find(c=>c[0]===guideCrop(G))||[])[1], goal=(GUIDE_GOALS.find(g=>g[0]===guideGoal(G))||[])[1];
   const rows=[['作物',S.cropName||crop],['目標',goal],['比べるもの',R.F.map(f=>`${f.name}${f.n}`).join('×')]];
-  if(!R.tooMany){ rows.push(['並べ方',DESIGN[R.design].jp],['区の数',`${R.N}区（${R.design==='latin'?R.T+'×'+R.T:R.nT+(R.design==='oa'?'通り':'処理')+'×'+R.r+'反復'}）`]); if(R.surveys&&R.surveys.length>1) R.surveys.forEach(x=>rows.push([x.jp,surveyNote(x,docUnit(R.s))])); else if(R.sub>1) rows.push(['1区あたり',R.sub+'点']); rows.push(['調べる項目',R.aItems.length+'項目'+(R.items.length>R.aItems.length?'＋メモ'+(R.items.length-R.aItems.length):'')]); }
+  if(!R.tooMany){ rows.push(['並べ方',DESIGN[R.design].jp],['区の数',`${R.N}区（${R.design==='latin'?R.T+'×'+R.T:R.nT+(R.design==='oa'?'通り':'処理')+'×'+R.r+'反復'}）`]); if(R.surveys&&R.surveys.length>1) R.surveys.forEach(x=>rows.push([grpMark(x.g)+x.jp,surveyNote(x,docUnit(R.s),R.s)])); else if(obsSpec(S)&&R.surveys&&R.surveys[0]) rows.push(['調査の単位',obsShow(R.surveys[0].obs,obsUnitJP(S))]); else if(R.sub>1) rows.push(['1区あたり',R.sub+'点']); rows.push(['調べる項目',R.aItems.length+'項目'+(R.items.length>R.aItems.length?'＋メモ'+(R.items.length-R.aItems.length):'')]); }
   const open=!(window.matchMedia&&window.matchMedia('(max-width:860px)').matches);
-  return `<aside class="card gnow" id="gNow"><details class="gnow-d"${open?' open':''}><summary>いまの案：${esc(R.tooMany?'組合せが多すぎます':LEVEL_JP[R.level].replace(/（.*$/,''))}</summary><dl style="margin-top:8px">${rows.map(r=>`<dt>${r[0]}</dt><dd>${esc(r[1])}</dd>`).join('')}</dl><div class="lv lv${R.level}">${esc(R.levelTitle)}</div></details></aside>`;
+  return `<aside class="card gnow" id="gNow"><details class="gnow-d"${open?' open':''}><summary>いまの案：${esc(R.tooMany?'組合せが多すぎます':LEVEL_JP[R.level].replace(/（.*$/,''))}</summary><dl style="margin-top:8px">${rows.map(r=>`<dt>${r[0]}</dt><dd>${esc(r[1])}</dd>`).join('')}</dl>${R.tooMany?'':svSplitList(R).map(x=>`<p class="hint" style="margin:4px 0">${esc(`${surveyJP(x.g)}は${x.tabs.length}つの野帳に分かれます。`)}</p>`).join('')}<div class="lv lv${R.level}">${esc(R.levelTitle)}</div></details></aside>`;
 }
 // 上の帯（画面の上に留まる）：戻る／段のボタン（1〜10・できあがり。どの段へも1回で移れる）／次へ
 function gTopHTML(st){
@@ -2758,6 +2982,7 @@ function guideClick(e){
   if(t.dataset.stp){ const inp=gEl(t.dataset.stp), d=+t.dataset.d, cur=parseInt(inp.value,10), ph=parseInt((inp.placeholder.match(/\d+/)||[])[0],10);
     const base=isNaN(cur)?(isNaN(ph)?+inp.min:ph):cur, v=Math.max(+inp.min,Math.min(+inp.max,isNaN(cur)&&d>0&&!isNaN(ph)?ph+1:(isNaN(cur)&&d<0&&!isNaN(ph)?ph-1:base+d)));
     inp.value=v; if(gNumChange(inp.id,v)) renderGuide(); return; }
+  if(t.dataset.svact){ gSvRead(); if(svAct(t,v=>{ if(v.surveys) GD.G.surveys=Object.keys(v.surveys).length?v.surveys:null; guideCommit(); if(v.items){ surveyItemApply(v.items); guideCommit(); } })) renderGuide(); return; }
   if(t.dataset.use!=null){ const R=gR(), nx=R&&R.next[+t.dataset.use]; if(!nx||!nx.set) return; S=toItems(applySet(S,nx.set)); GD.G=guideApplySet(G,nx.set); PRESET=null; save(); return renderGuide(); }   // あと一歩を、その場で案に反映（設計資料18 の 6.）
   const act=t.dataset.act; if(!act) return;
   if(act==='addfac'){ gReadFacs(); if(G.facs.length<8) G.facs.push({name:'条件'+(G.facs.length+1), kind:'qual', n:2, labelsText:'水準1, 水準2', ctrl:''}); }
@@ -2778,7 +3003,8 @@ function guideClick(e){
 function guideChange(e){
   const t=e.target; if(!GD||!t||t.closest('.tplp')) return; const G=GD.G;
   if(t.id==='gGrpSel'){ TPL.g=t.value; TPL.url=''; TPL.show=false; return renderGuide(); }
-  if(t.closest('[data-sv]')){ planPick(t); G.surveys=surveyFormRead(gEl('guide')); guideCommit(); if(t.tagName==='SELECT') renderGuide(); else gRefreshNow(); return; }
+  if(t.id==='gSubName'){ if(subNameToggle(t,'gSubName')) return; G.subName=subNameRead(S,'gSubName'); guideCommit(); return gRefreshNow(); }
+  if(t.closest(SVROW)){ planPick(t); if(obsNameToggle(t)) return; gSvRead(); if(t.tagName==='SELECT'&&!/^oname/.test(t.dataset.svk||'')) renderGuide(); else { gRefreshNow(); svLight(gEl('gSurveys')); } return; }
   if(t.dataset.p){ const ps=guidePurposes(G), before=guideItemNames(G), p=t.dataset.p; const nx=t.checked?ps.concat(p):ps.filter(x=>x!==p);
     if(!nx.length){ t.checked=true; return; } G.purposes=guidePOrder(GUIDE_PURPOSES.map(x=>x[0]).filter(x=>nx.includes(x)));
     if(Array.isArray(G.items)&&t.checked) G.items=before.concat(guideDictCandidates(p,guideCrop(G)).filter(c=>c.on&&!before.includes(c.name)).map(c=>c.name));
@@ -2797,9 +3023,18 @@ function guideChange(e){
 }
 // 設計全体の調査日（日付を決めて）を、文字の欄から答えへ写す（欄は作り直さない）
 function gPlanDates(){ const f=gEl('gDates'); if(!f) return; planNoteSync(f); GD.G.plan=Object.assign({start:'',every:7,count:5},S.plan||{},{dates:planDatesParse(f.value)}); guideCommit(); gRefreshNow(); }
+// 8段目の欄（グループの行・項目の行）を、ガイドの答えへ写す
+function gSvRead(){ const root=gEl('gSurveys'); if(!root) return; const v=surveyFormRead(root); GD.G.surveys=v&&Object.keys(v).length?v:null; guideCommit(); const w=surveyItemRead(root); if(w){ surveyItemApply(w); guideCommit(); } }
+// 「2段目を足す／外す」（グループの行・項目の行で同じ）。今の欄を読んでから、その行の段を変える
+function svAct(btn,apply){ const r=btn.closest(SVROW); if(!r) return false; const a=btn.dataset.svact, def=obsDefName(S), cands=obsCands(S);
+  const ed=ob=>{ ob=(ob||[]).map(x=>({...x})); if(a==='add2'&&ob.length===1) ob.push({name:cands.find(c=>c!==ob[0].name)||'個体', n:obsDefN(S)}); if(a==='del2') ob=ob.slice(0,1); return obsClean(ob,def)||[]; };
+  if(r.dataset.sv){ const g=r.dataset.sv, v=surveyClean(S.surveys,def), x=Object.assign({},v[g]||{}), ob=ed(obsModeOf(S,x).obs); delete x.sub; delete x.obs; if(!ob.length) x.sub=1; else if(ob.length===1&&obsEq(ob,obsFromSub({...S, sub:ob[0].n}))) x.sub=ob[0].n; else x.obs=ob; v[g]=x; apply({surveys:v}); }
+  else { const it=(S.items||[]).find(o=>o.key===r.dataset.svi); if(!it) return false; const w=svWayOf(it); w.obs=ed(w.obs); apply({items:{[it.key]:itemWayClean(w,def,it.kind)}}); }
+  return true; }
 function guideInput(e){
   if(!GD||(e&&e.isComposing)) return; const t=e.target; if(!t||t.closest('.tplp')) return;
-  if(t.closest('[data-sv]')){ if(t.tagName!=='SELECT'&&t.dataset.svk!=='pick'){ if(t.dataset.svk==='dates') planNoteSync(t); GD.G.surveys=surveyFormRead(gEl('guide')); guideCommit(); gRefreshNow(); } return; }
+  if(t.id==='gSubNameTx'){ GD.G.subName=subNameRead(S,'gSubName'); guideCommit(); return gRefreshNow(); }
+  if(t.closest(SVROW)){ if(t.tagName!=='SELECT'&&t.dataset.svk!=='pick'){ if(t.dataset.svk==='dates') planNoteSync(t); gSvRead(); gRefreshNow(); svLight(gEl('gSurveys')); } return; }
   if(!t.id) return;
   if(t.id==='gDates'){ return gPlanDates(); }
   if(t.type==='number'){ if(GNUM[t.id]) gNumChange(t.id,t.value); return; }   // 規模の数は、打つたびに一言を更新（処理の数は、欄を離れたときに反映）
@@ -2878,10 +3113,10 @@ function tplPanelHTML(){
   const nodec=R.items.filter(x=>x.kind==='cont'&&x.dec==null&&!x.virtual).map(x=>x.name);
   return `<div class="tplp">
     <p class="hint">声で野帳Pro を使っている方向けです。音声で入力する列（調べる項目）と、先に分かっている列（区番号・処理など）の個体リストが入った調査を、Pro に作れます。測定値は入りません。Pro を使わないときは、記入表（Excel）で同じ記録が取れます。</p>
-    ${R0.surveys.length>1?`<label class="f" style="margin-bottom:8px">どの調査のひな形を作りますか <small>調査のグループごとに、ひな形を1つずつ作ります（${R0.surveys.length}つ）。選んで、それぞれ保存するか、Pro で開きます</small><select class="tplGrp">${R0.surveys.map(x=>`<option value="${x.g}"${SV.g===x.g?' selected':''}>${esc(grpMark(x.g)+x.jp)}（${esc(surveyNote(x,docUnit(R0.s)))}）</option>`).join('')}</select></label>`:''}
+    ${R0.surveys.length>1?`<label class="f" style="margin-bottom:8px">どの調査のひな形を作りますか <small>調査のグループごとに、ひな形を1つずつ作ります（${R0.surveys.length}つ）。選んで、それぞれ保存するか、Pro で開きます</small><select class="tplGrp">${R0.surveys.map(x=>`<option value="${x.tab}"${SV.tab===x.tab?' selected':''}>${esc(grpMark(x.g)+x.jp)}（${esc(surveyNote(x,docUnit(R0.s),R0.s))}）</option>`).join('')}</select></label>`:''}
     <div class="row2"><label class="f">調査の名前 <small>Pro の調査一覧に出ます${R0.surveys.length>1?'（うしろに、調査のグループの名前が付きます）':''}</small><input type="text" class="tplName" value="${esc(o.name)}" placeholder="${esc(designName(S,o))}" maxlength="80"><button type="button" class="btn ghost fillph" data-fill=".tplName"${o.name?' disabled':''} style="margin-top:4px;justify-self:start">薄い字の名前を欄に入れて直す</button></label>
     <label class="f">個体リストの順番 <small>読み上げて回る順</small><select class="tplOrder"><option value="0"${o.snake?'':' selected'}>区番号の順</option><option value="1"${o.snake?' selected':''}>歩く順（区割り図の1行ごとに折り返す）</option></select></label></div>
-    <p class="note tplWhat">項目 ${c.items}（音声で入力 ${c.meas}・事前入力 ${c.id}）、個体リスト ${c.list?c.list.toLocaleString()+'行':'なし'}${R.s.repeated?'、調査日ごとに記録（経時調査）'+(R.s.plan&&Array.isArray(R.s.plan.dates)&&R.s.plan.dates.length?`・調査日：${R.s.plan.dates.length}回（日付を指定。声で野帳Pro の予定には入れていないので、Pro の設定で調査日を入れます）`:(t.S.plan&&t.S.plan.on?`・予定：${t.S.plan.start} から ${t.S.plan.every}日ごとに${t.S.plan.count}回`:'')):''}。</p>
+    <p class="note tplWhat">項目 ${c.items}（音声で入力 ${c.meas}・事前入力 ${c.id}）、個体リスト ${c.list?c.list.toLocaleString()+'行':'なし'}${R.s.repeated?'、調査日ごとに記録（経時調査）'+(R.s.plan&&Array.isArray(R.s.plan.dates)&&R.s.plan.dates.length?`・調査日（${R.s.plan.dates.length}回。日付を指定）を、声で野帳Pro の予定に入れました`:(t.S.plan&&t.S.plan.on?`・予定：${t.S.plan.start} から ${t.S.plan.every}日ごとに${t.S.plan.count}回`:'')):''}。</p>
     ${!c.list&&nList>PRO_LIST_MAX?`<p class="note">個体リストが${nList.toLocaleString()}行になり、Pro が受け取れる数（${PRO_LIST_MAX.toLocaleString()}行）を超えるため、ひな形には項目だけを入れています。1区あたりの調査数を減らすと、個体リストも入ります。</p>`:''}
     ${nodec.length?`<p class="note">小数の桁が空欄の項目（${esc(nodec.join('・'))}）は、ひな形では小数1桁にしています。項目の欄の「小数の桁」を入れると、その桁になります。</p>`:''}
     <div class="toolbar"><button type="button" class="btn primary" data-tpl="file">ひな形のファイルを保存（.json）</button><a class="btn done tplOpen" target="_blank" rel="noopener noreferrer"${TPL.url?` href="${esc(TPL.url)}"`:' aria-disabled="true"'}>声で野帳Pro で開く${TPL.url?'':'（準備中）'}</a><button type="button" class="btn" data-tpl="link">リンクを作る</button></div>
@@ -2925,7 +3160,8 @@ function zipStore(files){
 }
 // 記入表の列の日本語の見出し（Excel の1行目）。項目は「名前（単位）」、分母は分母の名前、区の列は区番号・ブロックなど
 function sheetLabels(R,cols){
-  const F=R.F||[], m={year:'年次', plot:'区番号', block:'ブロック（反復）', row:'行', col:'列', time:'調査回', sample:(R.s.crop==='fruit'||(!R.s.crop&&R.s.unit==='tree'))?'果実番号':'株番号'};
+  const OB=R.obs||[], F=R.F||[], m={year:'年次', plot:'区番号', block:'ブロック（反復）', row:'行', col:'列', time:'調査回', sample:(OB.length?OB[OB.length-1].name:obsDefName(R.s))+'番号'};
+  if(OB.length>=2) m.sub1=OB[0].name+'番号';   // 2段：上の段（樹）の番号
   F.forEach(f=>{ m[f.v]=f.name||f.v; }); (R.items||[]).forEach(o=>{ m[o.col]=o.name+(o.unit?`（${o.unit}）`:''); if(o.den) m[o.den.rv]=o.den.name||o.den.rv; });
   return cols.map(c=>m[c]||c);
 }
@@ -2934,14 +3170,16 @@ function xlsxBlob(sheets){   // sheets：[{name, cols, rows, labels}]（シー�
   const cell=(v,r,c)=>{ if(v==null||v==='') return ''; const ref=col(c)+r; return (typeof v==='number'&&isFinite(v))||(typeof v==='string'&&/^-?\d+(\.\d+)?$/.test(v)&&!/^-?0\d/.test(v))?`<c r="${ref}"><v>${v}</v></c>`:`<c r="${ref}" t="inlineStr"><is><t xml:space="preserve">${x(v)}</t></is></c>`; };
   const H='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n', NS=XLSX_NS, used=new Set();
   const names=sheets.map((sh,i)=>{ let n=String(sh.name||'記入表').replace(/[\\\/?*\[\]:]/g,'_').slice(0,31)||('Sheet'+(i+1)), b=n, j=2; while(used.has(n)) n=b.slice(0,28)+'_'+(j++); used.add(n); return n; });
-  const xml=sheets.map(sh=>{ const hd=(Array.isArray(sh.labels)&&sh.labels.length===sh.cols.length?[sh.labels.map(c=>({v:String(c),s:1}))]:[]).concat([sh.cols.map(c=>({v:String(c),s:1}))]), all=hd.concat(sh.rows.map(r=>sh.cols.map(c=>({v:r[c]})))), fz=hd.length;
-    return H+`<worksheet xmlns="${NS}spreadsheetml/2006/main"><sheetViews><sheetView workbookViewId="0"><pane ySplit="${fz}" topLeftCell="A${fz+1}" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><sheetData>${all.map((r,i)=>`<row r="${i+1}">${r.map((o,j)=>o.s?`<c r="${col(j)+(i+1)}" t="inlineStr"><is><t xml:space="preserve">${x(o.v)}</t></is></c>`:cell(o.v,i+1,j)).join('')}</row>`).join('')}</sheetData></worksheet>`; });
+  // 書かない場所（点数が少ない項目の、番号が多い行。dataRows の _skip）は、薄い灰色の塗りだけ（字は入れない：Rで読めなくなるため。設計資料31 の 6.）。灰色のセルがあるときだけ、書式（styles.xml）を入れる
+  const gray=sheets.some(sh=>sh.rows.some(r=>Array.isArray(r._skip)&&r._skip.length));
+  const xml=sheets.map(sh=>{ const hd=(Array.isArray(sh.labels)&&sh.labels.length===sh.cols.length?[sh.labels.map(c=>({v:String(c),s:1}))]:[]).concat([sh.cols.map(c=>({v:String(c),s:1}))]), all=hd.concat(sh.rows.map(r=>sh.cols.map(c=>({v:r[c], g:Array.isArray(r._skip)&&r._skip.includes(c)})))), fz=hd.length;
+    return H+`<worksheet xmlns="${NS}spreadsheetml/2006/main"><sheetViews><sheetView workbookViewId="0"><pane ySplit="${fz}" topLeftCell="A${fz+1}" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><sheetData>${all.map((r,i)=>`<row r="${i+1}">${r.map((o,j)=>o.s?`<c r="${col(j)+(i+1)}" t="inlineStr"><is><t xml:space="preserve">${x(o.v)}</t></is></c>`:(o.g&&(o.v==null||o.v==='')?`<c r="${col(j)+(i+1)}" s="1"/>`:cell(o.v,i+1,j))).join('')}</row>`).join('')}</sheetData></worksheet>`; });
   return zipStore([
-    {name:'[Content_Types].xml', data:H+`<Types xmlns="${NS}package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>${xml.map((_,i)=>`<Override PartName="/xl/worksheets/sheet${i+1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('')}</Types>`},
+    {name:'[Content_Types].xml', data:H+`<Types xmlns="${NS}package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>${gray?'<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>':''}${xml.map((_,i)=>`<Override PartName="/xl/worksheets/sheet${i+1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('')}</Types>`},
     {name:'_rels/.rels', data:H+`<Relationships xmlns="${NS}package/2006/relationships"><Relationship Id="rId1" Type="${NS}officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`},
     {name:'xl/workbook.xml', data:H+`<workbook xmlns="${NS}spreadsheetml/2006/main" xmlns:r="${NS}officeDocument/2006/relationships"><sheets>${names.map((n,i)=>`<sheet name="${x(n)}" sheetId="${i+1}" r:id="rId${i+1}"/>`).join('')}</sheets></workbook>`},
-    {name:'xl/_rels/workbook.xml.rels', data:H+`<Relationships xmlns="${NS}package/2006/relationships">${xml.map((_,i)=>`<Relationship Id="rId${i+1}" Type="${NS}officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i+1}.xml"/>`).join('')}</Relationships>`}
-  ].concat(xml.map((d,i)=>({name:`xl/worksheets/sheet${i+1}.xml`, data:d}))));
+    {name:'xl/_rels/workbook.xml.rels', data:H+`<Relationships xmlns="${NS}package/2006/relationships">${xml.map((_,i)=>`<Relationship Id="rId${i+1}" Type="${NS}officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i+1}.xml"/>`).join('')}${gray?`<Relationship Id="rId${xml.length+1}" Type="${NS}officeDocument/2006/relationships/styles" Target="styles.xml"/>`:''}</Relationships>`}
+  ].concat(gray?[{name:'xl/styles.xml', data:H+`<styleSheet xmlns="${NS}spreadsheetml/2006/main"><fonts count="1"><font><sz val="11"/><name val="Calibri"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFE6E6E6"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="0" fillId="2" borderId="0" xfId="0" applyFill="1"/></cellXfs></styleSheet>`}]:[]).concat(xml.map((d,i)=>({name:`xl/worksheets/sheet${i+1}.xml`, data:d}))));
 }
 // 保存先を選んで保存する（ファイルに書き戻せるブラウザ：PCの Chrome・Edge など）。選べないブラウザでは、これまでどおりダウンロードの場所に保存する。やめたときは null
 async function saveOut(data,name,mime,desc,ext){
@@ -3136,7 +3374,7 @@ function loadPreset(key){
 }
 function markPreset(){ document.querySelectorAll('#presets button').forEach(b=>b.classList.toggle('on', b.dataset.k===PRESET)); }
 function writeForm(){
-  SVSIG=null; setTimeout(()=>svSync(true),0);
+  SVSIG=null; SNSIG=null; { const b=$('#svBox'); if(b) b.innerHTML=''; } subNameSync(); setTimeout(()=>svSync(true),0);   // 前の設計の欄を読まないよう、先に空にする
   document.querySelectorAll('input[name=purpose]').forEach(i=>i.checked=i.value===S.purpose);
   document.querySelectorAll('input[name=field]').forEach(i=>i.checked=i.value===S.field);
   $('#inter').checked=!!S.inter; $('#repeated').checked=!!S.repeated; $('#missing').checked=!!S.missing;
@@ -3216,7 +3454,9 @@ function itemHints(R){
     const d=document.getElementById('dr'+i); if(d && o.den) d.placeholder='自動：'+o.den.rv; });
 }
 function readForm(){
+  { const n=subNameRead(S,'subName'); if(n!==undefined){ if(n) S.subName=n; else delete S.subName; if(GD) GD.G.subName=n; } }   // 何を数えますか（設計全体の1段目の名前）
   { const v=surveyFormRead($('#svBox')); if(v){ if(Object.keys(v).length) S.surveys=v; else delete S.surveys; if(GD) GD.G.surveys=Object.keys(v).length?v:null; } }
+  surveyItemApply(surveyItemRead($('#svBox')));   // 項目ごとの調査の単位・調べ方（設計資料31 の 7.、設計資料32 の 2.）
   const num=(id,int=true)=>{ const v=int?parseInt($(id).value,10):parseFloat($(id).value); return isNaN(v)?null:v; };
   const clamp=(v,lo,hi)=>v==null?null:Math.max(lo,Math.min(hi,v));
   S.purpose=(document.querySelector('input[name=purpose]:checked')||{}).value||'auto';
@@ -3394,8 +3634,8 @@ function respNote(t,R){ const q=R&&R.noRE; return {
   cont:'残差が左右対称で、処理ごとのばらつきが同程度か（等分散）を残差プロットで確認する。',
   date:'日付のままでは計算できないため、1月1日を1とする通し日にする。差は「日」で読める。',
   prop:'割合（%）をそのまま分散分析しない。分母（調べた数）の情報を使えるGLMで解析する。'+(q?'区ごとのばらつきが二項分布より大きくても（過分散）、その分を織り込んでF検定する。':''),
-  binary:'同じ樹の果実どうしは似るため、樹（区）を変量効果に入れて擬似反復を防ぐ。',
-  count:q&&R.sub<=1?'数は0付近で分布がゆがむので、対数の尺度で比べる。区ごとのばらつきがポアソン分布より大きくても（過分散）、その分を織り込んでF検定する。':'数は0付近で分布がゆがむ。ばらつきが平均より大きい（過分散）なら負の二項分布にする。',
+  binary:R&&R.sub>1?'同じ樹の果実どうしは似るため、区ごとに数えて（何個中何個）から解析し、擬似反復を防ぐ。'+(q?'区ごとのばらつきが二項分布より大きくても（過分散）、その分を織り込んでF検定する。':''):(plotRE0(R)?'同じ区を続けて調べるため、区を変量効果に入れます。'+(R.design==='split'?'分割区法のため、大区画も変量効果に入れます。':''):'1区に1個体の あり／なし は、区ごとの値をそのまま解析に使います。1区で複数個体を調べると、「何個中何個」として比べられるようになります。'+(R&&R.design==='split'?'分割区法のため、大区画を変量効果に入れます。':'')),   // 設計資料34 の 3.・設計資料36 の 1.（雛形の rand と同じ条件：design==='split' と plotRE0）
+  count:q?'数は0付近で分布がゆがむので、対数の尺度で比べる。区ごとのばらつきがポアソン分布より大きくても（過分散）、その分を織り込んでF検定する。':'数は0付近で分布がゆがむ。ばらつきが平均より大きい（過分散）なら負の二項分布にする。',
   ord:'0〜4の程度は「間隔が等しい」とは限らないため、平均を取らず順序として扱う。',
   rate:'区が実験の単位なので、区ごとの値（例：1果そうあたりの着果数）1点にしてから、測った数値と同じ手順で解析する。'}[t]; }
 function cmpTitle(c){ return {tukey:'Tukey法（チューキー）', dunnett:'Dunnett法（ダネット）', two:'2区の比較（分散分析のF検定＝t検定）', reg:'回帰分析（傾き・決定係数R²）', oa:'要因効果図と分散分析'}[c.m]; }
@@ -3415,7 +3655,7 @@ function tabBody(R,dr){
     const show=dr.rows.slice(0,12);
     const nameOf=c=>{ const f=R.F.find(f=>f.v===c), it=R.items.find(o=>o.col===c), dn=R.items.find(o=>o.den&&o.den.rv===c);
       const jp=f?f.name:(it?it.name+(it.kind==='note'?'（メモ）':''):(dn?dn.den.name:null)); return jp&&jp!==c?`${esc(c)}<br><small>${esc(jp)}</small>`:esc(c); };
-    return `${(R.surveys&&R.surveys.length>1)?`<label class="f" style="margin-bottom:8px">どの調査の記入表ですか <small>記入表は、調査のグループごとに分かれます</small><select class="tplGrp" id="sheetGrp">${R.surveys.map(x=>`<option value="${x.g}"${surveyCur(R).g===x.g?' selected':''}>${esc(x.jp)}（${esc(surveyNote(x,docUnit(R.s)))}）</option>`).join('')}</select></label>`:''}<p class="sub">1行＝1つの測定値（1区・1樹・1果実）。処理は列に、測定値は1列に縦に並べます（縦長形式）。区画番号の列を必ず入れます。${dr.perObs&&R.aItems.some(o=>o.den)?'数えた数（該当数）と調べた数（'+esc(R.aItems.filter(o=>o.den).map(o=>o.rv+'・'+o.den.rv).join('、'))+'）は各区の1行目（sample = 1）だけに入れます。':''}${R.years!=='single'?'年の列の値は例です。':''}全${dr.rows.length}行のうち先頭12行を表示しています。</p>
+    return `${(R.surveys&&R.surveys.length>1)?`<label class="f" style="margin-bottom:8px">どの調査の記入表ですか <small>記入表は、調査のグループ（調べ方が違うときは表）ごとに分かれます</small><select class="tplGrp" id="sheetGrp">${R.surveys.map(x=>`<option value="${x.tab}"${surveyCur(R).tab===x.tab?' selected':''}>${esc(grpMark(x.g)+x.jp)}（${esc(surveyNote(x,docUnit(R.s),R.s))}）</option>`).join('')}</select></label>`:''}<p class="sub">1行＝1つの測定値（1区・1樹・1果実）。処理は列に、測定値は1列に縦に並べます（縦長形式）。区画番号の列を必ず入れます。${dr.perObs&&R.aItems.some(o=>o.den)?'数えた数（該当数）と調べた数（'+esc(R.aItems.filter(o=>o.den).map(o=>o.rv+'・'+o.den.rv).join('、'))+'）は各区の1行目（sample = 1）だけに入れます。':''}${R.years!=='single'?'年の列の値は例です。':''}全${dr.rows.length}行のうち先頭12行を表示しています。</p>
       <div class="tscroll"><table class="t"><tr>${dr.cols.map(c=>`<th>${nameOf(c)}</th>`).join('')}</tr>${show.map(r=>`<tr>${dr.cols.map(c=>`<td>${esc(r[c]??'')}</td>`).join('')}</tr>`).join('')}</table></div>
       <div class="toolbar"><button type="button" class="btn" data-copy="tsv">記入用の表をコピー（全${dr.rows.length}行）</button><span class="note" id="tsvm">Excelのセルに貼り付け、空欄に測定値を入れて data.csv として保存します（保存の形式：${R.s.enc==='utf8'?'CSV UTF-8':'CSV（コンマ区切り）'}。その他の欄で切り替え）。</span></div>
       <details class="tplbox" id="tplBox"${R.s.rec==='pro'||TPL.open?' open':''}><summary><b>声で野帳Pro の野帳のひな形を作る</b> <span class="term">Pro を使っている方向け</span></summary>${tplPanelHTML()}</details>`;
@@ -3458,7 +3698,7 @@ function aiText(R){
   if(R.design==='oa') L.push(`・直交表${R.oa.name}で${R.nT}通りを選んで実施${R.inter.length?'。'+R.F[0].name+'×'+R.F[1].name+'の交互作用も見たい':''}`);
   L.push('','【調査項目とデータの形】');
   R.items.forEach(o=>L.push(o.kind==='note'?`・${o.name}：メモ（解析しない）。列 ${o.col}`:`・${o.name}（${RESP[o.kind].jp}${o.unit?'、単位 '+o.unit:''}）：列名 ${o.den?o.rv+(o.kind==='rate'?'（数えた数）と ':'（該当数）と ')+o.den.rv+'（'+o.den.name+'）':o.rv}${o.def?'。定義：'+o.def:''}`));
-  if(R.sub>1) L.push(`・1区（樹）あたり${R.sub}点を調査し、1行に1点ずつ入れている（列 sample）`);
+  if(R.sub>1) L.push((R.obs||[]).length>=2?`・1${obsUnitJP(R.s)}あたり${obsTxt(R.obs)}を調査し、1行に1点ずつ入れている（列 sub1＝${R.obs[0].name}番号、sample＝${R.obs[1].name}番号）`:`・1区（樹）あたり${R.sub}点を調査し、1行に1点ずつ入れている（列 sample）`);
   if(S.repeated) L.push('・同じ区を時期を変えて複数回調査（列 time）');
   if(R.years==='same') L.push('・同じ樹・区で複数年継続（列 year）');
   if(R.years==='new') L.push('・複数年、毎年配置し直し（列 year）');
@@ -3470,18 +3710,18 @@ function aiText(R){
 }
 function paperJP(R){
   if(R.split) return R.surveys.map(x=>`【${x.jp}】`+paperJP(x.R)).join('\n');   // 調べ方がグループで違う：グループごとに書く
-  const D=DESIGN[R.design], noRep=R.r<=1&&R.design!=='latin';
-  let s=`試験は${R.design==='oa'?R.oa.name+'直交表に割り付けた一部実施要因計画を'+(R.r>1?'乱塊法'+R.r+'反復で':'')+'配置して':D.jp+'（'+(R.design==='latin'?R.T+'行×'+R.T+'列':R.r+'反復')+(R.sub>1?'、1区'+R.sub+'点調査':'')+'）で'}行った。`;
-  if(noRep && R.design!=='oa') s=`試験は各処理1区（反復なし${R.sub>1?'、1区'+R.sub+'点調査':''}）で行った。`;
-  if(R.design==='split') s=`試験は${R.mainF.map(f=>f.name).join('×')}を主区、${R.subF.map(f=>f.name).join('×')}を副区とする分割区法（${R.r}反復${R.sub>1?'、1区'+R.sub+'点調査':''}）で行った。`;
+  const D=DESIGN[R.design], noRep=R.r<=1&&R.design!=='latin', two=(R.obs||[]).length>=2, subT=R.sub>1?(two?`、1${obsUnitJP(R.s)}あたり${obsTxt(R.obs)}を調査`:'、1区'+R.sub+'点調査'):'';
+  let s=`試験は${R.design==='oa'?R.oa.name+'直交表に割り付けた一部実施要因計画を'+(R.r>1?'乱塊法'+R.r+'反復で':'')+'配置して':D.jp+'（'+(R.design==='latin'?R.T+'行×'+R.T+'列':R.r+'反復')+subT+'）で'}行った。`;
+  if(noRep && R.design!=='oa') s=`試験は各処理1区（反復なし${subT}）で行った。`;
+  if(R.design==='split') s=`試験は${R.mainF.map(f=>f.name).join('×')}を主区、${R.subF.map(f=>f.name).join('×')}を副区とする分割区法（${R.r}反復${subT}）で行った。`;
   if(R.level==='C') return s+(R.houseOne?'1つの処理につき1棟（1枚）で、処理の差と場所の差を分けられないため、':'反復を設けていないため、')+'統計的検定は行わず、処理ごとの値を示した。';
   const parts=[];
   const rateN=R.aItems.filter(o=>o.kind==='rate').map(o=>o.name), contLike=R.resp.includes('cont')||R.resp.includes('date');
   if(R.hasCont) parts.push(`${rateN.length?rateN.join('・')+'（数えた数／調べた数）は区ごとに算出し、':''}${contLike?(R.resp.includes('date')&&!R.resp.includes('cont')?'通し日に変換した':'')+(rateN.length?'測定値'+(R.sub>1?'（区ごとに平均）':'')+'とともに':'測定値は'+(R.sub>1?'区ごとに平均した後、':'')):''}${R.anaJP.replace('・混合モデル','').replace('（ブロックを含む）','').replace('（行・列を含む）','')}${R.mixed?'（線形混合モデル）':''}を行い`);
   if(R.resp.includes('prop')) parts.push(!R.noRE?'割合データは二項分布を仮定した一般化線形混合モデルで解析し':'割合データは、過分散を考慮した二項型の一般化線形モデル（quasi-binomial）で解析してF検定を行い');
-  if(R.resp.includes('count')) parts.push(!R.noRE||R.sub>1?'計数データはポアソン分布を仮定した一般化線形混合モデルで解析し':'計数データは、過分散を考慮したポアソン型の一般化線形モデル（quasi-Poisson）で解析してF検定を行い');
+  if(R.resp.includes('count')) parts.push(!R.noRE?'計数データはポアソン分布を仮定した一般化線形混合モデルで解析し':'計数データは、過分散を考慮したポアソン型の一般化線形モデル（quasi-Poisson）で解析してF検定を行い');   // 1区で複数個体の数も、区ごとに合計してから同じ手順（設計資料32 の 1.）
   if(R.resp.includes('ord')) parts.push('程度の指数は'+(R.ordBlock==='random'?'、ブロックを変量効果とした':(R.ordBlock==='latin'?'、行と列を変量効果とした':''))+'累積リンク'+(R.ordMixed?'混合':'')+'モデル（順序ロジスティック回帰）で解析して尤度比検定を行い');
-  if(R.resp.includes('binary')) parts.push(R.sub>1?'有無のデータは区を変量効果としたロジスティック混合モデルで解析し':'有無のデータはロジスティック回帰で解析し');
+  if(R.resp.includes('binary')) parts.push(R.sub>1?(!R.noRE?'有無のデータは二項分布を仮定した一般化線形混合モデルで解析し':'有無のデータは、過分散を考慮した二項型の一般化線形モデル（quasi-binomial）で解析してF検定を行い'):'有無のデータはロジスティック回帰で解析し');   // 1区で複数個体の あり／なし は、区ごとに数えた割合と同じ手順（設計資料32 の 1.）
   const c=R.cmp.map(c=>c.m); let tail='';
   if(c.includes('tukey')) tail+='Tukey法により多重比較した';
   if(c.includes('dunnett')) tail+=(tail?'。対照区との比較はDunnett法により行った':'各処理区と対照区との比較はDunnett法により行った');
@@ -3489,7 +3729,7 @@ function paperJP(R){
   if(c.includes('oa')) tail+=(tail?'。':'')+'各要因の主効果を比較した';
   if(!tail) tail='有意性を判定した';
   const cnd={twoway:'各組合せが1区のため、交互作用はないものと仮定して主効果を検定した。', reg:'反復を設けていないため、回帰式の形を仮定して解析した（当てはまりの検定は行っていない）。', oa:'反復を設けていないため、要因を割り付けていない列を誤差として用いた。'}[R.cond]||'';
-  s+=parts.join('、')+(parts.length?'、':'')+tail+`（P < ${R.s.alpha}）。${cnd}統計解析にはR（バージョン［　］）およびemmeansパッケージ（バージョン［　］）を用いた。`;
+  s+=parts.join('、')+(parts.length?'、':'')+tail+`（P < ${R.s.alpha}）。${cnd}${(R.anaAdd&&R.anaAdd.jp||[]).join('')}統計解析にはR（バージョン［　］）およびemmeansパッケージ（バージョン［　］）を用いた。`;
   return s;
 }
 function paperEN(R){
@@ -3502,22 +3742,26 @@ function paperEN(R){
   if(R.resp.includes('rate')) s+='The number per unit (the count divided by the number examined) was calculated for each plot. ';
   if(R.regF.length&&R.k===1&&R.hasCont) s+='Data were analyzed by regression analysis';
   else if(R.hasCont) s+=`Data were subjected to ${R.anaEN}${R.mixed?' using a linear mixed model':''}`;
-  if(R.resp.includes('prop')) s+=(R.hasCont?', and p':'P')+'roportion data were analyzed with '+(!R.noRE?'a generalized linear mixed model assuming a binomial distribution':'a quasi-binomial generalized linear model (accounting for overdispersion) with F-tests');
+  if(R.resp.includes('prop')||(R.resp.includes('binary')&&R.sub>1)) s+=(R.hasCont?', and p':'P')+'roportion data were analyzed with '+(!R.noRE?'a generalized linear mixed model assuming a binomial distribution':'a quasi-binomial generalized linear model (accounting for overdispersion) with F-tests');
   else if(!R.hasCont && !(R.resp.length===1&&R.resp[0]==='ord')) s+='Data were analyzed with a generalized linear model';
   if(R.resp.includes('ord')) s+=(R.resp.length>1?', and o':'O')+'rdinal scores were analyzed with a cumulative link '+(R.ordMixed?'mixed ':'')+'model'+(R.ordBlock==='random'?' with block as a random effect':(R.ordBlock==='latin'?' with row and column as random effects':''))+', and effects were tested by likelihood-ratio tests';
   const c=R.cmp.map(c=>c.m);
   if(c.includes('tukey')) s+=', followed by Tukey\'s multiple comparison test';
   if(c.includes('dunnett')) s+='; each treatment was compared with the control by Dunnett\'s test';
   const cnd={twoway:' Because each combination had a single plot, main effects were tested assuming no interaction.', reg:' Because the treatments were not replicated, the form of the regression model was assumed and lack of fit was not tested.', oa:' Because the design was not replicated, unassigned columns were used as the error term.'}[R.cond]||'';
-  s+=` (P < ${R.s.alpha}).${cnd} Statistical analyses were performed in R (version [ ]) with the emmeans package (version [ ]).`;
+  s+=` (P < ${R.s.alpha}).${cnd}${(R.anaAdd&&R.anaAdd.en||[]).map(t=>' '+t).join('')} Statistical analyses were performed in R (version [ ]) with the emmeans package (version [ ]).`;
   return s;
 }
 
 let SVSIG=null;
-function svSync(force){ const b=$('#svBox'); if(!b) return; const sig=surveySig(); if(!force&&sig===SVSIG) return; SVSIG=sig; b.innerHTML=surveyFormHTML(); b.hidden=!sig; }   // グループの顔ぶれ・1回／何回もが変わったときだけ作り直す（数を打っている間は作り直さない）
+function svSync(force){ const b=$('#svBox'); if(!b) return; subNameSync(); const sig=surveySig(); if(!force&&sig===SVSIG) return svLight(b); SVSIG=sig; b.innerHTML=surveyFormHTML(); b.hidden=!sig; }   // グループ・項目の顔ぶれ・選ぶ欄の選び方が変わったときだけ作り直す（数・名前を打っている間は作り直さない。文字だけ合わせる）
+// 「何を数えますか」の選ぶ欄：候補（作物・実験の単位で変わる）が変わったときだけ作り直す。書く欄は作り直さない
+let SNSIG=null;
+function subNameSync(){ const box=$('#subNameBox'); if(!box) return; const sig=JSON.stringify([obsCands(S), S.subName||'', obsDefName(S)]); if(sig===SNSIG&&box.firstChild) return; const a=document.activeElement; if(a&&a.id==='subNameTx'&&box.firstChild){ return; } SNSIG=sig; box.innerHTML=subNameHTML(S,'subName'); }
 function update(){ readForm(); refreshCtrlOptions(); save(); render(); svSync(); }
 function onEdit(e){ if(e && e.isComposing) return;
-  { const t=e&&e.target; if(t&&t.closest&&t.closest('#svBox')){ if(e.type==='change') planPick(t); if(t.dataset&&t.dataset.svk==='dates') planNoteSync(t); } }   // グループの調査日：選んだ日を文字の欄に足す・回数の一言を合わせる
+  { const t=e&&e.target; if(t&&t.closest&&t.closest('#svBox')){ if(e.type==='change') planPick(t); if(t.dataset&&t.dataset.svk==='dates') planNoteSync(t); if(e.type==='change'&&obsNameToggle(t)) return; } }   // グループの調査日：選んだ日を文字の欄に足す・回数の一言を合わせる。「そのほか（書く）」を選んだら書く欄を見せる（書くまでは反映しない）
+  { const t=e&&e.target; if(t&&t.id==='subName'&&e.type==='change'&&subNameToggle(t,'subName')) return; }
   // 文字・数の入力欄は input で反映済み。欄を離れたときの change で結果を描き直すと、ちょうど押そうとしたボタン（タブ・コピー）が作り直されて、最初の1回が効かなくなるので、描き直さない
   if(e && e.type==='change' && e.target && e.target.tagName==='INPUT' && (e.target.type==='text'||e.target.type==='number')) return;
   if(e && e.type!=='compositionend'){ PRESET=null; markPreset(); }
@@ -3531,6 +3775,8 @@ $('#form').addEventListener('change', onEdit);
 $('#form').addEventListener('compositionend', ()=>setTimeout(()=>onEdit({type:'compositionend'}),0));
 $('#facs').addEventListener('click', e=>{ const d=e.target.closest('[data-del]'); if(!d) return; readForm(); S.factors.splice(+d.dataset.del,1); S.factors.forEach(f=>{ if(f.ctrl!==''&&f.ctrl!=null&&+f.ctrl>=f.n) f.ctrl=''; }); renderFactors(); PRESET=null; markPreset(); save(); render(); });
 $('#addFac').onclick=()=>{ readForm(); if(S.factors.length>=8) return; S.factors.push({name:'',kind:'qual',n:2,labelsText:'',ctrl:'',hard:false}); renderFactors(); PRESET=null; markPreset(); save(); render(); };
+$('#svBox').addEventListener('click', e=>{ const b=e.target.closest('[data-svact]'); if(!b) return; readForm(); if(svAct(b,v=>{ if(v.surveys){ if(Object.keys(v.surveys).length) S.surveys=v.surveys; else delete S.surveys; if(GD) GD.G.surveys=Object.keys(v.surveys).length?v.surveys:null; } if(v.items) surveyItemApply(v.items); })){ PRESET=null; markPreset(); save(); render(); svSync(true); } });
+document.addEventListener('toggle', e=>{ const d=e.target; if(d&&d.dataset&&d.dataset.svd){ if(d.open) SVOPEN.add(d.dataset.svd); else SVOPEN.delete(d.dataset.svd); } }, true);   // 「項目ごとに変える」を開いたままにする（作り直しても）
 $('#items').addEventListener('click', e=>{ const d=e.target.closest('[data-idel]'); if(!d) return; readForm(); S.items.splice(+d.dataset.idel,1); renderItems(); PRESET=null; markPreset(); save(); render(); });
 $('#addItem').onclick=()=>{ readForm(); if(S.items.length>=MAX_ITEMS) return; let n=1; while(S.items.some(o=>o.key==='i'+n)) n++; S.items.push({key:'i'+n,name:'',kind:'cont',rv:''}); renderItems(); PRESET=null; markPreset(); save(); render(); const e=document.getElementById('in'+(S.items.length-1)); if(e) e.focus(); };
 $('#clearAll').onclick=()=>{ S=blankState(); S.factors=[{name:'',kind:'qual',n:3,labelsText:'',ctrl:'',hard:false}]; PRESET=null; TAB=0; writeForm(); update(); };
