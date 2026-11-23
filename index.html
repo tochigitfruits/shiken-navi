@@ -1,5 +1,6 @@
 <!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>試験設計ナビ</title>
+<meta name="robots" content="noindex, nofollow">
 <meta name="description" content="試験の条件を入れると、区割りのモデル図、試験設計の型、解析手法、検定・多重比較、Rの雛形を提案します。栃木県農業総合研究センター 果樹研究室">
 <style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <style>
@@ -175,6 +176,16 @@ pre.txt{background:var(--bg);color:var(--ink);border:1px solid var(--line);font-
 .chap{display:inline-block;font-size:12px;font-weight:700;color:#24463A;background:#E3B23C;border-radius:999px;padding:1px 10px;margin:2px 4px 0 0}
 .empty{padding:30px;text-align:center;color:var(--muted)}
 footer{margin-top:24px;font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:2px}
+/* 試行版の印と、使う前の確認（了承するまでは、確認の囲みだけを出す） */
+.trial{display:inline-block;margin-left:10px;padding:1px 8px;border:1px solid var(--gold);border-radius:999px;font-size:11px;letter-spacing:.08em;color:var(--gold);vertical-align:1px}
+.tos .tosList{margin:8px 0 10px;padding-left:1.3em;line-height:1.7}
+.tos .tosList li{margin:2px 0}
+.tosChk{display:flex;gap:8px;align-items:center;font-weight:700;cursor:pointer}
+.tosChk input{width:18px;height:18px}
+.tosMini{margin-top:12px;font-size:13px}.tosMini summary{cursor:pointer;color:var(--muted,#555)}.tosMini .tosList{margin:6px 0 0;padding-left:1.3em;line-height:1.6}
+#tosBox{display:none}
+body.tos-wait #tosBox{display:block}
+body.tos-wait #entry .card.start,body.tos-wait #presets,body.tos-wait #entryTop .ab-in>:not(.gt):not(.st){display:none!important}
 /* 入口・かんたんガイド（05 の 2.）。画面の切り替えは body の v-entry / v-guide / v-detail */
 .view{display:none}
 body.v-entry #entry,body.v-guide #guide,body.v-detail #detail{display:block}
@@ -383,7 +394,7 @@ body.v-doc #docv{display:block}
 <header class="top">
   <div class="in">
     <div>
-      <div class="eyebrow">栃木県農業総合研究センター 果樹研究室</div>
+      <div class="eyebrow">栃木県農業総合研究センター 果樹研究室<span class="trial">試行版</span></div>
       <h1><button type="button" class="h1home" id="goHome" title="最初の画面に戻る（入力中の設計は残ります）">試験設計ナビ</button></h1>
       <p>質問に答えていくと、区割りのモデル図、試験設計の型、解析手法、検定・多重比較、Rの雛形まで、その場で提案します。空欄・「おまかせ」の項目は標準的な考え方で補います。</p>
     </div>
@@ -395,7 +406,24 @@ body.v-doc #docv{display:block}
 <section class="wrap view" id="entry">
   <div class="ab" id="entryTop"><div class="ab-in"><b class="gt">試験設計ナビ</b><span class="st">最初の画面</span><button type="button" class="btn ghost abtog" data-abtog="1" aria-expanded="false">操作 ▾</button><span class="abslot"></span></div><p class="abmsg" role="status"></p></div>
   <div class="entry">
-    <div class="card">
+    <div class="card tos" id="tosBox" aria-labelledby="tosH">
+      <h2 id="tosH">使う前に確かめること</h2>
+      <p class="hint">このツールは試行版です。次の内容を確かめて、了承したうえで使います。</p>
+      <ul class="tosList">
+        <li>このツールは、栃木県農業総合研究センター 果樹研究室が、試験研究の参考として試行的に公開しているものです。</li>
+        <li>このツールは、生成AIを使って作成しました。判定・計算・Rの雛形は、生成AIが作った自動の検査（Rでの実行や、古典的な分散分析との突き合わせなど）で確かめていますが、統計の専門家による検証や、学術的な審査は受けていません。</li>
+        <li>判定・計算・Rの雛形・試験設計書は、標準的な考え方にもとづく提案です。間違いや、ご自身の試験に合わない点が含まれることがあります。</li>
+        <li>これらの内容について、正しさや目的への適合を、栃木県が保証するものではありません。</li>
+        <li>最終的な設計と解析の方法は、使う人が自分で確かめて決めます。試験設計書の段階で、共同研究者や統計の担当者と確かめると安心です。</li>
+        <li>このツールの結果を使って生じた損害について、栃木県および作成者は責任を負いません。</li>
+        <li>内容は、予告なく変わったり、公開を止めたりすることがあります。</li>
+        <li>入力した内容は、この端末のブラウザの中だけで処理され、端末の外には送られません。</li>
+      </ul>
+      <label class="tosChk"><input type="checkbox" id="tosChk"> 上の内容を確かめて、了承しました</label>
+      <div class="toolbar" style="margin-top:10px"><button type="button" class="btn pri" id="tosGo" disabled>了承して始める</button></div>
+      <p class="note" style="margin-top:8px">了承したことは、この端末のブラウザに記録します。次からは、この確認を出しません（内容を変えたときは、もう一度確かめます）。</p>
+    </div>
+    <div class="card start">
       <h2>どちらから始めますか？</h2>
       <p class="hint">どちらで始めても、同じ設計（区割り・解析手法・記入表・Rの雛形）ができます。あとから行き来できます。</p>
       <div class="entry-g">
@@ -404,6 +432,7 @@ body.v-doc #docv{display:block}
       </div>
       <p class="hint" id="entryDs" style="margin:10px 0 0"></p><div id="resume" hidden style="margin-top:12px"><button type="button" class="bigbtn" id="goResume"><b>続きから</b><span id="resumeNote"></span></button></div>
       <div class="toolbar" style="margin-top:12px"><button type="button" class="btn ghost" data-openfile="1">設計ファイルから続ける（.json）</button><span class="note">前に保存した設計ファイルを読み込みます。ファイルは、この端末の中だけで読みます</span></div>
+      <details class="tosMini" id="tosMini"><summary>利用上の注意（試行版）</summary><ul class="tosList" id="tosMiniList"></ul></details>
     </div>
   </div>
 </section>
@@ -525,7 +554,7 @@ body.v-doc #docv{display:block}
 </div>
 <div class="wrap">
 <footer>
-  <div><b>試験設計ナビ ver. 2.0（2026-11-23）</b>　栃木県農業総合研究センター 果樹研究室</div>
+  <div><b>試験設計ナビ ver. 2.0（2026-11-23）試行版</b>　栃木県農業総合研究センター 果樹研究室</div>
   <div>判定は、結果欄の「根拠と参照」の文献に沿った標準的な提案です。ナビの答えは出発点です。最終的な設計と解析方法は、試験設計書の段階で、共同研究者や統計の担当者と確かめると安心です。対象範囲外の試験（結果欄の最後を参照）も、同じように相談すると進め方が決まります。このツールの結果を使って生じた損害について、作成者は責任を負いません。</div>
   <div>「根拠と参照」の文献は、ナビの判断のよりどころを示すものです。ナビの説明は要約なので、設計書や論文で根拠として挙げるときは、必ず原典に当たって、該当する箇所を確かめます。</div>
   <div>問い合わせ先：栃木県農業総合研究センター果樹研究室</div>
@@ -534,6 +563,7 @@ body.v-doc #docv{display:block}
     <dl>
       <dt>ver. 2.0（2026-11-23）</dt>
       <dd><ul>
+        <li>試行版とした。最初の画面で、使う前に確かめること（試行版であること・生成AIで作成し、専門家の検証は受けていないこと・内容に間違いが含まれることがあること・栃木県が内容を保証しないこと・損害の責任を負わないこと など）を示し、了承してから使う形にした。検索の結果に出さない指定を入れた</li>
         <li>声で野帳Pro の野帳のひな形：同じ表で、項目によって調べる数が違うとき（例：横径は果実10個、糖度は5個）、少ない項目の書かない番号を、入力の順番からとばす指定を入れるようにした（声で野帳Pro 4.9.8 以降で働く）</li>
         <li>上の「試験設計ナビ」の文字を押すと、最初の画面に戻るようにした（入力中の設計は残る）</li>
         <li>1区（樹）で何個体かを調べる「あり／なし」「数」は、区ごとに数えて（何個中何個、合計と調べた数）から解析するようにした（区のばらつきがあると、個体ごとの混合モデルは差がなくても有意になりやすいため）。程度・段階はこれまでどおり</li>
@@ -2485,7 +2515,20 @@ function proReadCode(R,item){
 const GSTEPS=['何の作物の試験ですか？','何を確かめたい試験ですか？','比べるもの（処理）はいくつですか？','処理は、区（樹）ごとに変えられますか？','どこで試験しますか？ むらはありますか？','どのくらいの規模にしますか？','何を調べますか？','何回調べますか？ 何年続けますか？','ざっくり案','設計書に載せること（どれも空欄でかまいません）'];
 let VIEW='entry', VIEW_LAST='detail', DOC_BACK='detail', GD=null, GTMP={cname:'', ckind:'cont', cgrp:''}, ABOPEN=false, ABMSG='';
 const gEl=id=>document.getElementById(id);
+// 使う前の確認（試行版の利用上の注意）。了承した内容の版を、この端末のブラウザに記録する。文面を変えたら TOS_VER を変えると、もう一度確かめる
+const TOS_VER='2026-11-23', TOS_KEY='shiken-navi-tos';
+let TOS_MEM=false;   // ブラウザに記録できないとき（プライベートモードなど）は、この画面を開いている間だけ覚える
+function tosOK(){ if(TOS_MEM||window.__navTosOK===TOS_VER) return true;   // __navTosOK：自動の検査で、ブラウザの記録に書かずに了承済みとして開くための印（検査の初期化で入れる）
+  try{ return localStorage.getItem(TOS_KEY)===TOS_VER; }catch(e){ return false; } }
+function tosSync(){ document.body.classList.toggle('tos-wait',!tosOK()); }
+function tosAccept(){ TOS_MEM=true; try{ localStorage.setItem(TOS_KEY,TOS_VER); }catch(e){} tosSync(); setView('entry'); }
+function initTos(){
+  const c=$('#tosChk'), b=$('#tosGo'); c.checked=false; b.disabled=true;
+  c.addEventListener('change',()=>{ b.disabled=!c.checked; }); b.onclick=()=>{ if(c.checked) tosAccept(); };
+  $('#tosMiniList').innerHTML=$('#tosBox .tosList').innerHTML; tosSync();
+}
 function setView(v,keep){
+  if(!tosOK()) v='entry';   // 了承するまでは、最初の画面（確認の囲み）だけ。アドレスの #guide・#detail、例題・設計ファイルからも先へ進まない
   if(v==='doc' && VIEW!=='doc') DOC_BACK=VIEW;
   VIEW=v; if(v==='guide'||v==='detail') VIEW_LAST=v; document.body.classList.remove('v-entry','v-guide','v-detail','v-doc'); document.body.classList.add('v-'+v); document.body.classList.toggle('from-guide',!!GD);
   ABMSG=''; document.querySelectorAll('.ab .abmsg').forEach(m=>m.textContent='');
@@ -3073,7 +3116,7 @@ function initViews(){
   // 題字（H1）：押すと最初の画面へ。日本語の変換中は移らない。変換の確定の反映（compositionend の setTimeout）を待ってから移る
   document.addEventListener('compositionstart',()=>{ COMPOSING=true; },true); document.addEventListener('compositionend',()=>{ COMPOSING=false; },true);
   $('#goHome').onclick=e=>{ if(COMPOSING||(e&&e.isComposing)) return; setTimeout(goEntry,0); };
-  initBar(); initDocView(); initLink();
+  initTos(); initBar(); initDocView(); initLink();
   const h=(location.hash||'').replace('#','');
   if(h==='guide') startGuide(false); else setView(h==='detail'?'detail':'entry');
 }
@@ -3282,7 +3325,7 @@ function initLink(){
     if(!t||!t.classList||!t.classList.contains('tplOrder')) return; if(!S.tpl) S.tpl={}; S.tpl.snake=t.value==='1'; TPL.msg=''; save(); tplRefresh('.tplOrder'); });
   document.addEventListener('toggle',e=>{ if(e.target&&e.target.id==='tplBox') TPL.open=e.target.open; },true);
   const fi=$('#designFileIn'); fi.onchange=()=>{ const f=fi.files&&fi.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>{ loadDesign(String(rd.result),f.name); fi.value=''; }; rd.readAsText(f); };
-  document.querySelectorAll('[data-openfile]').forEach(b=>b.onclick=()=>fi.click());
+  document.querySelectorAll('[data-openfile]').forEach(b=>b.onclick=()=>{ if(tosOK()) fi.click(); });
 }
 
 // ================= 画面 =================
@@ -3793,7 +3836,7 @@ function onEdit(e){ if(e && e.isComposing) return;
   if(e && e.type==='change' && e.target && e.target.dataset && e.target.dataset.rerender){ readForm(); renderItems(); }   // 値の形・分母の決め方を変えたときだけ、項目の欄を作り直す
   update(); }
 
-Object.entries(PRESETS).forEach(([k,p])=>{ const b=document.createElement('button'); b.type='button'; b.textContent=p.label; b.dataset.k=k; b.onclick=()=>loadPreset(k); $('#presets').appendChild(b); });
+Object.entries(PRESETS).forEach(([k,p])=>{ const b=document.createElement('button'); b.type='button'; b.textContent=p.label; b.dataset.k=k; b.onclick=()=>{ if(tosOK()) loadPreset(k); }; $('#presets').appendChild(b); });
 $('#presets').insertAdjacentHTML('beforeend','<small>例題の名前と数値はすべて架空です</small>');
 $('#form').addEventListener('input', onEdit);
 $('#form').addEventListener('change', onEdit);
