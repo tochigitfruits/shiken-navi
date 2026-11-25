@@ -476,6 +476,14 @@ body.v-guide .grid,body.v-guide #presets,body.v-guide #entry,body.v-guide #scope
   <p>例題と例の名前・数値はすべて架空です。入力した内容はブラウザの中だけで処理され、端末の外には送られません（入力の保存先はこの端末のブラウザです）。</p>
   <details><summary>変更履歴</summary>
     <dl>
+      <dt>ver. 2.4（2026-11-25）</dt>
+      <dd><ul>
+        <li>声で野帳Pro との「連動の契約 v1」に合わせて、ひな形の作った元の情報（設計のIDなど）と、株・シャーレの列の印をそろえた</li>
+        <li>声で野帳Pro のひな形に、種子親・花粉親の列（空欄で渡す記録の列。解析には使わない）を追加</li>
+        <li>一致・分離比の試験で、個体ごとの判定を記録する判定表（声で野帳Pro のひな形）と、その CSV から数を数える R の行を追加</li>
+        <li>Pro の CSV の見出しに項目の id が付いていても（Pro 4.9.11 の設定）、Rの雛形で読めるように</li>
+        <li>リンクが長いときは、行の作り方だけを入れた短いリンクにする（Pro 4.9.12 以降で行が並ぶ）</li>
+      </ul></dd>
       <dt>ver. 2.3（2026-11-25）</dt>
       <dd><ul>
         <li>一般版と同じく、最初の画面（かんたんガイド／詳しい画面）から始める形に。題字を押すと最初の画面に戻る</li>
@@ -529,7 +537,7 @@ body.v-guide .grid,body.v-guide #presets,body.v-guide #entry,body.v-guide #scope
 <script>
 /*LOGIC-START*/
 /* 判定ロジック：ここから LOGIC-END までは画面（DOM）に触れない。Node.js から単体で検査できる。 */
-const VERSION={ver:'2.3',date:'2026-11-25'};
+const VERSION={ver:'2.4',date:'2026-11-25'};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const rq=s=>String(s).replace(/[\r\n\t]/g,' ').replace(/[\\"]/g,'\\$&');   // Rの文字列の中に入れる
 const R_RESERVED=['if','else','repeat','while','function','for','next','break','TRUE','FALSE','NULL','Inf','NaN','NA','in','T','F'];
@@ -1585,6 +1593,9 @@ const BIO_TRAIT_ID={発病度:'dis_score',病斑数:'lesion',枯死:'dead',発�
 const bioTraitId=S=>BIO_TRAIT_ID[S.col]||'t1';
 /* ひな形を出す目的：表現型・マーカーと表現型（claude/52 の 1.）。数を数えて入れる目的（一致・分離比・2つの検出法）は記入表で記録する */
 const bioHasTpl=S=>S.purpose==='pheno'||S.purpose==='assoc';
+/* ver. 2.4：一致・分離比は、個体ごとの判定を記録する表（判定表）のひな形を出す（claude/61 の 1. の D-3・D-L7）。数は判定表から数え、ナビの表に入れる。判定不能率（method）は出さない */
+const bioHasJudge=S=>S.purpose==='agree'||(S.purpose==='segr'&&!!S.rarr&&(S.sn||[]).length>=2);   // 分離比は、期待比（区分）が決まってから
+const bioHasPro=S=>bioHasTpl(S)||bioHasJudge(S);
 
 /* 記録する列（ひな形の items）。名前は記入表・Rの雛形の列名と同じにする（Pro の CSV の見出しが、そのまま雛形の列名になる）。
    Pro の見出し（調査日・状態など）と重なるときだけ、名前を変えて、Rで読むときに付け替える（bioProRead） */
@@ -1595,7 +1606,8 @@ function bioProCols(S){
   else if(S.nPop>1||q==='pop')add('pop','集団','text','id');
   add('line','系統','text','id');
   if(needKubun(S))add('kubun','区分','text','id');
-  add(u==='シャーレ'?'dish':'plant',u,'num','id',{dec:0});
+  add('sample',u,'num','id',{dec:0});   // ver. 2.4：株・シャーレの id は sample（連動の契約 v1 の 4.1。名前は「株」「シャーレ」のまま）
+  add('p_seed','種子親','text','id',{blank:true,rec:true});add('p_pollen','花粉親','text','id',{blank:true,rec:true});   // ver. 2.4：親の列（claude/61 の D-4）。空欄で渡す記録の列で、解析には使わない（記入表・雛形は変えない。Rで読むときに外す）
   if(S.blocks)add('batch','接種回','num','id',lotOn(S)?{dec:0}:{dec:0,blank:true});   // 接種回：ロットごとの対照のときは割り振り（番号順の例）を入れて渡す。ほかは Pro で入れる（空欄で渡す）
   if(q==='assoc')markers(S).forEach((m,i)=>add('M'+(i+1),m,'choice','id',{options:S.geno==='3'?['AA','AB','BB']:['有','無'],blank:true}));   // 遺伝子型は検査室の結果。空欄で渡す
   if(q==='group')add('pred','予測値','num','id',{dec:2,blank:true});
@@ -1610,7 +1622,7 @@ function bioProCols(S){
 /* 個体の並び（記入表と同じ順）：集団 → 系統 → 株、最後に対照。系統の名前は全体で通し番号（集団が違っても重ねない）。
    each：作り方（入れ子の繰り返し。claude/53 の 3.2 の gen の形）。list はこれを広げたもの */
 function bioGen(S){
-  const q=qOf(S),C=bioProCols(S),has=id=>C.some(c=>c.id===id),uid=C.find(c=>c.id==='plant'||c.id==='dish').id,rows=[],w=()=>3;   // 系統の名前は記入表と同じ lineName（頭＋3桁。1000 からは4桁のまま）
+  const q=qOf(S),C=bioProCols(S),has=id=>C.some(c=>c.id===id),uid='sample',rows=[],w=()=>3;   // 系統の名前は記入表と同じ lineName（頭＋3桁。1000 からは4桁のまま）
   const prefill=C.filter(c=>c.fixed!=null);   // 決まった値を入れる列（置床数）
   const set0=Object.fromEntries(prefill.map(c=>[c.id,c.fixed]));
   if(q==='group'){
@@ -1661,32 +1673,71 @@ const bioRowCount=S=>{const q=qOf(S);return (q==='group'?S.nPop*S.nLines:S.nPop*
 function bioFold(S){
   const q=qOf(S),C=bioProCols(S),has=id=>C.some(c=>c.id===id),alt=[];
   const by=q==='group'?['grp','cross']:has('pop')?(S.nPer>1?['pop','line']:['pop']):(S.nPer>1?['line']:[]);
-  if(lotOn(S)){if(by.length)alt.unshift(by);if(has('kubun'))alt.push(['kubun']);if(has('M1'))alt.push(['M1']);return {by:S.nPer>1?['batch','line']:['batch'],open:'first',alt};}   // ロット → 系統（docs/58 の 5.4）
-  if(has('kubun'))alt.push(['kubun']);if(has('M1'))alt.push(['M1']);if(has('batch'))alt.push(['batch']);
+  if(lotOn(S)){if(by.length)alt.unshift(by);if(has('kubun'))alt.push(['kubun']);if(has('M1'))alt.push(['M1']);if(has('p_seed'))alt.push(['p_seed']);return {by:S.nPer>1?['batch','line']:['batch'],open:'first',alt};}   // ロット → 系統（docs/58 の 5.4）
+  if(has('kubun'))alt.push(['kubun']);if(has('M1'))alt.push(['M1']);if(has('batch'))alt.push(['batch']);if(has('p_seed'))alt.push(['p_seed']);
   return by.length?{by,open:'first',alt}:null;
+}
+/* 判定表（一致・分離比。ver. 2.4）：1行＝1個体。列：（分離比は交配組合せ）・個体・プレート（空欄）・判定。行の数は、入れた個体数の合計（判定不能を含む） */
+function bioJudgeCols(S){
+  const out=[],names=new Set(PRO_CSV_HEADS),ids=new Set();
+  // 名前の末尾が「 [英数字]」だと、Pro の CSV を読むときに id の印と見分けられないので、角かっこを全角にする（docs/63 の Fable の B）
+  const add=(id,col,type,role,ex)=>{let n=String(col||'').trim().slice(0,56).replace(/ \[([A-Za-z0-9_-]{1,40})\]$/,' ［$1］')||id,j=2;const n0=n;while(names.has(n))n=n0+'（'+(j++)+'）';names.add(n);ids.add(id);out.push(Object.assign({id,name:n,col:n0,type,role},ex||{}));};
+  const opts=a=>{const o=[];a.forEach(v=>{v=String(v==null?'':v).trim().slice(0,60);if(v&&!o.includes(v))o.push(v);});return o;};
+  const U=bioJudgeU(S);   // 判定不能の候補。区分の名前と重ならない文字（Fable の D）
+  if(S.purpose==='segr')add('cross','交配組合せ','text','id',{fixed:crossName(S,1)});
+  add('sample','個体','num','id',{dec:0});
+  add('plate','プレート','text','id',{blank:true});   // プレート・泳動のまとまり（claude/58 の D-L7）。空欄で渡し、検査のときに入れる
+  if(S.purpose==='agree'){add('judge_a',S.mA,'choice','meas',{options:opts([S.lab1,S.lab2]).concat(U)});add('judge_b',S.mB,'choice','meas',{options:opts([S.lab1,S.lab2]).concat(U)});}
+  else add('type','型','choice','meas',{options:opts(S.sn||[]).concat(U)});
+  return out;
+}
+/* 判定不能の候補の文字。区分（型）の名前に「判定不能」があるときは、重ならない文字にする */
+function bioJudgeU(S){const lv=(S.purpose==='agree'?[S.lab1,S.lab2]:(S.sn||[])).map(v=>String(v==null?'':v).trim());let u='判定不能';while(lv.includes(u))u+='（判定表）';return u;}
+const bioJudgeN=S=>S.purpose==='agree'?S.a.reduce((x,y)=>x+y,0)+S.aund:S.sc.reduce((x,y)=>x+y,0)+S.sund;
+function bioJudgeGen(S){const n=bioJudgeN(S);if(!n)return null;const set=S.purpose==='segr'?{cross:crossName(S,1)}:{};return {rows:[{each:[{id:'sample',seq:{from:1,to:n}}],set}]};}
+/* 判定表（Pro の CSV）から、ナビの表に入れる数を数える R の行（雛形には入れない。数えたあとの検定は、今の雛形の obs・2×2 の表で行う） */
+function bioCountCode(S){
+  const C=bioJudgeCols(S),nm=id=>(C.find(c=>c.id===id)||{}).name,v=a=>a.map(x=>`"${rq(String(x).trim())}"`).join(', '),U=rq(bioJudgeU(S));
+  const L=['# 声で野帳Pro の判定表（1行＝1個体）の CSV から、ナビの表に入れる個体数を数える','d <- read.csv("data.csv", fileEncoding = "UTF-8-BOM", check.names = FALSE, na.strings = c("", "NA"))   # Pro の書き出しを data.csv として保存',
+    'names(d) <- sub(" \\\\[[A-Za-z0-9_-]{1,40}\\\\]$", "", names(d))   # 見出しの末尾の [id] を外す（Pro の設定がオフでもそのまま動く）',
+    'if ("状態" %in% names(d)) d <- d[is.na(d[["状態"]]) | d[["状態"]] == "", ]   # Pro で除外した個体の行を外す（除外の理由と数は、別に記録しておく）',
+    `stopifnot("判定の列が CSV に見つかりません。判定表の見出しを確かめます" = all(c(${(S.purpose==='agree'?[nm('judge_a'),nm('judge_b')]:[nm('type')]).map(x=>`"${rq(x)}"`).join(', ')}) %in% names(d)))`];   // 列が見つからないと、全部 0 のまま黙って進むので止める（Fable の A）
+  if(S.purpose==='agree'){const lv=v([S.lab1,S.lab2]);
+    L.push(`A <- d[["${rq(nm('judge_a'))}"]]; B <- d[["${rq(nm('judge_b'))}"]]`,
+      `ok <- A %in% c(${lv}) & B %in% c(${lv})   # 両方の判定が「${rq(S.lab1)}」か「${rq(S.lab2)}」の個体`,
+      `table(factor(A[ok], levels = c(${lv})), factor(B[ok], levels = c(${lv})), dnn = c("${rq(S.mA)}", "${rq(S.mB)}"))   # 行＝${rq(S.mA)}、列＝${rq(S.mB)}。ナビの 2×2 の表に、この並びで入れる`,
+      `sum(A %in% "${U}" | B %in% "${U}")   # 判定不能の個体数（どちらかが「${U}」。ナビの「判定不能」に入れる）`,
+      `sum(!ok & !(A %in% "${U}" | B %in% "${U}"))   # まだ入っていない（空欄・候補にない値の）個体数。0 になってから数を写す`);}
+  else{const lv=v(S.sn||[]);
+    L.push(`G <- d[["${rq(nm('type'))}"]]`,`table(factor(G[G %in% c(${lv})], levels = c(${lv})))   # 区分ごとの個体数。ナビの観察数に、この並びで入れる`,
+      `sum(G %in% "${U}")   # 判定不能の個体数（ナビの「判定不能」に入れる）`,`sum(!(G %in% c(${lv}, "${U}")))   # まだ入っていない（空欄・候補にない値の）個体数。0 になってから数を写す`);}
+  return L;
 }
 function bioDesignId(raw){const t=JSON.stringify(raw);let h=0x811c9dc5;for(let i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,0x01000193);}return('0000000'+(h>>>0).toString(16)).slice(-8);}
 function bioDesignName(S,doc,today){const t=String((doc&&doc.title)||'').trim();if(t)return t.slice(0,80);return [S.col||'',{pheno:'表現型',assoc:'マーカーと表現型',agree:'判定の一致',segr:'分離比',method:'検出法の比較'}[S.purpose],today||''].filter(Boolean).join(' ').slice(0,80);}
 /* 野帳のひな形。opt：{raw, doc, today}。行が Pro の上限を超えるときは list を入れず、作り方（gen）だけで渡す */
 function bioTemplate(o,opt){
-  opt=opt||{};const S=o.S;if(!bioHasTpl(S))return null;
-  const C=bioProCols(S),name=bioDesignName(S,opt.doc,opt.today);
+  opt=opt||{};const S=o.S;if(!bioHasPro(S))return null;
+  const J=!bioHasTpl(S),C=J?bioJudgeCols(S):bioProCols(S),name=bioDesignName(S,opt.doc,opt.today);
   const items=C.slice(0,PRO_ITEM_MAX).map(c=>{const it={id:c.id,name:c.name,type:c.type,role:c.role};if(c.type==='num')it.dec=c.dec||0;if(c.options)it.options=c.options.slice();return it;});
-  const S0={name,items,ts:!!S.rep,dir:'row'};
-  if(S.rep){S0.outFmt='long';S0.plan={on:false,mode:'every',start:'',every:Math.max(1,Math.min(365,S.interval)),count:Math.max(0,Math.min(200,S.nSurvey)),until:'',list:[],time:'',alarms:['eve','morn']};}
+  const S0={name,items,ts:!J&&!!S.rep,dir:'row'};   // 判定表は1回の記録（前の入力の「何回も調べる」が残っていても付けない。Fable の C）
+  if(!J&&S.rep){S0.outFmt='long';S0.plan={on:false,mode:'every',start:'',every:Math.max(1,Math.min(365,S.interval)),count:Math.max(0,Math.min(200,S.nSurvey)),until:'',list:[],time:'',alarms:['eve','morn']};}
   const t={app:PRO_TPL_APP,v:1,ver:`試験設計ナビ 生物工学版 ver. ${VERSION.ver}（${VERSION.date}）`,name,S:S0};
-  const gen=bioGen(S),n=bioRowCount(S);
-  if(n<=PRO_LIST_MAX)t.list=bioGenExpand(gen).map(r=>{const x={};Object.keys(r).forEach(k=>{if(r[k]!==''&&r[k]!=null)x[k]=r[k];});return x;});
-  t.gen=gen;const fd=bioFold(S);if(fd)t.fold=fd;   // Pro の改良（claude/53）を待つキー。今の Pro は知らないキーを捨てるので、渡しても害はない
-  t.meta={contract:'nav-bio-1',src:'shiken-navi-bio',srcVer:VERSION.ver,design:opt.raw?bioDesignId(opt.raw):'',made:opt.today||'',rows:n};
+  const gen=J?bioJudgeGen(S):bioGen(S),n=J?bioJudgeN(S):bioRowCount(S);
+  if(gen&&n<=PRO_LIST_MAX)t.list=bioGenExpand(gen).map(r=>{const x={};Object.keys(r).forEach(k=>{if(r[k]!==''&&r[k]!=null)x[k]=r[k];});return x;});
+  if(gen)t.gen=gen;const fd=J?null:bioFold(S);if(fd)t.fold=fd;   // gen は Pro 4.9.12 から受け取る。fold は Pro 4.9.13 を待つキー（今の Pro は捨てる。渡しても害はない）
+  // meta：連動の契約 v1 の 3.（koe-yacho の docs/contract_v1.md）。rows は生物工学版が足したキー（Pro は残す）
+  t.meta={contract:1,src:'shiken-navi-bio',srcVer:VERSION.ver,design:opt.raw?bioDesignId(opt.raw):'',made:opt.today||'',survey:'A',idCol:J?'sample':'line',rows:n};
   return t;
 }
 /* Pro の CSV を読む行（雛形の read.csv の行と置き換える）。Pro の見出しと重なって名前を変えた列・日付の列だけを付け替える */
 function bioProRead(S){
   const C=bioProCols(S),L=[],ren=C.filter(c=>c.name!==c.col&&!c.days);
   L.push('d <- read.csv("data.csv", fileEncoding = "UTF-8-BOM", check.names = FALSE, na.strings = c("", "NA"))   # 声で野帳Pro の書き出し'+(S.rep?'（縦持ち〔R用〕のCSV）':'')+'を data.csv として保存');
+  L.push('names(d) <- sub(" \\\\[[A-Za-z0-9_-]{1,40}\\\\]$", "", names(d))   # 見出しの末尾の [id] を外す（Pro の設定「見出しに項目の id を付ける」がオフでもそのまま動く）');
   L.push('if ("状態" %in% names(d)) d <- d[is.na(d[["状態"]]) | d[["状態"]] == "", ]   # Pro で除外した個体の行を外す（除外の理由と数は、別に記録しておく）');
-  L.push('d <- d[, setdiff(names(d), c("No.", "状態", "除外日", "理由"'+(S.rep?'':', "調査日"')+')), drop = FALSE]   # Pro が付ける列を外す');
+  const recC=C.filter(c=>c.rec).map(c=>c.name);
+  L.push('d <- d[, setdiff(names(d), c("No.", "状態", "除外日", "理由"'+(S.rep?'':', "調査日"')+recC.map(n=>`, "${rq(n)}"`).join('')+')), drop = FALSE]   # Pro が付ける列'+(recC.length?'と、記録だけの列（'+recC.join('・')+'。解析には使わない）':'')+'を外す');
   if(ren.length)L.push(`names(d)[match(c(${ren.map(c=>`"${rq(c.name)}"`).join(', ')}), names(d))] <- c(${ren.map(c=>`"${rq(c.col)}"`).join(', ')})`);
   if(S.trait==='binary')L.push(`d$${S.col} <- ifelse(d$${S.col} == "あり", 1L, ifelse(d$${S.col} == "なし", 0L, NA))   # あり → 1、なし → 0`);
   const base=S.trait==='prop'?'置床日':'接種日（播種日）',inPlace=(from,to,expr)=>[`d[["${from}"]] <- ${expr}`,`names(d)[names(d) == "${from}"] <- "${to}"`];
@@ -1779,7 +1830,9 @@ function bioDesignDoc(o,doc,opt){
   const rec=[];
   if(o.lay&&o.lay.cols&&o.lay.cols.length)rec.push(`記入表の列：${o.lay.cols.join('、')}（1行の決まりは記入表の注意のとおり）。`);
   if(bioHasTpl(S)){const C=bioProCols(S),n=bioRowCount(S);
-    rec.push(opt.record==='pro'?`声で野帳Pro の野帳のひな形（試験設計ナビで作成）を使い、音声で記録する。項目：${C.map(c=>c.name).join('、')}。行：${n.toLocaleString()}（${n>PRO_LIST_MAX?'作り方で渡す。受け取れる版の Pro が要る':'1行ずつ渡す'}）。`:`記入表に記録する（声で野帳Pro の野帳のひな形も作れる：項目 ${C.length}、行 ${n.toLocaleString()}）。`);}
+    rec.push(opt.record==='pro'?`声で野帳Pro の野帳のひな形（試験設計ナビで作成）を使い、音声で記録する。項目：${C.map(c=>c.name).join('、')}。行：${n.toLocaleString()}（${n>PRO_LIST_MAX?`Pro が受け取れる ${PRO_LIST_MAX.toLocaleString()} 行を超えるので、集団・ロットなどに分けて受け取る`:'1行ずつと、行の作り方で渡す'}）。種子親・花粉親の列は記録だけに使い、解析には使わない。`:`記入表に記録する（声で野帳Pro の野帳のひな形も作れる：項目 ${C.length}、行 ${n.toLocaleString()}）。`);}
+  if(bioHasJudge(S)){const C=bioJudgeCols(S),n=bioJudgeN(S);
+    rec.push(`個体ごとの判定は、声で野帳Pro の判定表（ひな形。1行＝1個体、項目：${C.map(c=>c.name).join('、')}${n?`、行 ${n.toLocaleString()}`:''}）でも記録できる。判定表では、判定できなかった個体は「${bioJudgeU(S)}」を選ぶ（空欄は、まだ入れていない個体として別に数える）。判定表の CSV から数を数え、集計表の数にする（数える行は、ナビの「声で野帳Pro」の欄）。`);}
   rec.push('測れなかった値・判定できなかった個体は空欄のままにする（0 を入れない）。','除外する個体は、消さずに、理由を備考（声で野帳Pro では除外の理由）に書く。');
   R.annex.push({h:'別紙3　記録の取り方',blocks:[{t:'ul',items:rec}]});
   R.annex.push({h:'付　作成の記録',blocks:[{t:'p',text:`試験設計ナビ 生物工学版 ver. ${VERSION.ver}（${VERSION.date}）で作成。作成日：${opt.today||''}。${opt.file?'設計ファイル：'+opt.file+'。':''}例の名前と数値は架空。`}]});
@@ -1936,7 +1989,7 @@ function render(){
     lay:hasLay?'<button type="button" class="btn primary" data-act="copy">表をコピー（Excelに貼り付け）</button><button type="button" class="btn" data-act="save">ファイルに保存（.csv）</button>':'',
     ai:OUT.ai?'<button type="button" class="btn primary" data-act="copy">コピー</button>':'',pap:'',pro:''}[TAB];
   const done=FROM_GUIDE?`<section class="card sec done" id="done"><h3>できあがり <span class="term">かんたんガイドの答えから</span></h3><p class="sub">ガイドの答えから、設計ができました。下の「この設計で言えること」で中身を確かめ、左の入力で直せます。持ち帰るものは次のとおりです。</p>
-    <div class="toolbar" style="margin-top:6px"><button type="button" class="btn primary" data-go="doc">試験設計書を見る</button>${bioHasTpl(S)?'<button type="button" class="btn" data-go="pro">声で野帳Pro のひな形</button>':''}<button type="button" class="btn" data-go="lay">記入表（データの並べ方）</button><button type="button" class="btn" data-file="save">設計ファイルを保存</button></div></section>`:'';
+    <div class="toolbar" style="margin-top:6px"><button type="button" class="btn primary" data-go="doc">試験設計書を見る</button>${bioHasPro(S)?`<button type="button" class="btn" data-go="pro">声で野帳Pro の${bioHasTpl(S)?'ひな形':'判定表'}</button>`:''}<button type="button" class="btn" data-go="lay">記入表（データの並べ方）</button><button type="button" class="btn" data-file="save">設計ファイルを保存</button></div></section>`:'';
   $('#out').innerHTML=`${done}
   <section class="verdict">
     <div class="lab">解析の段階</div>
@@ -1984,15 +2037,28 @@ let PRO={url:'',len:0,msg:''};
 function tplNow(){return OUT?bioTemplate(OUT,{raw:readRaw(),doc:DOCF,today:todayStr()}):null;}
 function proTabHtml(){
   if(!OUT)return'';const S=OUT.S;
-  if(!bioHasTpl(S))return'<p class="note">この目的は、数を数えて入れる試験です。個体ごとの記録は「データの並べ方」の記入表で取ります（声で野帳Pro のひな形は、表現型・マーカーと表現型の試験で作れます）。</p>';
+  if(S.purpose==='segr'&&!bioHasPro(S))return'<p class="note">期待比を「3:1」のような「数:数」の形で入れると、区分ごとに個体の判定を記録する判定表（声で野帳Pro のひな形）を作れるようになります。</p>';
+  if(!bioHasPro(S))return'<p class="note">この目的は、数を数えて入れる試験です。個体ごとの記録は「データの並べ方」の記入表で取ります（声で野帳Pro のひな形は、表現型・マーカーと表現型の試験、個体ごとの判定表は、一致・分離比の試験で作れます）。</p>';
+  if(bioHasJudge(S))return judgeTabHtml(S);
   const t=tplNow(),n=t.meta.rows,its=t.S.items,big=n>PRO_LIST_MAX;
   return`<p class="sub" style="margin-top:0">声で野帳Pro（音声で記録する野帳のアプリ）で、この設計の野帳を作るための「ひな形」です。系統・株などの名前を入れた行と、調べる項目が入っています。ナビは連携なしでも使えます。</p>
-  <div class="tscroll"><table class="t"><tr><th>項目</th><th>種類</th><th>入れ方</th></tr>${its.map(i=>`<tr><td>${esc(i.name)}</td><td>${esc({num:'数値',text:'文字',choice:'選ぶ',count:'数える',date:'日付'}[i.type]||i.type)}</td><td>${i.role==='id'?(['batch','pred'].includes(i.id)||/^M\d/.test(i.id)?'事前の列（空欄で渡す。あとで入れる）':'事前の列（名前・番号を入れて渡す）'):'音声で入れる'}</td></tr>`).join('')}</table></div>
-  <p class="note" style="margin:8px 0 0">行：${n.toLocaleString()}（${big?`Pro が1行ずつ受け取れる ${PRO_LIST_MAX.toLocaleString()} 行を超えるので、行の作り方だけを渡します。作り方を受け取れる版の Pro で開くと、行が並びます`:'1行ずつ渡します'}）。${S.rep?`調査：${S.interval}日ごとに${S.nSurvey}回（予定の開始日は Pro で入れます）。`:''}${t.fold?`行のまとめ方：${t.fold.by.map(id=>(its.find(i=>i.id===id)||{}).name).join(' → ')}（受け取れる版の Pro で、まとめて開け閉めできます）。`:''}</p>
+  <div class="tscroll"><table class="t"><tr><th>項目</th><th>種類</th><th>入れ方</th></tr>${its.map(i=>`<tr><td>${esc(i.name)}</td><td>${esc({num:'数値',text:'文字',choice:'選ぶ',count:'数える',date:'日付'}[i.type]||i.type)}</td><td>${i.role==='id'?(['batch','pred','p_seed','p_pollen'].includes(i.id)||/^M\d/.test(i.id)?'事前の列（空欄で渡す。あとで入れる）':'事前の列（名前・番号を入れて渡す）'):'音声で入れる'}</td></tr>`).join('')}</table></div>
+  <p class="note" style="margin:8px 0 0">行：${n.toLocaleString()}（${big?`声で野帳Pro が受け取れる ${PRO_LIST_MAX.toLocaleString()} 行を超えています。集団やロットを分けて設計すると、1つずつ受け取れるようになります（ひな形には行の作り方を入れてあります）`:'1行ずつと、行の作り方の両方を入れて渡します。作り方は Pro 4.9.12 以降が使います'}）。種子親・花粉親の列は、空欄で渡す記録の列です（解析には使いません）。${S.rep?`調査：${S.interval}日ごとに${S.nSurvey}回（予定の開始日は Pro で入れます）。`:''}${t.fold?`行のまとめ方：${t.fold.by.map(id=>(its.find(i=>i.id===id)||{}).name).join(' → ')}（受け取れる版の Pro で、まとめて開け閉めできます）。`:''}</p>
   <div class="toolbar"><button type="button" class="btn primary" data-pro="file">ひな形を保存（.json）</button><button type="button" class="btn" data-pro="link">声で野帳Pro で開くリンクを作る</button>${PRO.url?'<button type="button" class="btn" data-pro="copy">リンクをコピー</button>':''}<span class="note" id="proMsg" role="status">${esc(PRO.msg)}</span></div>
   ${PRO.url?`<p class="note" style="word-break:break-all;margin:6px 0 0"><a href="${esc(PRO.url)}" target="_blank" rel="noopener">声で野帳Pro で開く</a>（${PRO.len.toLocaleString()}バイト）</p>`:''}
   <h4 style="margin:14px 0 4px">Pro の CSV を Rの雛形で読むとき</h4><p class="note" style="margin:0 0 6px">「Rの雛形」の read.csv の1行を、次の行に置き換えます。列の名前は記入表と同じなので、あとの行はそのまま動きます。${S.trait==='days'||S.rep?'基準日（接種日・置床日など）を入れるまでは、止まる形にしています。':''}${S.trait==='days'&&S.censor?'起きた日が空欄の株は、調査の終わりまで起きなかった株として読みます。枯れた株・欠株は Pro で除外にすると、数に入りません。':''}</p>
   <pre class="code" id="cPro" tabindex="0">${esc(bioProRead(S).join('\n'))}</pre><div class="toolbar"><button type="button" class="btn" data-pro="rcopy">コピー</button></div>`;
+}
+/* 一致・分離比の判定表（ver. 2.4） */
+function judgeTabHtml(S){
+  const t=tplNow(),n=t.meta.rows,its=t.S.items,big=n>PRO_LIST_MAX;
+  return`<p class="sub" style="margin-top:0">声で野帳Pro（音声で記録する野帳のアプリ）で、個体ごとの判定を記録する「判定表」のひな形です。1行＝1個体で、判定を選んで入れます。判定できなかった個体は「${esc(bioJudgeU(S))}」を選びます（空欄は、まだ入れていない個体として別に数えます）。記録が済んだら、下の R の行で数を数え、このページの表に入れると、検定の結果が出ます。ナビは連携なしでも使えます。</p>
+  <div class="tscroll"><table class="t"><tr><th>項目</th><th>種類</th><th>入れ方</th></tr>${its.map(i=>`<tr><td>${esc(i.name)}</td><td>${esc({num:'数値',text:'文字',choice:'選ぶ'}[i.type]||i.type)}</td><td>${i.role==='id'?(i.id==='plate'?'事前の列（空欄で渡す。検査のときに入れる）':'事前の列（番号・名前を入れて渡す）'):'音声・ボタンで選ぶ（'+esc((i.options||[]).join('／'))+'）'}</td></tr>`).join('')}</table></div>
+  <p class="note" style="margin:8px 0 0">行：${n?n.toLocaleString()+(big?`（声で野帳Pro が受け取れる ${PRO_LIST_MAX.toLocaleString()} 行を超えています。プレートや交配組合せごとに分けて数を入れると、1つずつ受け取れるようになります）`:'（入れた個体数の合計。判定不能を含む）'):'0（個体数を入れると、その数の行を入れて渡します。今は項目だけを渡します）'}。</p>
+  <div class="toolbar"><button type="button" class="btn primary" data-pro="file">ひな形を保存（.json）</button><button type="button" class="btn" data-pro="link">声で野帳Pro で開くリンクを作る</button>${PRO.url?'<button type="button" class="btn" data-pro="copy">リンクをコピー</button>':''}<span class="note" id="proMsg" role="status">${esc(PRO.msg)}</span></div>
+  ${PRO.url?`<p class="note" style="word-break:break-all;margin:6px 0 0"><a href="${esc(PRO.url)}" target="_blank" rel="noopener noreferrer">声で野帳Pro で開く</a>（${PRO.len.toLocaleString()}バイト）</p>`:''}
+  <h4 style="margin:14px 0 4px">判定表の CSV から数を数える R の行</h4><p class="note" style="margin:0 0 6px">Pro の CSV を data.csv として保存し、次の行を R で動かすと、${S.purpose==='agree'?'2×2 の表':'区分ごとの観察数'}と判定不能の数が出ます。その数をこのページの表に入れると、Rの雛形と結果が出ます（雛形は数を入れる形のまま変わりません）。</p>
+  <pre class="code" id="cPro" tabindex="0">${esc(bioCountCode(S).join('\n'))}</pre><div class="toolbar"><button type="button" class="btn" data-pro="rcopy">コピー</button></div>`;
 }
 async function tplEncode(t){
   const raw=new TextEncoder().encode(JSON.stringify(t));
@@ -2005,10 +2071,12 @@ function copyText(txt,el,okMsg){const say=m=>{const c=$('#proMsg')||$('#copied')
 async function proAct(a){
   const t=tplNow();if(!t&&a!=='rcopy')return;
   if(a==='file'){download(`${t.name.replace(/[\\/:*?"<>|]/g,'_')}_ひな形.json`,JSON.stringify(t),'application/json');PRO.msg='ひな形のファイルを保存しました。声で野帳Pro の「ひな形のファイルから作る」で読み込めます。';}
-  if(a==='link'){const url=proLink(await tplEncode(t)),len=new TextEncoder().encode(url).length;PRO.url=url;PRO.len=len;
-    PRO.msg=len>PRO_LINK_MAX?`リンクを作りました。QRコードに載る長さ（${PRO_LINK_MAX.toLocaleString()}バイト）を超えるので、ほかの端末へは、ファイルで渡すのが確実です。`:'リンクを作りました。';}
+  if(a==='link'){let url=proLink(await tplEncode(t)),len=new TextEncoder().encode(url).length,short=false;
+    if(len>PRO_LINK_MAX&&t.list&&t.gen){const t2=Object.assign({},t);delete t2.list;const u2=proLink(await tplEncode(t2)),l2=new TextEncoder().encode(u2).length;if(l2<len){url=u2;len=l2;short=true;}}   // 長いときは、行の一覧を外して作り方だけにする（連動の契約 v1 の 8.）
+    PRO.url=url;PRO.len=len;
+    PRO.msg=(short?'行の作り方だけを入れた短いリンクを作りました。声で野帳Pro 4.9.12 以降で開くと、行が並びます（それより前の版の Pro には、ファイルで渡すと行が並びます）。':'リンクを作りました。')+(len>PRO_LINK_MAX?`QRコードに載る長さ（${PRO_LINK_MAX.toLocaleString()}バイト）を超えるので、ほかの端末へは、ファイルで渡すのが確実です。`:'');}
   if(a==='copy'){copyText(PRO.url,null,'リンクをコピーしました。');return;}
-  if(a==='rcopy'){copyText(bioProRead(OUT.S).join('\n'),$('#cPro'),'コピーしました');return;}
+  if(a==='rcopy'){copyText((bioHasJudge(OUT.S)?bioCountCode(OUT.S):bioProRead(OUT.S)).join('\n'),$('#cPro'),'コピーしました');return;}
   LAST='';render();
 }
 
