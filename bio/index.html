@@ -476,6 +476,10 @@ body.v-guide .grid,body.v-guide #presets,body.v-guide #entry,body.v-guide #scope
   <p>例題と例の名前・数値はすべて架空です。入力した内容はブラウザの中だけで処理され、端末の外には送られません（入力の保存先はこの端末のブラウザです）。</p>
   <details><summary>変更履歴</summary>
     <dl>
+      <dt>ver. 2.4.1（2026-11-25）</dt>
+      <dd><ul>
+        <li>声で野帳Pro 4.9.13 に合わせて、行の数の知らせを直した（行のまとめ方つきのひな形は 20,000 行まで受け取れる。まとまりごとに開け閉めできる）</li>
+      </ul></dd>
       <dt>ver. 2.4（2026-11-25）</dt>
       <dd><ul>
         <li>声で野帳Pro との「連動の契約 v1」に合わせて、ひな形の作った元の情報（設計のIDなど）と、株・シャーレの列の印をそろえた</li>
@@ -537,7 +541,7 @@ body.v-guide .grid,body.v-guide #presets,body.v-guide #entry,body.v-guide #scope
 <script>
 /*LOGIC-START*/
 /* 判定ロジック：ここから LOGIC-END までは画面（DOM）に触れない。Node.js から単体で検査できる。 */
-const VERSION={ver:'2.4',date:'2026-11-25'};
+const VERSION={ver:'2.4.1',date:'2026-11-25'};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const rq=s=>String(s).replace(/[\r\n\t]/g,' ').replace(/[\\"]/g,'\\$&');   // Rの文字列の中に入れる
 const R_RESERVED=['if','else','repeat','while','function','for','next','break','TRUE','FALSE','NULL','Inf','NaN','NA','in','T','F'];
@@ -1585,7 +1589,13 @@ function compute(raw){
    PRO_TPL_HOME は、このページでただ1つの外部のアドレス。リンクの文字を作るのに使うだけで、ナビからは通信しない */
 const PRO_TPL_APP='koe-yacho-v2-template',BIO_DESIGN_APP='shiken-navi-bio-design';
 const PRO_TPL_HOME='https://tochigitfruits.github.io/koe-yacho/pro.html';
-const PRO_LINK_MAX=2900,PRO_LIST_MAX=5000,PRO_ITEM_MAX=200;
+const PRO_LINK_MAX=2900,PRO_LIST_MAX=5000,PRO_ITEM_MAX=200,PRO_FOLD_MAX=20000;   // PRO_FOLD_MAX：Pro 4.9.13 からは、行のまとめ方（fold）つきのひな形を作り方（gen）で 20,000 行まで受け取る（連動の契約 v1 の 5.・6.）
+/* 行の数と、Pro が受け取れるか（画面・設計書の知らせ。ver. 2.4.1） */
+function bioProRows(n,fold){
+  if(n<=PRO_LIST_MAX)return {ok:true,how:'both'};
+  if(fold&&n<=PRO_FOLD_MAX)return {ok:true,how:'gen'};
+  return {ok:false,max:fold?PRO_FOLD_MAX:PRO_LIST_MAX};
+}
 const PRO_CSV_HEADS=['調査日','No.','状態','除外日','理由'];   // Pro の CSV が自分で付ける見出し。項目の名前と重ねない
 const DOC_BLANK='（記入）';
 /* 形質の英数字の id（claude/52 の D-5）。辞書にない名前は t1。年をまたいで同じになることは保証しない */
@@ -1830,7 +1840,7 @@ function bioDesignDoc(o,doc,opt){
   const rec=[];
   if(o.lay&&o.lay.cols&&o.lay.cols.length)rec.push(`記入表の列：${o.lay.cols.join('、')}（1行の決まりは記入表の注意のとおり）。`);
   if(bioHasTpl(S)){const C=bioProCols(S),n=bioRowCount(S);
-    rec.push(opt.record==='pro'?`声で野帳Pro の野帳のひな形（試験設計ナビで作成）を使い、音声で記録する。項目：${C.map(c=>c.name).join('、')}。行：${n.toLocaleString()}（${n>PRO_LIST_MAX?`Pro が受け取れる ${PRO_LIST_MAX.toLocaleString()} 行を超えるので、集団・ロットなどに分けて受け取る`:'1行ずつと、行の作り方で渡す'}）。種子親・花粉親の列は記録だけに使い、解析には使わない。`:`記入表に記録する（声で野帳Pro の野帳のひな形も作れる：項目 ${C.length}、行 ${n.toLocaleString()}）。`);}
+    rec.push(opt.record==='pro'?`声で野帳Pro の野帳のひな形（試験設計ナビで作成）を使い、音声で記録する。項目：${C.map(c=>c.name).join('、')}。行：${n.toLocaleString()}（${(k=>k.how==='both'?'1行ずつと、行の作り方で渡す':k.ok?`行の作り方だけで渡す。声で野帳Pro 4.9.13 以降が、行のまとめ方つきで ${PRO_FOLD_MAX.toLocaleString()} 行まで受け取る`:`Pro が受け取れる ${k.max.toLocaleString()} 行を超えるので、集団・ロットなどに分けて受け取る`)(bioProRows(n,!!bioFold(S)))}）。種子親・花粉親の列は記録だけに使い、解析には使わない。`:`記入表に記録する（声で野帳Pro の野帳のひな形も作れる：項目 ${C.length}、行 ${n.toLocaleString()}）。`);}
   if(bioHasJudge(S)){const C=bioJudgeCols(S),n=bioJudgeN(S);
     rec.push(`個体ごとの判定は、声で野帳Pro の判定表（ひな形。1行＝1個体、項目：${C.map(c=>c.name).join('、')}${n?`、行 ${n.toLocaleString()}`:''}）でも記録できる。判定表では、判定できなかった個体は「${bioJudgeU(S)}」を選ぶ（空欄は、まだ入れていない個体として別に数える）。判定表の CSV から数を数え、集計表の数にする（数える行は、ナビの「声で野帳Pro」の欄）。`);}
   rec.push('測れなかった値・判定できなかった個体は空欄のままにする（0 を入れない）。','除外する個体は、消さずに、理由を備考（声で野帳Pro では除外の理由）に書く。');
@@ -2040,10 +2050,10 @@ function proTabHtml(){
   if(S.purpose==='segr'&&!bioHasPro(S))return'<p class="note">期待比を「3:1」のような「数:数」の形で入れると、区分ごとに個体の判定を記録する判定表（声で野帳Pro のひな形）を作れるようになります。</p>';
   if(!bioHasPro(S))return'<p class="note">この目的は、数を数えて入れる試験です。個体ごとの記録は「データの並べ方」の記入表で取ります（声で野帳Pro のひな形は、表現型・マーカーと表現型の試験、個体ごとの判定表は、一致・分離比の試験で作れます）。</p>';
   if(bioHasJudge(S))return judgeTabHtml(S);
-  const t=tplNow(),n=t.meta.rows,its=t.S.items,big=n>PRO_LIST_MAX;
+  const t=tplNow(),n=t.meta.rows,its=t.S.items,k=bioProRows(n,!!t.fold);
   return`<p class="sub" style="margin-top:0">声で野帳Pro（音声で記録する野帳のアプリ）で、この設計の野帳を作るための「ひな形」です。系統・株などの名前を入れた行と、調べる項目が入っています。ナビは連携なしでも使えます。</p>
   <div class="tscroll"><table class="t"><tr><th>項目</th><th>種類</th><th>入れ方</th></tr>${its.map(i=>`<tr><td>${esc(i.name)}</td><td>${esc({num:'数値',text:'文字',choice:'選ぶ',count:'数える',date:'日付'}[i.type]||i.type)}</td><td>${i.role==='id'?(['batch','pred','p_seed','p_pollen'].includes(i.id)||/^M\d/.test(i.id)?'事前の列（空欄で渡す。あとで入れる）':'事前の列（名前・番号を入れて渡す）'):'音声で入れる'}</td></tr>`).join('')}</table></div>
-  <p class="note" style="margin:8px 0 0">行：${n.toLocaleString()}（${big?`声で野帳Pro が受け取れる ${PRO_LIST_MAX.toLocaleString()} 行を超えています。集団やロットを分けて設計すると、1つずつ受け取れるようになります（ひな形には行の作り方を入れてあります）`:'1行ずつと、行の作り方の両方を入れて渡します。作り方は Pro 4.9.12 以降が使います'}）。種子親・花粉親の列は、空欄で渡す記録の列です（解析には使いません）。${S.rep?`調査：${S.interval}日ごとに${S.nSurvey}回（予定の開始日は Pro で入れます）。`:''}${t.fold?`行のまとめ方：${t.fold.by.map(id=>(its.find(i=>i.id===id)||{}).name).join(' → ')}（受け取れる版の Pro で、まとめて開け閉めできます）。`:''}</p>
+  <p class="note" style="margin:8px 0 0">行：${n.toLocaleString()}（${k.how==='both'?'1行ずつと、行の作り方の両方を入れて渡します。作り方は Pro 4.9.12 以降が使います':k.ok?`行が多いので、行の作り方だけで渡します。声で野帳Pro 4.9.13 以降は、行のまとめ方つきのひな形を ${PRO_FOLD_MAX.toLocaleString()} 行まで受け取れます（それより前の版は ${PRO_LIST_MAX.toLocaleString()} 行まで）`:`声で野帳Pro が受け取れる ${k.max.toLocaleString()} 行を超えています。集団やロットを分けて設計すると、1つずつ受け取れるようになります（ひな形には行の作り方を入れてあります）`}）。種子親・花粉親の列は、空欄で渡す記録の列です（解析には使いません）。${S.rep?`調査：${S.interval}日ごとに${S.nSurvey}回（予定の開始日は Pro で入れます）。`:''}${t.fold?`行のまとめ方：${t.fold.by.map(id=>(its.find(i=>i.id===id)||{}).name).join(' → ')}（声で野帳Pro 4.9.13 以降で、まとまりごとに開け閉めできます）。`:''}</p>
   <div class="toolbar"><button type="button" class="btn primary" data-pro="file">ひな形を保存（.json）</button><button type="button" class="btn" data-pro="link">声で野帳Pro で開くリンクを作る</button>${PRO.url?'<button type="button" class="btn" data-pro="copy">リンクをコピー</button>':''}<span class="note" id="proMsg" role="status">${esc(PRO.msg)}</span></div>
   ${PRO.url?`<p class="note" style="word-break:break-all;margin:6px 0 0"><a href="${esc(PRO.url)}" target="_blank" rel="noopener">声で野帳Pro で開く</a>（${PRO.len.toLocaleString()}バイト）</p>`:''}
   <h4 style="margin:14px 0 4px">Pro の CSV を Rの雛形で読むとき</h4><p class="note" style="margin:0 0 6px">「Rの雛形」の read.csv の1行を、次の行に置き換えます。列の名前は記入表と同じなので、あとの行はそのまま動きます。${S.trait==='days'||S.rep?'基準日（接種日・置床日など）を入れるまでは、止まる形にしています。':''}${S.trait==='days'&&S.censor?'起きた日が空欄の株は、調査の終わりまで起きなかった株として読みます。枯れた株・欠株は Pro で除外にすると、数に入りません。':''}</p>
