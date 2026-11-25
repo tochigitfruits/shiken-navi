@@ -34,6 +34,7 @@ header.top{background:var(--green);color:var(--on-green);padding-block:22px 20px
 header.top .in{max-width:1440px;margin:0 auto;display:flex;flex-wrap:wrap;gap:10px 28px;align-items:flex-end;justify-content:space-between}
 .eyebrow{font-size:12px;letter-spacing:.1em;color:var(--gold);font-weight:700}
 h1{font-size:30px;margin:2px 0 0;line-height:1.2;text-wrap:balance}
+.h1home{all:unset;cursor:pointer;font:inherit;color:inherit;line-height:inherit}.h1home:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:4px}
 header.top p{margin:6px 0 0;font-size:14px;max-width:64ch;opacity:.92}
 .presets{display:flex;flex-wrap:wrap;gap:6px;align-items:center;max-width:720px}
 .presets span{font-size:12px;color:var(--gold);font-weight:700;margin-right:4px}
@@ -178,13 +179,30 @@ footer dd ul{margin:2px 0 0;padding-left:18px}
 .tosMini{margin-top:12px;font-size:13px}.tosMini summary{cursor:pointer;color:var(--muted)}.tosMini .tosList{margin:6px 0 0;padding-left:1.3em;line-height:1.6}
 #tosBox{display:none}
 body.tos-wait #tosBox{display:block}
-body.tos-wait .grid,body.tos-wait #presets,body.tos-wait #entry,body.tos-wait #guide{display:none!important}
+body.tos-wait .grid,body.tos-wait #presets,body.tos-wait #entry,body.tos-wait #guide,body.tos-wait #detailBar,body.tos-wait #docView{display:none!important}
 /* かんたんガイド（05 の 9.）：1画面に1つの質問。ガイドの間は詳しい画面と例題を隠す */
-#entry{margin-top:20px;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between}
-#entry p{margin:0;font-size:14px;min-width:0;flex:1 1 280px}
+/* 画面の切り替え（一般版と同じ）：body の v-entry（最初の画面）/ v-guide / v-detail / v-doc（試験設計書） */
+#entry{margin-top:20px;display:none}
+#entry h2{font-size:20px;margin:0 0 4px}
+.entry-g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+@media (max-width:640px){.entry-g{grid-template-columns:minmax(0,1fr)}}
+.bigbtn{display:flex;flex-direction:column;gap:4px;text-align:left;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);padding:14px 16px;font:inherit;cursor:pointer;width:100%}
+.bigbtn b{font-size:17px}.bigbtn span{font-size:13px;color:var(--muted)}
+.bigbtn.pri{background:var(--green);color:var(--on-green);border-color:var(--green)}.bigbtn.pri span{color:var(--on-green);opacity:.9}
+.bigbtn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.dbar{margin-top:20px;display:none;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 14px}
+.dbar .sp{flex:1}.dbar .dlab{font-size:12px;font-weight:700;color:var(--muted)}
+.dbar .note{flex-basis:100%;margin:0}
+.dbar .note:empty{display:none}
+body.v-entry #entry{display:block}
+body.v-detail #detailBar{display:flex}
+body.v-entry .grid,body.v-entry #presets{display:none!important}
+#docView{display:none;margin-top:20px}
+body.v-doc #docView{display:block}
+body.v-doc #mainGrid,body.v-doc #presets,body.v-doc #entry,body.v-doc #guide,body.v-doc #scope{display:none!important}
 #guide{display:none;margin-top:20px}
 body.v-guide #guide{display:block}
-body.v-guide .grid,body.v-guide #presets,body.v-guide #entry{display:none!important}
+body.v-guide .grid,body.v-guide #presets,body.v-guide #entry,body.v-guide #scope{display:none!important}
 .gcard{max-width:760px;margin:0 auto}
 .gprog{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.06em}
 .gcard h2{font-size:20px;margin:6px 0 4px}
@@ -196,14 +214,26 @@ body.v-guide .grid,body.v-guide #presets,body.v-guide #entry{display:none!import
 .gnow{margin-top:14px;border-radius:9px;padding:8px 12px;font-size:14px;background:var(--tint);border:1px solid var(--line)}
 .gnow b{display:block}
 .btn.big{font-size:15px;padding:10px 16px}
+.lotbox{margin-top:8px;border-left:3px solid var(--gold);padding:4px 0 2px 10px}.lotbox .lab2{font-size:13px;font-weight:700}
+#lotIn{grid-template-columns:repeat(2,minmax(0,1fr))}@media (max-width:420px){#lotIn{grid-template-columns:minmax(0,1fr)}}
+/* 試験設計書（claude/52 の 3.2）。見本は白い紙。印刷は見本だけ */
+.docpaper{background:#fff;color:#111;font-family:"Times New Roman","Yu Mincho","Hiragino Mincho ProN",serif;font-size:14px;line-height:1.7}
+.docpaper h3{font-size:15px;margin:14px 0 4px}.docpaper h3.dmh{font-weight:normal}.docpaper h4{font-size:14px;margin:8px 0 2px}
+.docpaper p{margin:0}.docpaper p.di{text-indent:1em}.docpaper p.dk{padding-left:8em;text-indent:-8em}.docpaper p.dp{padding-left:8em}
+.docpaper .dannex{border-top:1px dashed #999;margin-top:16px;padding-top:6px}.docpaper ul{margin:2px 0;padding-left:1.3em}
+.docpaper table.dt{border-collapse:collapse;margin:4px 0;font-size:13px}.docpaper table.dt th,.docpaper table.dt td{text-align:left;vertical-align:top;padding:2px 6px}
+#docForm textarea,#docForm input{width:100%;font:inherit;font-size:15px;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
+.done{border-color:var(--gold)}
+@media print{body{background:#fff}header.top,footer,#docView .dbar,#docForm,#detailBar,#entry,#guide,#mainGrid,#scope,#tosBox{display:none!important}#docView .grid{display:block}#docPrev{border:none;box-shadow:none;padding:0}}
+
 </style>
 </head>
-<body>
+<body class="v-entry">
 <header class="top">
   <div class="in">
     <div>
       <div class="eyebrow">栃木県農業総合研究センター 果樹研究室<span class="trial">試行版</span></div>
-      <h1>試験設計ナビ（生物工学版）</h1>
+      <h1><button type="button" class="h1home" id="goHome" title="最初の画面に戻る（入力中の設計は残ります）">試験設計ナビ（生物工学版）</button></h1>
       <p>DNAマーカー選抜・接種試験・分離集団の調査向けです。わかる条件だけ入れると、解析の型、データの並べ方、Rの雛形を提案します。一致率・分離比・判定不能率は、この画面で計算まで行います。入力した内容は、お使いの端末の外には送られません。</p>
     </div>
     <div class="presets" id="presets" aria-label="例題"><span>例題</span></div>
@@ -229,9 +259,22 @@ body.v-guide .grid,body.v-guide #presets,body.v-guide #entry{display:none!import
   <div class="toolbar" style="margin-top:10px"><button type="button" class="btn primary" id="tosGo" disabled>了承して始める</button></div>
   <p class="note" style="margin-top:8px">了承したことは、この端末のブラウザに記録します。次からは、この確認を出しません（内容を変えたときは、もう一度確かめます）。</p>
 </div>
-<div class="card" id="entry"><p><b>はじめての方は、かんたんガイドから。</b>質問に1つずつ答えると、ざっくりした設計（この設計で言えること・データの並べ方・Rの雛形）ができます。統計の用語を知らなくても答えられます。わからない質問は「おまかせ」で進めます。</p><button type="button" class="btn primary big" id="goGuide">かんたんガイドで作る</button></div>
+<div class="card start" id="entry">
+  <h2>どちらから始めますか？</h2>
+  <p class="hint">どちらで始めても、同じ設計（この設計で言えること・データの並べ方・Rの雛形・試験設計書・声で野帳Pro のひな形）ができます。あとから行き来できます。</p>
+  <div class="entry-g">
+    <button type="button" class="bigbtn pri" id="goGuide"><b>かんたんガイドで作る</b><span>1画面に1つの質問に答えていくと、ざっくりした設計ができます。統計の用語を知らなくても答えられます。わからない質問は「おまかせ」で進めます（初めての方向け）</span></button>
+    <button type="button" class="bigbtn" id="goDetail"><b>詳しい画面で作る</b><span>目的・データの型・材料の組み方を、1つの画面で入れます。例題から始めることもできます</span></button>
+  </div>
+  <div id="resume" hidden style="margin-top:12px"><button type="button" class="bigbtn" id="goResume"><b>続きから</b><span>詳しい画面の、前回の入力の続き</span></button></div>
+  <div class="toolbar" style="margin-top:12px"><button type="button" class="btn" data-file="open">設計ファイルから続ける（.json）</button><span class="note">前に保存した設計ファイルを読み込みます。ファイルは、この端末の中だけで読みます</span></div>
+  <p class="note" id="fileMsgE" role="status" style="margin:6px 0 0"></p>
+</div>
+<div class="card dbar" id="detailBar"><button type="button" class="btn" id="backEntry">最初の画面へ</button><button type="button" class="btn" id="goGuide2">かんたんガイドで作り直す</button><button type="button" class="btn primary" id="goDocBar">試験設計書</button><span class="sp"></span><span class="dlab">設計ファイル</span><button type="button" class="btn" data-file="save">保存</button><button type="button" class="btn" data-file="open">開く</button><span class="note" id="fileMsg" role="status"></span></div>
+<input type="file" id="designFileIn" accept=".json,application/json" hidden>
 <section id="guide" aria-live="polite"></section>
-<div class="grid">
+<section id="docView" aria-live="polite"></section>
+<div class="grid" id="mainGrid">
 <form class="col-in" id="form" onsubmit="return false" autocomplete="off">
 
   <section class="card">
@@ -276,8 +319,19 @@ body.v-guide .grid,body.v-guide #presets,body.v-guide #entry{display:none!import
     <label class="chk" id="censorBox"><input type="checkbox" id="censor"> <span>調査終了までに起きなかった株がある<small>（未開花・未発芽など）</small></span></label>
     <label class="f" id="seedBox" style="margin-top:8px">1シャーレの粒数<input type="number" id="nSeed" min="1" max="1000" inputmode="numeric"></label>
     <label class="chk"><input type="checkbox" id="hasCtrl"> <span>対照（抵抗性・罹病性の品種、交配親など）を同じ条件で入れた</span></label>
-    <label class="f" id="ctrlPerBox" style="margin-top:6px"><span id="lbCtrlPer">対照1つあたりの株数</span><small>空欄は「1系統の株数」と同じ。対照だけ多めに置くときに入れます</small><input type="number" id="nCtrlPer" min="1" max="50" inputmode="numeric" placeholder="空欄＝同じ"></label>
+    <label class="f" id="ctrlPerBox" style="margin-top:6px"><span id="lbCtrlPer">対照1つあたりの株数</span><small id="smCtrlPer">空欄は「1系統の株数」と同じ。対照だけ多めに置くときに入れます</small><input type="number" id="nCtrlPer" min="1" max="50" inputmode="numeric" placeholder="空欄＝同じ"></label>
     <label class="chk"><input type="checkbox" id="blocks"> <span>接種・播種を複数回、または複数の場所（人工気象器・温室など）に分けた</span></label>
+    <div id="lotBox" class="lotbox">
+      <div class="lab2">対照はどこに置きますか <span class="term">ロットごとの対照</span></div>
+      <div class="opts two" style="margin-top:6px">
+        <label class="opt"><input type="radio" name="ctrlPlace" value="all" checked><div><b>試験全体で1組</b><span>これまでどおり</span></div></label>
+        <label class="opt"><input type="radio" name="ctrlPlace" value="lot"><div><b>ロットごとに置く</b><span>接種回・トレイ・培養ロットごとに、対照を入れる（系統が多く、対照は1ロットに少しずつ、など）</span></div></label>
+      </div>
+      <div id="lotIn" class="gfields" style="margin-top:6px">
+        <label class="f">ロット（接種回）の数<small id="lotPer">&nbsp;</small><input type="number" id="nLot" min="2" max="200" inputmode="numeric" value="2"></label>
+        <label class="f">各ロットに置く対照<small>&nbsp;</small><select id="ctrlKinds"><option value="2" id="ck2">2つ（抵抗性対照・罹病性対照）</option><option value="1" id="ck1">1つ（罹病性対照）</option></select></label>
+      </div>
+    </div>
   </section>
 
   <section class="card" data-show="pheno">
@@ -396,7 +450,7 @@ body.v-guide .grid,body.v-guide #presets,body.v-guide #entry{display:none!import
   <h3>このツールで扱うもの・扱わないもの <span class="term">対象範囲</span></h3>
   <div class="scope">
     <div><b>扱うもの</b>
-      <ul><li>接種試験・発芽試験・形質調査の表現型データ（段階スコア、あり・なし、割合、数値、日数、数）</li><li>系統の値（BLUP）と広義の遺伝率、集団の比較、対照との比較、交配の予測の検証</li><li>同じ個体を年を変えて調べたときの個体の値と反復性</li><li>マーカーの遺伝子型と表現型の関連（マーカー8個まで。2つのときは交互作用も）</li><li>マーカー判定の一致（2×2）とマーカー判定の的中率、分離比の適合度</li><li>2つの方法の割合の比較（判定不能率・検出率・表現型との外れの割合）</li></ul></div>
+      <ul><li>接種試験・発芽試験・形質調査の表現型データ（段階スコア、あり・なし、割合、数値、日数、数）</li><li>系統の値（BLUP）と広義の遺伝率、集団の比較、対照との比較、交配の予測の検証</li><li>同じ個体を年を変えて調べたときの個体の値と反復性</li><li>マーカーの遺伝子型と表現型の関連（マーカー8個まで。2つのときは交互作用も）</li><li>マーカー判定の一致（2×2）とマーカー判定の的中率、分離比の適合度</li><li>2つの方法の割合の比較（判定不能率・検出率・表現型との外れの割合）</li><li>接種回・トレイ・培養ロットごとに対照を置く設計（ロットのずれの補正と、ロットごとの成立の確認）</li></ul><p class="note" style="margin:6px 0 0">PCR・電気泳動のプレート（ラン）ごとに置く陽性対照・陰性対照は、そのプレートの判定が成り立ったかを確かめるためのものです。個体数には数えません。対照が想定どおりに出なかったプレートの判定は数に入れず、やり直した結果を入れると、判定不能率や一致率を読み違えにくくなります。</p></div>
     <div><b>扱わないもの（範囲外）</b>
       <ul><li>GWAS・QTL解析・連鎖地図の作成・ゲノム予測モデルの構築そのもの</li><li>3つ以上の型どうしの一致（3×3以上の表）、3つ以上の検出法の比較</li><li>複数の場所にまたがる試験、年をまたいだ集団・対照・マーカーの比較、不完全ブロックなどの配置の設計</li><li>共変量による補正、非線形モデル</li></ul>
       <p class="note" style="margin:6px 0 0">範囲外の試験は、無理に当てはめず、統計の担当者に相談すると確実です。圃場での区割りを伴う試験は、<a href="../">「試験設計ナビ（一般版）」</a>で扱います。</p></div>
@@ -411,6 +465,7 @@ body.v-guide .grid,body.v-guide #presets,body.v-guide #entry{display:none!import
     <tr><td>3つ以上の型どうしの一致（多数の対立遺伝子、ヘテロを含む3型、「中間」の区分）</td><td>2×2 の表に分けて使います</td><td>① 対立遺伝子ごとに「ある／ない」の表にする ② 3つの型は、遺伝の仕方に合わせて2つにまとめる（まとめ方は結果を見る前に決める） ③ 「中間」は、どちらに入れるかを先に決めるか、判定不能の欄に入れて「判定不能も含めた一致率」で見る。全体の一致率（合った個体 ÷ 全個体）は、区分がいくつでも出せます</td></tr>
     <tr><td>複数の交配の分離比をまとめて確かめる</td><td>交配ごとに「分離比」で確かめます。まとめる計算は雛形にあります</td><td>分離比の雛形の het()（異質性χ²）に、交配 × 区分の表を入れると、まとめてよいかを確かめられます</td></tr>
     <tr><td>多数のマーカーを網羅的に調べる（GWAS）、ゲノミック予測、連鎖地図・QTL解析</td><td>扱いません。関連（マーカーと表現型）は8個までです。8個はこのツールの上限で、マーカーを同時にモデルに入れて比べる方法の範囲です。それより多いマーカーを調べるときは、検定の回数の調整や、集団の成り立ち（血縁）の補正が要る別の手法になります</td><td>このツールでできる前の段：表現型の系統の値（BLUP）と遺伝率を出す、絞り込んだ候補のマーカーを確かめる、分離比・判定の一致を確かめる。解析そのものは、ゲノム解析の経験者・共同研究先に相談すると確実です</td></tr>
+    <tr><td>定量PCR（発現量など）で、プレートの間のずれを補正したい</td><td>扱いません</td><td>ラン間の較正用の試料の置き方は、定量PCRの報告の指針（MIQE：Bustin et al., 2009。該当箇所は原典での照合が済んでいません）を手がかりに、統計の担当者に相談すると進めやすくなります</td></tr>
     <tr><td>株の中の葉・果実ごとの値をそのまま解析に入れる</td><td>1株1値にまとめてから入れます</td><td>株ごとに1つの値（平均、または調査の前に決めた代表の値：いちばん重い葉など）にまとめます。葉や果実を反復として数えると、反復を水増しすることになります</td></tr>
   </table></div>
 </section>
@@ -421,6 +476,14 @@ body.v-guide .grid,body.v-guide #presets,body.v-guide #entry{display:none!import
   <p>例題と例の名前・数値はすべて架空です。入力した内容はブラウザの中だけで処理され、端末の外には送られません（入力の保存先はこの端末のブラウザです）。</p>
   <details><summary>変更履歴</summary>
     <dl>
+      <dt>ver. 2.3（2026-11-25）</dt>
+      <dd><ul>
+        <li>一般版と同じく、最初の画面（かんたんガイド／詳しい画面）から始める形に。題字を押すと最初の画面に戻る</li>
+        <li>試験設計書（画面・印刷・Word で開けるファイル・文の写し）を追加</li>
+        <li>声で野帳Pro の野帳のひな形（ファイル・リンク）と、Pro の CSV を Rの雛形で読む行を追加。設計ファイルの保存・読み戻し</li>
+        <li>接種回・トレイ・培養ロットごとに対照を置く設計（対照1つ・各ロット1株も含む）。ロットのずれの補正と、ロットごとの成立の確認</li>
+        <li>対象範囲に、プレートごとの対照の扱いと、定量PCR の案内を追加</li>
+      </ul></dd>
       <dt>ver. 2.2（2026-11-25）</dt>
       <dd><ul>
         <li>配色を紺・金・朱にした（一般版と同じ）。ホーム画面に追加したときのアイコン・タブのアイコンを付けた</li>
@@ -466,7 +529,7 @@ body.v-guide .grid,body.v-guide #presets,body.v-guide #entry{display:none!import
 <script>
 /*LOGIC-START*/
 /* 判定ロジック：ここから LOGIC-END までは画面（DOM）に触れない。Node.js から単体で検査できる。 */
-const VERSION={ver:'2.2',date:'2026-11-25'};
+const VERSION={ver:'2.3',date:'2026-11-25'};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const rq=s=>String(s).replace(/[\r\n\t]/g,' ').replace(/[\\"]/g,'\\$&');   // Rの文字列の中に入れる
 const R_RESERVED=['if','else','repeat','while','function','for','next','break','TRUE','FALSE','NULL','Inf','NaN','NA','in','T','F'];
@@ -512,6 +575,8 @@ const REFS={bates:'Bates D, Mächler M, Bolker B, Walker S (2015) Fitting linear
   mead:'Mead R (1988) The Design of Experiments: Statistical Principles for Practical Applications. Cambridge University Press, Cambridge.',
   dunnett:'Dunnett CW (1955) A multiple comparison procedure for comparing several treatments with a control. Journal of the American Statistical Association 50: 1096–1121.',
   schoenfeld:'Schoenfeld DA (1983) Sample-size formula for the proportional-hazards regression model. Biometrics 39: 499–503.（該当箇所は原典での照合が済んでいません）',
+  federer:'Federer WT (1956) Augmented (or hoonuiaku) designs. Hawaiian Planters\' Record 55: 191–208.（該当箇所は原典での照合が済んでいません）',
+  santos:'Santos AH, Bearzoti E, Ferreira DF, Silva Filho JL (2002) Simulation of mixed models in augmented block design. Scientia Agricola 59(3): 483–489.',
   falconer:'Falconer DS, Mackay TFC (1996) Introduction to Quantitative Genetics, 4th ed. Longman, Harlow.（該当箇所は原典での照合が済んでいません）',
   altman:'Altman DG, Bland JM (1994) Statistics Notes: Diagnostic tests 2: predictive values. BMJ 309: 102.'};
 /* Rの雛形で使う列名（調査項目の名前がこれらと重なったら言い換える） */
@@ -576,6 +641,9 @@ function normalize(r){
   S.mEvent=pick(r.mEvent,['und','pos','miss'],'und');   // 数える出来事（claude/55b の 5.2）
   // 同じ株を年（作期）を変えて調べる回数（claude/55 の 2.1）。判定で使うのは yOf(S)
   S.nYear=int(r.nYear,1,1,10);
+  // ロット（接種回・トレイ・培養ロット）ごとに置く対照（docs/58 の 3.）。効くのは lotOn(S) のときだけ
+  S.ctrlPlace=pick(r.ctrlPlace,['all','lot'],'all');S.nLot=int(r.nLot,2,2,200);S.ctrlKinds=String(r.ctrlKinds)==='1'?1:2;
+  if(lotOn(S)&&['物差し','系統か','ロット内の差'].includes(S.col))S.col+='_値';   // 雛形で作る列と重ねない（FIXED_COLS は変えない）
   return S;
 }
 const qOf=S=>S.purpose==='assoc'?'assoc':S.q;
@@ -591,7 +659,15 @@ const crossName=(S,i)=>S.preCross+pad(i,2);
 const indName=(S,i)=>S.prePop.replace(/[-_‐－ー]+$/,'')+'01-'+pad(i,3);
 const CTRL_FEW=10;   // 対照と1つずつ検定する系統数の上限（ツールの目安）
 
-const cOf=S=>S.nCtrlPer||S.nPer;   // 対照1つあたりの株（シャーレ）数（空欄は1系統の株数と同じ）
+const cOf=S=>S.nCtrlPer||S.nPer;   // 対照1つあたりの株（シャーレ）数（空欄は1系統の株数と同じ）。ロットごとのときは「1ロットあたり」
+/* ロットごとに置く対照（docs/58 の 3.1）。対照あり・接種回を分けた・表現型かマーカー・交配の予測の検証でない・1年のときだけ効く */
+const lotOn=S=>S.ctrlPlace==='lot'&&S.blocks&&S.hasCtrl&&(S.purpose==='pheno'||S.purpose==='assoc')&&qOf(S)!=='group'&&yOf(S)===1&&S.nLines>=2;   // 1集団の系統が1つならロットを分けられないので「試験全体で1組」と同じ（docs/60 の L-2）
+const bOf=S=>lotOn(S)?Math.min(S.nLot,S.nLines):1;        // 判定で使うロットの数（1集団の系統数より多くしない）
+const kOf=S=>lotOn(S)&&S.ctrlKinds===1?1:2;               // 対照の数
+const ecOf=S=>{const b=bOf(S),k=kOf(S),c=cOf(S);return b*k*(c-1)+(b-1)*(k-1);};   // 対照から取れる誤差の自由度 Ec（docs/58 の 1.2）
+const lotOfLine=(S,i)=>Math.floor((i-1)*bOf(S)/S.nLines)+1;   // i＝集団の中での系統の番号（1〜nLines）。番号順の割り振りの例（5.1）
+const lotFirst=(S,j)=>Math.ceil((j-1)*S.nLines/bOf(S))+1;     // ロット j に入る最初の系統の番号（集団の中で）
+const ctrlNames=S=>kOf(S)===1?[S.ctrlS]:[S.ctrlR,S.ctrlS];
 const applySet=(raw,set)=>Object.assign({},raw,set);
 const LV_RANK={N:-1,C:0,B:1,A:2};
 const E0=e=>Math.max(0,e);   // 画面の数字は0より小さくしない（0以下はどれも「ばらつきを見積もれない」）
@@ -602,11 +678,23 @@ const LT={A:'検定までできます',B:'検定はできますが、差が出�
 const LT_POP1='比べる相手の集団がまだありません（まとめ方はあります）';
 const LT_CTRLM={A:'試験の成立を確かめて、系統を区分できます',B:'系統の区分はできますが、試験の成立の確認は差が出にくい設計です',C:'系統の値は並べられますが、試験の成立は検定で確かめられません（まとめ方はあります）'};
 const LT_LINE={A:'系統の値と遺伝率まで出せます',B:'系統の値と遺伝率は出せますが、見積もりの幅が大きい設計です',C:'このままでは遺伝率は出せません（まとめ方はあります）'};
+const LT_LINEL={A:'ロットのずれを補正した系統の値と、遺伝率の目安まで出せます',B:'ロットのずれを補正した系統の値と遺伝率の目安は出せますが、見積もりの幅が大きい設計です'};
 const LT_LINEY={A:'個体の値と、年をまたいだ再現性（反復性）まで出せます',B:'個体の値と反復性は出せますが、見積もりの幅が大きい設計です'};
 const lvOfE=E=>E>=10?'A':E>=1?'B':'C';
 function efOf(S){
   const q=qOf(S),G=S.nPop*S.nLines,r=S.nPer,c=cOf(S),u=unitOf(S),few=G<=CTRL_FEW;
   const o={q,G,r,c,u,ctrlFew:few,E:null,Eg:null,Ee:null,reason:'',levelBy:[],unit:'系統'};
+  const lot=lotOn(S);if(lot)o.lot={b:bOf(S),k:kOf(S),c,Ec:ecOf(S),per:Math.ceil(G/bOf(S))};
+  if(q==='line'&&lot){   // ロットごとの対照（docs/58 の 4.1）：lot_clone＝株あり、lot_single＝1系統1株（株のばらつきは対照から）
+    // 1系統1株で株のばらつきを対照から借りるのは、測った数値・打ち切りのない日数だけ（値の大きさでばらつきが変わる型では、上限・下限に寄る対照のばらつきは代わりにならない。docs/60 の L-1）
+    const F0=famOf(S),borrow=F0.f==='gauss'&&F0.how!=='auc';
+    o.y=1;o.mode=r>1?'lot_clone':'lot_single';o.Eg=G-o.lot.b;o.Ee=r>1?G*(r-1):(borrow?o.lot.Ec:0);const lg=lvOfE(o.Eg),le=lvOfE(o.Ee);
+    o.levelBy=[{target:'系統のばらつき',level:lg,E:o.Eg},{target:(r>1?'':'対照の')+u+'のばらつき',level:le,E:o.Ee}];
+    o.level=(o.Eg<=0||o.Ee<=0)?'C':(lg==='A'&&le==='A')?'A':'B';
+    if(o.level==='C')o.reason=o.Eg<=0?'line_lotone':(r===1&&!borrow)?'line_lot_scale':'line_lot_noerr';
+    if(o.reason==='line_lot_scale')o.levelBy[1]={target:'対照の'+u+'のばらつき',level:'C',E:null};
+    o.levelTitle=(r===1&&o.level!=='C'?LT_LINEL:LT_LINE)[o.level];return o;
+  }
   if(q==='line'){
     // 場面（claude/55 の 2.2）：single＝1系統1株・1年／clone＝株あり・1年／year＝1系統1株・2年以上／clone_year＝株あり・2年以上
     const y=yOf(S);o.y=y;o.mode=r>1?(y>1?'clone_year':'clone'):(y>1?'year':'single');
@@ -619,8 +707,9 @@ function efOf(S){
   if(q==='pop'&&S.nPop<2){o.level='C';o.reason='pop_one';o.levelTitle=LT_POP1;o.levelBy=[{target:'集団どうし',level:'C',E:null}];return o;}
   if(q==='pop'){o.E=S.nPop*(S.nLines-1);o.reason='pop_norep';}
   else if(q==='group'){o.E=S.nPop-2;o.unit='交配組合せ';o.reason='group_norep';}
-  else if(q==='ctrl'&&few){o.E=G*(r-1)+2*(c-1);o.unit=u;o.reason='ctrl_norep';}
-  else if(q==='ctrl'){o.E=2*(c-1);o.unit=u;o.reason='ctrlm_norep';}
+  else if(q==='ctrl'&&few){o.E=G*(r-1)+(lot?o.lot.Ec:2*(c-1));o.unit=u;o.reason='ctrl_norep';}
+  else if(q==='ctrl'&&lot&&o.lot.k===1){o.unit=u;o.level='C';o.reason='ctrlm_onekind';o.levelTitle=LT_CTRLM.C;o.levelBy=[{target:'成立の確認',level:'C',E:null},{target:'区分',level:'A',E:null}];return o;}   // 対照が1つで、対照どうしの比べる相手がない
+  else if(q==='ctrl'){o.E=lot?o.lot.Ec:2*(c-1);o.unit=u;o.reason='ctrlm_norep';}
   else{const g=S.geno==='3'?3:2;o.g=g;o.E=G-1-S.nM*(g-1);o.reason='assoc_norep';if(S.nM===2)o.Eint=G-g*g;}   // Eint：マーカー2つの交互作用の誤差の自由度（claude/55 の 3.2。段階は E で決める）
   o.level=lvOfE(o.E);if(o.level!=='C')o.reason='';
   o.levelTitle=(q==='ctrl'&&!few?LT_CTRLM:LT)[o.level];
@@ -637,7 +726,7 @@ function famOf(S){const t=S.trait,r=S.rep,c=S.col;
   if(t==='days')return S.censor?{f:'surv',resp:'日数',how:'cens'}:{f:'gauss',resp:c,how:'raw'};
   return{f:'nb',resp:c,how:r?'sum':'raw'};}
 /* 対照どうしの成立確認（Kruskal–Wallis検定）が、どんなに差があっても有意にならない場面（claude/48 の 2.3） */
-const vkwOf=(S,F)=>S.hasCtrl&&qOf(S)!=='ctrl'&&F.f!=='surv'&&cOf(S)<=2;
+const vkwOf=(S,F)=>lotOn(S)?(kOf(S)===2&&qOf(S)!=='ctrl'&&F.f!=='surv'&&bOf(S)*cOf(S)<=2):S.hasCtrl&&qOf(S)!=='ctrl'&&F.f!=='surv'&&cOf(S)<=2;   // ロットごとのときは、ロットをまたいだ対照の株を数える（docs/58 の 4.1）
 
 function decidePheno(S){
   const F=famOf(S),q=qOf(S),unitN=unitOf(S),ctrlFew=S.nLines*S.nPop<=CTRL_FEW,ef=efOf(S),c=cOf(S);
@@ -649,6 +738,12 @@ function decidePheno(S){
   else{D.unit=S.nPer>1?'系統':'実生1個体';D.unitSm=S.nPer>1?'株は系統の中の繰り返し（擬似反復に注意）':'1個体＝1遺伝子型として扱う';}
   const typeMap={line:['系統の値と遺伝率','系統BLUP ＋ 広義の遺伝率 H²'],pop:['集団の比較','集団を固定効果、Tukey法'],ctrl:[ctrlFew?'対照との比較':'対照を物差しにした区分',ctrlFew?'Dunnett型（対照とだけ比べる）':'対照どうしで成立確認 → 系統は対照の値で区分'],group:['選抜群の比較','群の効果の検定 ＋ 順位相関'],assoc:['遺伝子型と表現型の関連',S.nM>1?'加法モデルで各マーカーの効果'+(F.f==='gauss'?'、説明率 R²':''):'遺伝子型の効果の検定 ＋ Tukey法']};
   if(q==='line'&&ef.mode==='year')typeMap.line=['個体の値と反復性','個体のBLUP ＋ 反復性（年をまたいだ再現性）'];
+  // ロットごとの対照（docs/58 の 4.2）
+  const lot=lotOn(S);
+  if(lot&&ef.mode==='lot_single'&&ef.level!=='C'){D.unit='対照の'+unitN+'（同じ遺伝子型の繰り返し）';D.unitSm='系統は1'+unitN+'ずつ。'+unitN+'ごとのばらつきは、各ロットの対照から見積もる';typeMap.line=['ロットのずれを補正した系統の値','対照を物差しにした BLUP ＋ 遺伝率の目安'];}
+  if(lot&&ef.mode==='lot_clone')typeMap.line[1]='系統BLUP ＋ 広義の遺伝率 H²（ロットのずれは対照で補正）';
+  if(lot&&q==='ctrl'&&!ctrlFew)typeMap.ctrl[1]='ロットごとに対照で成立確認 → 系統は同じロットの対照の値で区分';
+  if(lot&&(q==='line'||q==='ctrl')){D.refs.add('federer');D.refs.add('santos');}
   D.type=typeMap[q][0];D.test=typeMap[q][1];D.method=FAM[F.f][0];D.methodSm=FAM[F.f][1];
   if(F.f==='surv'){if(q==='pop')D.test='ログランク検定を組ごとに（Holm法で調整）';if(q==='ctrl'&&ctrlFew)D.test='対照を基準にしたハザード比';if(q==='assoc')D.test='Cox回帰で各遺伝子型のハザード比';}
   if(ef.level==='C'){D.test='検定は行わず、表と図でまとめる';}
@@ -665,7 +760,8 @@ function decidePheno(S){
   const W=D.W=[],can=t=>W.push({lv:'can',t}),caution=t=>W.push({lv:'caution',t}),memo=t=>W.push({lv:'memo',t});
   const cR=S.ctrlR,cS=S.ctrlS;
   if(S.purpose==='pheno'&&!S.hasCtrl&&q!=='ctrl') caution(`対照が入っていない設定です。接種などの処理が効いたか（${cR}は健全、${cS}は発病）を確かめられず、回ごとの強さの違いも補正できません。`);
-  if(S.hasCtrl&&q!=='ctrl') memo('対照は系統の比較からは外し、まず「対照どうしで差が出たか（試験の成立）」の確認に使います。');
+  if(S.hasCtrl&&q!=='ctrl'&&!lot) memo('対照は系統の比較からは外し、まず「対照どうしで差が出たか（試験の成立）」の確認に使います。');
+  if(lot&&q!=='ctrl') memo(q==='line'?'対照は、ロットごとの成立の確認と、ロットどうしのずれの補正に使います（増強計画の考え方：Federer, 1956。該当箇所は原典での照合が済んでいません）。'+(ef.mode==='lot_single'&&ef.level!=='C'?`1系統1${unitN}のときは、${unitN}ごとのばらつきの見積もりにも対照を使います。`:'系統のばらつき（遺伝率）の計算には、対照の値そのものは入れません。'):'対照は系統の比較からは外し、ロットごとの成立の確認に使います。');   // W-L2（docs/60 の L-10）
   if(q==='pop'&&S.nPer>1){memo('集団を比べるときの反復は系統です。同じ系統の株どうしは似るので、株を反復として数えると、反復を水増しすることになります（擬似反復：Hurlbert, 1984）。雛形では、系統を変量効果に入れて、これを避けています。');D.refs.add('hurlbert');}
   if(q==='line'&&S.nPer>1){memo('系統の値は、単純平均より、接種回などのずれを補正した BLUP を使うと、あとの解析に渡しやすくなります。遺伝率 H² が低いと、あとの解析（GWAS など）で領域が見つかりにくくなります（Holland et al., 2003）。');D.refs.add('holland');
     memo(`ここでの「1系統の${unitN}」は、同じ遺伝子型の${unitN}（挿し木・株分け・培養苗など）です。1つの交配から出た実生（きょうだい）を同じ系統の${unitN}として入れると、出てくる値は遺伝率ではなく、交配組合せ（家系）の平均の確かさを表す別の量になります。`);}   // W-CLONE（claude/55b の 6.）
@@ -687,8 +783,18 @@ function decidePheno(S){
   if(S.trait==='prop'&&S.rep) memo('発芽の速さ（T50）と揃い（T10〜T90 の日数）は、そのシャーレで最後までに発芽した粒の数に対する割合で数えます。発芽しなかった粒は入らないので、発芽率と必ず並べて報告します。最終発芽数が数粒しかないシャーレは、1〜2粒の動きで値が大きく変わるので、最終発芽数を添えておくと読み手が判断できます。発芽が止まるまで調査を続けると、値が安定します（調査の最後の回でも発芽が増えている場合、T50・T90 は実際より早く出ます）。調査の間隔より細かい違いは見分けられません。なお「発芽勢」は、種子の発芽試験では「決めた日までの発芽率」を指すことが多いので、このツールでは T50・T10〜T90 をその名前では呼びません。');
   if(S.blocks){can('接種回・場所を「接種回」列に記録し、変量効果としてモデルに入れます。回ごとの強さの違いを補正できます。');
     memo((F.f==='ord'&&q!=='line'?'段階スコアのモデル（clmm）は変量効果の水準が3つ以上要るので、雛形では接種回を固定効果に入れています。':'')+(q==='line'&&yOf(S)>1?'接種回の数が少ない（1年あたり2〜4回）と、回のばらつきの見積もりは不安定です。その場合は、雛形の (1|年:接種回) を固定効果（+ 年:接種回）に替えると安定します（Bolker et al., 2009。該当箇所は原典での照合が済んでいません）。':'接種回の数が少ない（2〜4回）と、回のばらつきの見積もりは不安定です。その場合は、雛形の (1|接種回) を固定効果（+ 接種回）に替えると安定します（Bolker et al., 2009。該当箇所は原典での照合が済んでいません）。'));D.refs.add('bolker');   // 年ありは (1|年:接種回)（claude/57 の L-1）
-    if(ef.level!=='C') memo('上の誤差の自由度は、接種回の分を引く前の数です。接種回を固定効果に入れる場合は、回の数より1つ少ない分だけ小さくなります。');}
+    if(ef.level!=='C'&&!(lot&&(q==='line'||q==='ctrl'))) memo('上の誤差の自由度は、接種回の分を引く前の数です。接種回を固定効果に入れる場合は、回の数より1つ少ない分だけ小さくなります。');}
   else if(S.purpose!=='assoc'&&q!=='group'&&S.nPop*S.nLines*S.nPer>200) memo(`供試数が${(S.nPop*S.nLines*S.nPer).toLocaleString()}${unitN}あります。1回・1か所で処理しきれずに分けた場合は、回・場所を記録し、各回に対照を入れると、回ごとの違いを補正できます。`);
+  if(lot){const L=ef.lot,b=L.b,k=L.k,r=S.nPer;   // W-L1・W-L3〜L9（docs/58 の 4.2）
+    can('ロット（接種回・トレイ・培養ロット）ごとに対照を置く設計です。ロットごとに、対照が想定どおりの値になったか（そのロットの成立）を確かめられます。');
+    memo('どの系統をどのロットに入れるかは、くじ（乱数）で決めると、ロットの違いと系統の違いが重なりにくくなります。交配組合せや採種日ごとにロットを分けると、その違いとロットの違いが重なり、各ロットの対照だけが比べる手がかりになります。記入表の割り振り（番号順）は例なので、「接種回」の列を書き換えて使えます。');
+    memo(`ロットの成立の基準（たとえば「${cS}の値が◯以上」）は、結果を見る前に決めておくと、読み手が判断できます。基準に届かなかったロットは、そのロットの系統をまとめに入れず、やり直すか、外したことを書き添えます。`);
+    if(k===2&&q==='line')caution(`ロットのずれの補正は、対照の値が、ロットによって系統と同じように上下することを前提にしています。${cR}のように、どのロットでもほとんど同じ値（0 など）になる対照は、成立の確認には役立ちますが、ずれの物差しにはなりにくく、${unitN}のばらつきを小さく見積もるもとになります。その場合は、雛形の「物差しにならない対照を外す」の行を使うと、${cS}だけを物差しにできます${ef.mode==='lot_single'&&ef.level!=='C'?`（そのときの対照の${unitN}のばらつきの自由度は ${b*(c-1)} になります）`:''}。`);
+    if(k===2&&q==='ctrl')caution(`ロットのずれの補正は、対照の値が、ロットによって系統と同じように上下することを前提にしています。${cR}のように、どのロットでもほとんど同じ値（0 など）になる対照は、成立の確認には役立ちますが、ずれの物差しにはなりにくい対照です。`);   // docs/60 の L-7
+    if(ef.mode==='lot_single'&&ef.level!=='C'){memo(`「遺伝率の目安」は、対照（同じ遺伝子型の${unitN}）どうしのばらつきを「遺伝によらないばらつき」とみなし、系統どうしのばらつきからそれを除いて求めた、1個体の値についての値です（Falconer and Mackay, 1996。該当箇所は原典での照合が済んでいません）。対照の${unitN}のばらつきが、系統の${unitN}のばらつきと同じ大きさであることを前提にしています。`);D.refs.add('falconer');}
+    if(q==='line')memo('系統のばらつきの自由度は、同じロットの中の系統どうしから数えています（系統の数 − ロットの数）。'+(r>1?`${unitN}のばらつきの自由度は系統の${unitN}から数え、対照の分は足していません。`:''));
+    if(S.nLot>S.nLines)memo(`ロットの数（${S.nLot}）が1集団の系統の数（${S.nLines}）より多いので、ロットを${S.nLines}として数えています。`);
+    memo(`列の名前は「接種回」のままですが、トレイ・培養ロット・ブロックの番号を入れて使えます。対照の${unitN}の番号は、ロットをまたいで通し番号にします（同じ番号を別のロットで使うと、同じ${unitN}として扱われます）。`);}
   if(q==='assoc'){
     if(S.nM>1) caution('近くにあるマーカーどうし（連鎖不平衡の範囲）は、効果を分けられません。同じ領域のマーカーは代表1つに絞るか、組合せ（保有数）として扱うと、解釈しやすくなります。');
     if(S.nM===2) memo('交互作用（片方のマーカーの効果が、もう片方の型によって変わること）は、型の組合せごとの個体数がそろっているほど確かめやすくなります。たとえば F2 で、離れた場所にある2つのマーカー（3型）なら、両方ともホモの組合せは、それぞれ全体の16分の1ほどしか出ません。組合せごとの個体数を表に添えると、読み手が判断できます。');   // W-INT
@@ -700,7 +806,7 @@ function decidePheno(S){
   D.refs.add(F.f==='surv'?'surv':F.f==='ord'?'ordinal':'bates');
   D.pills=[[TR[S.trait].t,''],[`反復の単位：${D.unit}`,D.unit==='反復なし'?'bad':'ok']];if(S.rep)D.pills.push([`${S.nSurvey}回調査`,'']);
   if(q==='line'&&ef.mode==='year')D.pills.push([`個体のばらつきの自由度 Eg ${E0(ef.Eg)}・目安10以上`,ef.Eg>=10?'ok':'bad'],[`年ごとのばらつきの自由度 Ee ${E0(ef.Ee)}・目安10以上`,ef.Ee>=10?'ok':'bad']);
-  else if(q==='line')D.pills.push([`系統のばらつきの自由度 Eg ${E0(ef.Eg)}・目安10以上`,ef.Eg>=10?'ok':'bad'],[`${unitN}のばらつきの自由度 Ee ${E0(ef.Ee)}・目安10以上`,ef.Ee>=10?'ok':'bad']);
+  else if(q==='line')D.pills.push([`系統のばらつきの自由度 Eg ${E0(ef.Eg)}・目安10以上`,ef.Eg>=10?'ok':'bad'],ef.reason==='line_lot_scale'?[`${unitN}のばらつき：この形質では対照から借りない`,'bad']:[`${ef.mode==='lot_single'?'対照の':''}${unitN}のばらつきの自由度 Ee ${E0(ef.Ee)}・目安10以上`,ef.Ee>=10?'ok':'bad']);
   else if(ef.E!=null)D.pills.push([`誤差の自由度 E ${E0(ef.E)}・目安10以上`,ef.level==='A'?'ok':'bad']);
   return D;
 }
@@ -714,17 +820,20 @@ function advisePheno(S,D,raw){
     for(let n=from+1;n<=from+200;n++){const t=trial({[key]:n}),now=key==='nCtrlPer'?cOf(t.S):t.S[key];if(now!==n)return null;if(pred(t.ef))return{n,ef:t.ef,add:n-from};}return null;};
   const up=e=>LV_RANK[e.level]>LV_RANK[lv],isA=e=>e.level==='A';
   const can=[],cannot=[],next=[],summary=[];
-  const vkw=vkwOf(S,F);
+  const vkw=vkwOf(S,F),lot=lotOn(S),LT=ef.lot||{},lotL=lot&&q==='line';
   // できること（3.1）
   const ab=lv!=='C',nP=S.nPop;
   if(q==='pop')can.push(ab?(F.f==='surv'?'ログランク検定で、集団どうしを組ごとに比べる（Holm法で調整）':`Tukey法で、集団どうしを比べる（${nP*(nP-1)/2}組）`):ef.reason==='pop_one'?'系統の値の分布（平均・最小〜最大・ヒストグラム）を、表と図で示す':'集団ごとの値を、表と図（1点ずつ）で示す');
   if(q==='group')can.push(...(ab?['予測の上位と下位の群の差を検定する（交配組合せを単位に）','予測値と実測値の対応を、図と順位相関で示す']:['交配組合せごとの平均を、予測値と並べて図に示す']));
   if(q==='ctrl'&&ef.ctrlFew)can.push(ab?(F.f==='surv'?'対照を基準にしたハザード比で示す':`対照（${cS}）と各系統を1つずつ比べる（Dunnett型、${G}組）`):'系統と対照の値を、表と図で並べて示す');
-  if(q==='ctrl'&&!ef.ctrlFew)can.push(...(ab?[`${cR}と${cS}の差で、試験の成立を確かめる`,'系統の値を、対照の値を物差しにして区分する']:['系統の値を、対照の値と並べて分布の図に示す']));
+  if(q==='ctrl'&&!ef.ctrlFew)can.push(...(ab?(lot?[`${cR}と${cS}の差で、試験の成立を確かめる（ロットをブロックとして）`,'系統の値を、同じロットの対照の値を物差しにして区分する']:[`${cR}と${cS}の差で、試験の成立を確かめる`,'系統の値を、対照の値を物差しにして区分する']):['系統の値を、対照の値と並べて分布の図に示す']));
   if(q==='assoc')can.push(...(ab?[`遺伝子型による表現型の違いを検定する（マーカー${S.nM}個）`,'遺伝子型ごとの平均を比べる']:['遺伝子型ごとの値と個体数を、表と図で示す']));
   const yearM=q==='line'&&ef.mode==='year';
-  if(q==='line')can.push(...(ab?(yearM?['年をならした個体の値（BLUP）を出して、選抜やあとの解析に渡す','反復性（同じ個体の値が、年が変わってもどれだけ再現するか）を出す']:['系統の値（BLUP）を出して、あとの解析や選抜に渡す','広義の遺伝率 H² を出す']):[`調査値（1系統1${u}の値）を、そのまま系統の値として使う`,'系統の値の分布を図に示す']));
-  if(S.hasCtrl&&q!=='ctrl'&&!vkw)can.push(yOf(S)>1?'対照どうしの差で、処理が効いたか（試験の成立）を、年ごとに確かめる':'対照どうしの差で、処理が効いたか（試験の成立）を確かめる');
+  if(lotL)can.push(...(ab?(ef.mode==='lot_single'?['ロット（接種回）のずれを補正した系統の値（BLUP）を出して、選抜やあとの解析に渡す','遺伝率の目安（1個体の値がどれだけ遺伝で決まるか）を出す']:['系統の値（BLUP）を出して、あとの解析や選抜に渡す','広義の遺伝率 H² を出す','ロットのずれを、各ロットの対照を物差しにして補正する']):ef.reason==='line_lotone'?[`系統の${u}の値を、同じロットの対照の値と並べて示す`]:[`調査値（1系統1${u}の値）を、そのまま系統の値として使う`,'系統の値の分布を図に示す']));
+  else if(q==='line')can.push(...(ab?(yearM?['年をならした個体の値（BLUP）を出して、選抜やあとの解析に渡す','反復性（同じ個体の値が、年が変わってもどれだけ再現するか）を出す']:['系統の値（BLUP）を出して、あとの解析や選抜に渡す','広義の遺伝率 H² を出す']):[`調査値（1系統1${u}の値）を、そのまま系統の値として使う`,'系統の値の分布を図に示す']));
+  if(lot&&q!=='ctrl'){can.push('ロットごとに、対照の値で成立を確かめる（基準は結果を見る前に決めておく）');if(LT.k===2&&!vkw)can.push('対照どうしの差を、ロットをまとめて検定で確かめる');
+    if(LT.k===1)cannot.push({t:'対照どうしの差の検定',why:'対照が1つで、比べる相手の対照がないため。ロットごとに、対照の値が基準に届いたかで成立を確かめます'});}
+  else if(S.hasCtrl&&q!=='ctrl'&&!vkw)can.push(yOf(S)>1?'対照どうしの差で、処理が効いたか（試験の成立）を、年ごとに確かめる':'対照どうしの差で、処理が効いたか（試験の成立）を確かめる');
   // マーカー2つの交互作用（claude/55 の 3.2）。段階は変えない
   const intOn=q==='assoc'&&S.nM===2&&F.f!=='surv'&&lv!=='C';
   if(intOn&&ef.Eint>=1)can.push('2つのマーカーの組合せで効果が変わるか（交互作用）を、主効果だけのモデルと比べて確かめる');
@@ -740,11 +849,16 @@ function advisePheno(S,D,raw){
     ctrlm_norep:[{t:'対照どうしの差の検定（試験の成立の確認）',why:`対照が1${u}ずつで、${u}どうしのばらつきを見積もれないため`},{title:`対照が1${u}ずつのまとめ方`,how:['2つの対照の値を示し、想定どおりの向き・大きさの差が出たかを文で書く','系統の値は、対照の値と並べた分布の図で示す'],dont:['「試験の成立を検定で確認した」という書き方']}],
     line_noper:[{t:'遺伝率（H²）と、ばらつきを補正した系統の値（BLUP）',why:`1系統1${u}では、系統の違いと${u}ごとの測定のばらつきを分けられないため`},{title:`1系統1${u}のまとめ方`,how:['調査値をそのまま系統の値として使う（実生の集団では、これがふつうの形です）','値の分布（ヒストグラム）と、対照の位置を示す','同じ個体を年や時期を変えて調べた値があれば、上の「調べる年の数」に入れると、個体の値の再現性（反復性）を出せる'],dont:['遺伝率の値','1個体の値の差を、系統の差として断定する書き方']}],
     line_one:[{t:'系統のばらつき（遺伝分散）と遺伝率',why:'系統が1つで、系統どうしのばらつきがないため'},{title:'系統が1つのときのまとめ方',how:[`${u}ごとの値の平均とばらつきを示す`],dont:['遺伝率の値']}],
+    line_lot_noerr:[{t:'遺伝率と、ロットのずれを補正した系統の値（BLUP）',why:`1系統1${u}で、各ロットの対照も1${u}ずつのため、${u}ごとのばらつきを見積もる手がかりがないため`},{title:`1系統1${u}・対照が各ロット1${u}のまとめ方`,how:['調査値をそのまま系統の値として使い、どのロットの値かを添える','ロットごとに、系統の値の分布と対照の値を並べた図を示す（ロットのずれの大きさを目で確かめる）','系統をくじでロットに割り振っているときは、「同じロットの系統の平均との差」を添えると、ロットをまたいで並べやすくなる'],dont:['遺伝率の値',`対照1${u}の値を引いた（割った）だけの値を、補正した値として断定的に使うこと`]}],
+    line_lot_scale:[{t:'遺伝率の目安と、ロットのずれを補正した系統の値（BLUP）',why:`1系統1${u}のときは、${u}ごとのばらつきを対照から借りますが、${TR[S.trait].n}は値の大きさでばらつきが変わるので、上限・下限に寄りやすい対照のばらつきは、系統の${u}のばらつきの代わりにならないため`},{title:`1系統1${u}・${TR[S.trait].n}のまとめ方`,how:['調査値をそのまま系統の値として使い、どのロットの値かを添える','ロットごとに、系統の値の分布と対照の値を並べた図を示す（ロットのずれの大きさを目で確かめる）','系統をくじでロットに割り振っているときは、「同じロットの系統の平均との差」を添えると、ロットをまたいで並べやすくなる'],dont:['遺伝率の値']}],
+    line_lotone:[{t:'系統のばらつき（遺伝分散）と遺伝率',why:'1ロットに1系統で、同じロットの中に比べる系統がないため'},{title:'1ロット1系統のまとめ方',how:['系統の値を、同じロットの対照の値と並べて示す'],dont:['遺伝率の値']}],
+    ctrlm_onekind:[{t:'対照どうしの差の検定（試験の成立の確認）',why:'対照が1つで、比べる相手の対照がないため'},{title:'対照が1つのときのまとめ方',how:['ロットごとの対照の値を表にし、結果を見る前に決めた基準に届いたロットを「成立」とする','成立したロットの系統を、同じロットの対照の値と並べた分布の図で示す'],dont:['「試験の成立を検定で確認した」という書き方']}],
     assoc_norep:[{t:'遺伝子型の効果の検定',why:`系統の数（${G}）が、マーカーの型の数（${S.nM*((ef.g||3)-1)+1}）以下で、型の違いと系統ごとのばらつきを分けられないため`},{title:'系統が少ないときのまとめ方',how:['遺伝子型ごとの値と個体数を表にする','図は1個体ずつ点を打つ'],dont:['有意差の記号や P値','「マーカーの効果がある／ない」と断定する書き方']}]};
-  if(lv==='C'){const x=C2[ef.reason];cannot.push(x[0]);summary.push(x[1]);if(ef.reason==='pop_norep')D.refs.add('hurlbert');}
+  if(lv==='C'){const x=C2[ef.reason];if(lot)cannot.unshift(x[0]);else cannot.push(x[0]);summary.push(x[1]);if(ef.reason==='pop_norep')D.refs.add('hurlbert');}
   // 段階B：読み方（3.3）
   if(lv==='B'){
     if(yearM)summary.push({title:'個体・年が少ないときの反復性の読み方',how:[`反復性は、個体のばらつきの自由度（${ef.Eg}）と年ごとのばらつきの自由度（${ef.Ee}）、調べた年数を添えて示す`,'値には幅があるものとして読み、ほかの集団の値と細かく比べない'],dont:['反復性の小数第2位までの違いを論じること','反復性を遺伝率として書くこと']});
+    else if(q==='line'&&ef.mode==='lot_single')summary.push({title:`系統・対照の${u}が少ないときの遺伝率の目安の読み方`,how:[`遺伝率の目安は、系統のばらつきの自由度（${ef.Eg}）と対照の${u}のばらつきの自由度（${ef.Ee}）を添えて示す`,'値には幅があるものとして読み、ほかの集団の値と細かく比べない'],dont:['遺伝率の小数第2位までの違いを論じること']});   // docs/60 の L-10
     else if(q==='line')summary.push({title:`系統・${u}が少ないときの遺伝率の読み方`,how:[`遺伝率は、系統のばらつきの自由度（${ef.Eg}）と${u}のばらつきの自由度（${ef.Ee}）を添えて示す`,'値には幅があるものとして読み、ほかの集団の値と細かく比べない'],dont:['遺伝率の小数第2位までの違いを論じること']});
     else summary.push({title:'反復が少ないときのまとめ方',how:[`検定はできる。平均に加えて、${ef.unit}ごとの値も表か図に載せる`,'差がみられなかった場合は、「差がない」ではなく「この規模では差を確かめられなかった」と書く'],dont:['有意でなかったことを、差がない証拠として書くこと']});
   }
@@ -779,12 +893,25 @@ function advisePheno(S,D,raw){
     }
     if(q==='ctrl'&&!ef.ctrlFew){
       const f1=find('nCtrlPer',up),fA=find('nCtrlPer',isA);
-      if(lv==='C'&&f1)push(1,'level',`対照を各${f1.n}${u}にすると、試験の成立を検定で確かめられるようになります（誤差の自由度 ${E0(ef.E)} → ${f1.ef.E}。各あと${f1.add}${u}）。`+(fA&&fA.n!==f1.n?`各${fA.n}${u}にすると、目安（10以上）に届きます。`:'')+`系統の${u}数はそのままで構いません。`,fA?{nCtrlPer:fA.n}:{nCtrlPer:f1.n},fA?fA.ef:f1.ef,{n:(fA||f1).add,unit:u},[stepOf('nCtrlPer',f1),stepOf('nCtrlPer',fA)].filter(Boolean));
-      else if(lv==='B'&&fA)push(1,'level',`対照を各${fA.n}${u}にすると、誤差の自由度が ${E0(ef.E)} → ${fA.ef.E} になり、目安（10以上）に届きます（各あと${fA.add}${u}）。系統の${u}数はそのままで構いません。`,{nCtrlPer:fA.n},fA.ef,{n:fA.add,unit:u},[stepOf('nCtrlPer',fA)]);
+      const pre=lot?'各ロットの対照':'対照',per=lot?'各ロット・対照1つあたり ':'各';
+      if(ef.reason==='ctrlm_onekind'){const t=trial({ctrlKinds:2});push(1,'level',`各ロットの対照を2つ（${cR}・${cS}）にすると、対照どうしの差で、試験の成立を確かめられるようになります（誤差の自由度 ${t.ef.E}。対照 あと${LT.b*c}${u}。「${t.ef.levelTitle}」の段階になります）。`,{ctrlKinds:2},t.ef,{n:1,unit:'対照'},[{set:{ctrlKinds:2},level:t.ef.level,E:t.ef.E}]);}
+      else if(lv==='C'&&f1)push(1,'level',`${pre}を各${f1.n}${u}にすると、試験の成立を検定で確かめられるようになります（誤差の自由度 ${E0(ef.E)} → ${f1.ef.E}。${per}あと${f1.add}${u}）。`+(fA&&fA.n!==f1.n?`各${fA.n}${u}にすると、目安（10以上）に届きます。`:'')+`系統の${u}数はそのままで構いません。`,fA?{nCtrlPer:fA.n}:{nCtrlPer:f1.n},fA?fA.ef:f1.ef,{n:(fA||f1).add,unit:u},[stepOf('nCtrlPer',f1),stepOf('nCtrlPer',fA)].filter(Boolean));
+      else if(lv==='B'&&fA)push(1,'level',`${pre}を各${fA.n}${u}にすると、誤差の自由度が ${E0(ef.E)} → ${fA.ef.E} になり、目安（10以上）に届きます（${per}あと${fA.add}${u}）。系統の${u}数はそのままで構いません。`,{nCtrlPer:fA.n},fA.ef,{n:fA.add,unit:u},[stepOf('nCtrlPer',fA)]);
     }
     if(q==='line'){
       const lab=nP>1?'1集団の系統':'系統',per=nP>1?'1集団あたり ':'';
-      if(ef.reason==='line_noper'){const t=trial({nPer:2});push(1,'level',`同じ遺伝子型の${u}を2にすると、遺伝率と、ばらつきを補正した系統の値（BLUP）を出せるようになります（${u}のばらつきの自由度 0 → ${t.ef.Ee}。1系統あたり あと1${u}）。挿し木・株分け・培養苗などで同じ遺伝子型を増やせる材料で使える方法です。`,{nPer:2},t.ef,{n:1,unit:u},[{set:{nPer:2},level:t.ef.level,E:null,Eg:t.ef.Eg,Ee:t.ef.Ee}]);
+      if(lotL&&ef.reason==='line_lot_noerr'){const b=LT.b,lt=t=>`（「${t.ef.levelTitle}」の段階になります）`;
+        const t1=trial({nCtrlPer:2});push(1,'level',`各ロットの対照を2${u}にすると、${u}ごとのばらつきを対照から見積もれるようになり、ロットのずれを補正した系統の値と遺伝率の目安を出せるようになります（対照の${u}のばらつきの自由度 0 → ${t1.ef.Ee}。対照 あと${LT.k*b}${u}）。${lt(t1)}`,{nCtrlPer:2},t1.ef,{n:2-c,unit:u},[{set:{nCtrlPer:2},level:t1.ef.level,E:null,Eg:t1.ef.Eg,Ee:t1.ef.Ee}]);
+        const t2=trial({ctrlKinds:2});push(1,'level',`各ロットの対照を2つ（${cR}・${cS}）にすると、同じように出せるようになります（自由度 0 → ${t2.ef.Ee}。対照 あと${b*c}${u}）。2つの対照が、ロットによって同じように上下する形質に向く方法です。`,{ctrlKinds:2},t2.ef,{n:1,unit:'対照'},[{set:{ctrlKinds:2},level:t2.ef.level,E:null,Eg:t2.ef.Eg,Ee:t2.ef.Ee}]);
+        const t3=trial({nPer:2});push(1,'level',`同じ遺伝子型の${u}を2にすると、${u}のばらつきを系統の${u}から見積もれるようになり、遺伝率まで出せるようになります（${u}のばらつきの自由度 0 → ${t3.ef.Ee}。1系統あたり あと1${u}）。挿し木・株分け・培養苗などで同じ遺伝子型を増やせる材料で使える方法です。`,{nPer:2},t3.ef,{n:1,unit:u},[{set:{nPer:2},level:t3.ef.level,E:null,Eg:t3.ef.Eg,Ee:t3.ef.Ee}]);}
+      else if(lotL&&ef.reason==='line_lot_scale'){const t3=trial({nPer:2});push(1,'level',`同じ遺伝子型の${u}を2にすると、${u}のばらつきを系統の${u}から見積もれるようになり、遺伝率まで出せるようになります（${u}のばらつきの自由度 0 → ${t3.ef.Ee}。1系統あたり あと1${u}）。挿し木・株分け・培養苗などで同じ遺伝子型を増やせる材料で使える方法です。`,{nPer:2},t3.ef,{n:1,unit:u},[{set:{nPer:2},level:t3.ef.level,E:null,Eg:t3.ef.Eg,Ee:t3.ef.Ee}]);}
+      else if(lotL&&ef.reason==='line_lotone'){const f=find('nLines',e=>e.Eg>=1);if(f)push(1,'level',`${lab}を${f.n}にすると、同じロットの中で系統どうしを比べられるようになります（「${f.ef.levelTitle}」の段階になります）。`,{nLines:f.n},f.ef,{n:f.add,unit:'系統'},[stepOf('nLines',f)]);}
+      else if(lotL){
+        if(ef.Eg<10){const f=find('nLines',e=>e.Eg>=10);if(f)push(1,'level',`${lab}を${f.n}にすると、系統のばらつきの自由度が ${ef.Eg} → ${f.ef.Eg} になり、ツールの目安（10以上）に届きます（${per}あと${f.add}系統）。`,{nLines:f.n},f.ef,{n:f.add,unit:'系統'},[stepOf('nLines',f)]);}
+        if(ef.Ee<10&&r>1){const f=find('nPer',e=>e.Ee>=10);if(f)push(1,'level',`1系統の${u}を${f.n}にすると、${u}のばらつきの自由度が ${ef.Ee} → ${f.ef.Ee} になり、ツールの目安（10以上）に届きます（1系統あたり あと${f.add}${u}）。`,{nPer:f.n},f.ef,{n:f.add,unit:u},[stepOf('nPer',f)]);}
+        if(ef.Ee<10&&r===1){const f=find('nCtrlPer',e=>e.Ee>=10);if(f)push(1,'level',`各ロットの対照を各${f.n}${u}にすると、対照の${u}のばらつきの自由度が ${ef.Ee} → ${f.ef.Ee} になり、ツールの目安（10以上）に届きます（各ロット・対照1つあたり あと${f.add}${u}）。`,{nCtrlPer:f.n},f.ef,{n:f.add,unit:u},[stepOf('nCtrlPer',f)]);}
+      }
+      else if(ef.reason==='line_noper'){const t=trial({nPer:2});push(1,'level',`同じ遺伝子型の${u}を2にすると、遺伝率と、ばらつきを補正した系統の値（BLUP）を出せるようになります（${u}のばらつきの自由度 0 → ${t.ef.Ee}。1系統あたり あと1${u}）。挿し木・株分け・培養苗などで同じ遺伝子型を増やせる材料で使える方法です。`,{nPer:2},t.ef,{n:1,unit:u},[{set:{nPer:2},level:t.ef.level,E:null,Eg:t.ef.Eg,Ee:t.ef.Ee}]);
         // 同じ株を2年調べる（claude/55 の 2.3）
         const ty=trial({nYear:2});if(up(ty.ef))push(1,'level',`同じ${u}を2年（2作期）調べると、年をならした個体の値と、年をまたいだ再現性（反復性）を出せるようになります（年ごとのばらつきの自由度 0 → ${ty.ef.Ee}。あと1年）。${u}を増やせない実生の集団で使える方法です。（「${ty.ef.levelTitle}」の段階になります）`,{nYear:2},ty.ef,{n:1,unit:'年'},[{set:{nYear:2},level:ty.ef.level,E:null,Eg:ty.ef.Eg,Ee:ty.ef.Ee}]);}
       else if(ef.reason==='line_one'){const f=find('nLines',e=>e.G>=2);if(f)push(1,'level',`系統を2つ以上にすると、系統どうしのばらつきを見積もれるようになります（「${f.ef.levelTitle}」の段階になります）。`,{nLines:f.n},f.ef,{n:f.add,unit:'系統'},[stepOf('nLines',f)]);}
@@ -796,11 +923,13 @@ function advisePheno(S,D,raw){
     }
   }
   // 成立の確認（V-KW）・順位相関（2.3・3.3）
-  if(vkw){cannot.push({t:'対照どうしの差の検定（試験の成立の確認）',why:`対照が各${c}${u}では、どんなに差があっても検定は有意になりません（Kruskal–Wallis検定のP値は0.08より小さくなりません）`});
+  if(vkw&&lot){const b=LT.b;cannot.push({t:'対照どうしの差の検定（試験の成立の確認）',why:`対照が各${b*c}${u}（${b}ロット × ${c}${u}）では、どんなに差があっても検定は有意になりません（Kruskal–Wallis検定のP値は0.08より小さくなりません）`});
+    const t=trial({nCtrlPer:2});push(2,'tip',`各ロットの対照を各2${u}にすると、対照どうしの差を検定で確かめられるようになります（対照2つ・${b}ロットで あと${2*b*(2-c)}${u}）。`,{nCtrlPer:2},t.ef,{n:2-c,unit:u},[{set:{nCtrlPer:2},level:t.ef.level,E:t.ef.E,Eg:t.ef.Eg,Ee:t.ef.Ee}]);}
+  else if(vkw){cannot.push({t:'対照どうしの差の検定（試験の成立の確認）',why:`対照が各${c}${u}では、どんなに差があっても検定は有意になりません（Kruskal–Wallis検定のP値は0.08より小さくなりません）`});
     const t=trial({nCtrlPer:3});push(2,'tip',`対照を各3${u}以上にすると、対照どうしの差を検定で確かめられるようになります（対照2つで あと${2*(3-c)}${u}）。3${u}ずつでは、2つの対照の値が完全に分かれたときだけ有意になるので、4${u}以上あるとゆとりができます。`,{nCtrlPer:3},t.ef,{n:3-c,unit:u},[{set:{nCtrlPer:3},level:t.ef.level,E:t.ef.E,Eg:t.ef.Eg,Ee:t.ef.Ee}]);}
   if(q==='group'&&nP<=4){cannot.push({t:'予測値と実測値の順位相関の検定',why:`交配組合せが${nP}では、順位が完全に一致しても、Spearmanの順位相関は5%水準で有意になりません（正確法の最小のP値：3組 0.333、4組 0.083）`});
     const t=trial({nPop:5});push(2,'tip','交配組合せを5以上にすると、順位相関を検定で確かめられるようになります（5組で順位が完全に一致したとき P = 0.017）。',{nPop:5},t.ef,{n:5-nP,unit:'交配組合せ'},[{set:{nPop:5},level:t.ef.level,E:t.ef.E}]);}
-  if(S.purpose==='pheno'&&!S.hasCtrl&&q!=='ctrl'){const t=trial({hasCtrl:true});push(3,'tip',`${cR}と${cS}を毎回入れると、接種などの処理が効いたかを確かめられるようになり、回ごとの強さの違いも補正できるようになります。`,{hasCtrl:true},t.ef,null,[{set:{hasCtrl:true},level:t.ef.level,E:t.ef.E,Eg:t.ef.Eg,Ee:t.ef.Ee}]);}
+  if(S.purpose==='pheno'&&!S.hasCtrl&&q!=='ctrl'){const t=trial({hasCtrl:true});push(3,'tip',`${ctrlNames(t.S).join('と')}を毎回入れると、接種などの処理が効いたかを確かめられるようになり、回ごとの強さの違いも補正できるようになります。`,{hasCtrl:true},t.ef,null,[{set:{hasCtrl:true},level:t.ef.level,E:t.ef.E,Eg:t.ef.Eg,Ee:t.ef.Ee}]);}
   next.sort((a,b)=>a.pri-b.pri);
   return{level:lv,levelTitle:ef.levelTitle,levelBy:ef.levelBy,E:q==='line'?null:ef.E,Eg:ef.Eg,Ee:ef.Ee,Eint:ef.Eint,unit:ef.unit,reason:ef.reason,vkw,
     can,cannot,next:next.slice(0,3).map(({pri,...x})=>x),summary};
@@ -854,8 +983,8 @@ function sumLines(S,F,X,grp,val,lab,opt){
 function rPheno(S,D,A){
   const F=D.F,q=D.q,u=D.unitN,X=S.hasCtrl&&q!=='ctrl'?'x':'a',cR=rq(S.ctrlR),cS=rq(S.ctrlS),c=cOf(S),lv=A.level,why=(A.cannot[0]||{}).why||'';
   const L=[`# 試験設計ナビ（生物工学版 ver. ${VERSION.ver}）の雛形です。列名・水準名を実際のCSVに合わせると、そのまま動きます。`];
-  const y=yOf(S),yearM=q==='line'&&S.nPer===1&&y>1;
-  if(lv==='B')L.push(yearM?`# 【読み方】個体のばらつきの自由度が${A.Eg}、年ごとのばらつきの自由度が${A.Ee}と小さく、反復性の見積もりの幅が大きい設計です。値には幅があるものとして読みます。`:q==='line'?`# 【読み方】系統のばらつきの自由度が${A.Eg}、${u}のばらつきの自由度が${A.Ee}と小さく、遺伝率の見積もりの幅が大きい設計です。値には幅があるものとして読みます。`
+  const y=yOf(S),yearM=q==='line'&&S.nPer===1&&y>1,lot=lotOn(S);
+  if(lv==='B')L.push(yearM?`# 【読み方】個体のばらつきの自由度が${A.Eg}、年ごとのばらつきの自由度が${A.Ee}と小さく、反復性の見積もりの幅が大きい設計です。値には幅があるものとして読みます。`:q==='line'?`# 【読み方】系統のばらつきの自由度が${A.Eg}、${lotOn(S)&&S.nPer===1?'対照の':''}${u}のばらつきの自由度が${A.Ee}と小さく、遺伝率の${lotOn(S)&&S.nPer===1?'目安':'見積もり'}の幅が大きい設計です。値には幅があるものとして読みます。`
     :`# 【読み方】誤差の自由度が${A.E}と小さく、差が出にくい設計です。有意でなくても「差がない」とは言えません。`);
   const libAt=L.length;
   L.push('d <- read.csv("data.csv", fileEncoding = "UTF-8", na.strings = c("", "NA"))   # Excelで保存したCSVは fileEncoding = "CP932"');
@@ -892,6 +1021,16 @@ function rPheno(S,D,A){
     else L.push(`aggregate(${Y} ~ 系統 + 年, data = ctl, FUN = mean)`,`by(ctl, ctl$年, function(z) kruskal.test(${Y} ~ 系統, data = z))`);
     L.push('x <- droplevels(subset(a, 区分 == "系統"))   # ここからは系統だけで解析','');
   }
+  else if(lot&&q!=='ctrl'){   // ロットごとの成立の確認（docs/58 の 6.1）
+    const k=kOf(S),b=bOf(S);
+    L.push('# (0) ロット（接種回）ごとの成立確認：対照が想定どおりの値になったか','ctl <- droplevels(subset(a, 区分 == "対照"))');
+    if(F.f==='surv'){L.push('aggregate(cbind(日数, 状態) ~ 系統 + 接種回, data = ctl, FUN = mean)   # ロットごとの、日数の平均と、起きた株の割合。成立の基準は、結果を見る前に決めておく');
+      L.push(k===2?'survdiff(Surv(日数, 状態) ~ 系統 + strata(接種回), data = ctl)   # ロットを層にした、対照どうしの比較':'# 対照が1つのため、対照どうしの検定はありません。上の表で、ロットごとに基準に届いたかを確かめます');}
+    else{L.push(`aggregate(${Y} ~ 系統 + 接種回, data = ctl, FUN = mean)   # ロットごとの対照の値。成立の基準は、結果を見る前に決めておく`);
+      L.push(k===1?'# 対照が1つのため、対照どうしの検定はありません。上の表で、ロットごとに基準に届いたかを確かめます':A.vkw?`# 対照が各${b*c}${u}のため、検定は行わず値を並べて確かめます`:`kruskal.test(${Y} ~ 系統, data = ctl)   # 対照どうしの差（ロットをまとめて。ロットのずれの分だけ、控えめな検定）`);}
+    L.push('# a <- droplevels(subset(a, !(接種回 %in% c("3"))))   # 基準に届かなかったロットを外す例（番号を書き換え、行頭の # を取る）',
+      'x <- droplevels(subset(a, 区分 == "系統"))   # 系統だけの表','');
+  }
   else if(S.hasCtrl&&q!=='ctrl'){
     L.push('# (0) 試験の成立確認：対照どうしで差が出たか（処理が効いたか）','ctl <- droplevels(subset(a, 区分 == "対照"))');
     if(F.f==='surv')L.push('survdiff(Surv(日数, 状態) ~ 系統, data = ctl)');
@@ -899,7 +1038,7 @@ function rPheno(S,D,A){
     else L.push(`aggregate(${Y} ~ 系統, data = ctl, FUN = mean)`,`kruskal.test(${Y} ~ 系統, data = ctl)`);
     L.push('x <- droplevels(subset(a, 区分 == "系統"))   # ここからは系統だけで解析','');
   }
-  if(lv==='C'&&A.reason!=='line_noper'&&A.reason!=='ctrlm_norep'){
+  if(lv==='C'&&!['line_noper','ctrlm_norep','line_lot_noerr','line_lot_scale','line_lotone','ctrlm_onekind'].includes(A.reason)){
     L.push(`# (1) この設計では検定は行わず、表と図でまとめます（理由：${why}）`);
     const lab=rq(F.f==='surv'?'日数':F.how==='auc'?'AUDPC':S.trait==='prop'?'発芽率':S.col);
     const R=A.reason;
@@ -929,6 +1068,37 @@ function rPheno(S,D,A){
     if(F.f==='nb'){L.push(`${X}$Y <- log1p(${X}$${S.col})`);yv='Y';}
     if(F.f==='surv'){L.push(`${X}$Y <- ${X}$日数   # 打ち切り株は調査終了日のまま。打ち切りが多いときは系統ごとの生存率も併記`);yv='Y';}
     const rr=['(1|系統)'];if(S.blocks)rr.push(y>1?'(1|年:接種回)':'(1|接種回)');
+    if(lot){   // ロットごとの対照（docs/58 の 6.2・6.3）。Y は対照の行も含めて a に作り、x・ctl を作り直す
+      if(yv==='Y'){const i=L.length-1;L[i]=L[i].split('x$').join('a$');L.push('x <- droplevels(subset(a, 区分 == "系統")); ctl <- droplevels(subset(a, 区分 == "対照"))');}
+      if(lv==='C'){L[L.length-(yv==='Y'?3:1)]=`# (1) この設計では遺伝率は出さず、表と図でまとめます（理由：${why}）`;
+        if(A.reason==='line_lotone')L.push(`blup <- x |> group_by(接種回, 系統) |> summarise(値 = mean(${yv}, na.rm = TRUE), ${u}数 = n(), .groups = "drop")   # 系統の値。同じロットの対照の値（(0) の表）と並べて読む`);   // docs/60 の L-8
+        else L.push(`blup <- x |> group_by(接種回) |> mutate(ロット内の差 = ${yv} - mean(${yv}, na.rm = TRUE)) |> ungroup() |>`,
+          `  select(系統, 接種回, ${yv}, ロット内の差)   # ロット内の差＝同じロットの系統の平均との差（系統をくじで割り振ったときの、並べ方の参考）`);
+        L.push('write.csv(blup, "系統の値.csv", row.names = FALSE, fileEncoding = "CP932")   # CP932はExcelで開く用','',
+          '# (2) ロットごとに、系統の値の分布と対照の値を並べる',
+          `ggplot(x, aes(${yv})) + geom_histogram(bins = 30) +`,
+          `  geom_vline(data = ctl, aes(xintercept = ${yv}, colour = 系統), linewidth = 1) + facet_wrap(~ 接種回, ncol = 1)`);
+        if(F.how==='germ')L.push(GERM_NOTE);
+        return withLibraries(L,libAt).join('\n');}
+      const single=S.nPer===1,mf=`物差し + (0 + 系統か | 系統) + (1|接種回)`;
+      if(single)L[L.length-(yv==='Y'?3:1)]='# (1) ロットのずれを補正した系統の値（BLUP）と、遺伝率の目安';
+      else L[L.length-(yv==='Y'?3:1)]='# (1) 系統の値（BLUP）と広義の遺伝率 H²（ロットのずれは、各ロットの対照を物差しにして補正）';
+      if(kOf(S)===2)L.push(`# a <- droplevels(subset(a, 系統 != "${cR}"))   # どのロットでもほぼ同じ値になる対照は、物差しにならないので、ここで外す`);
+      L.push('a$物差し <- relevel(factor(ifelse(a$区分 == "対照", as.character(a$系統), "系統")), ref = "系統")   # 対照は名前ごと、系統はひとまとめ（固定効果）',
+        'a$系統か <- as.numeric(a$区分 == "系統")   # 系統＝1、対照＝0（系統だけに、系統ごとのばらつきを持たせる）',
+        `m0 <- lmer(${yv} ~ ${mf}, data = a)   # ロットが少ない（2〜4）ときは (1|接種回) を + 接種回 に替える（BLUP は1番目のロットを基準にした値になる）`,'summary(m0)',
+        'vc <- as.data.frame(VarCorr(m0))','vg <- vc$vcov[vc$grp == "系統"]; ve <- vc$vcov[vc$grp == "Residual"]');
+      if(single)L.push(`H2 <- vg / (vg + ve); H2   # 1個体の値についての遺伝率の目安（${u}のばらつき ve は、対照から見積もったもの）`);
+      else L.push(`r  <- mean(table(x$系統))   # 1系統あたりの${u}数`,'H2 <- vg / (vg + ve / r); H2   # 系統平均ベースの広義の遺伝率');
+      L.push('blup <- ranef(m0)$系統 |> rownames_to_column("系統") |> filter(系統 %in% levels(x$系統)) |>',
+        '  transmute(系統, BLUP = 系統か + fixef(m0)[["(Intercept)"]])   # ロットのずれを補正した系統の値',
+        'write.csv(blup, "系統の値_BLUP.csv", row.names = FALSE, fileEncoding = "CP932")   # あとの解析（GWAS・選抜など）に渡す。CP932はExcelで開く用');
+      if(F.f==='bin2')L.push('','# 発芽の速さ（T50：日数）も同様に',`m1 <- lmer(T50 ~ ${mf}, data = a)`,'summary(m1)',
+        '','# 発芽の揃い（T90 − T10：日数。小さいほど揃っている）',`m2 <- lmer(発芽揃い ~ ${mf}, data = a)`,'summary(m2)');
+      L.push('','# (2) 系統の値の分布（二山になるか）と対照の位置','ggplot(blup, aes(x = BLUP)) + geom_histogram(bins = 30) + labs(x = "系統の値", y = "系統数")');
+      if(F.how==='germ')L.push(GERM_NOTE);
+      return withLibraries(L,libAt).join('\n');
+    }
     if(y>1){   // 同じ株を年を変えて調べる（claude/55 の 2.4）。年は固定効果
       const bk=S.blocks?' + (1|年:接種回)':'';
       if(S.nPer===1){
@@ -977,6 +1147,20 @@ function rPheno(S,D,A){
     if(F.how==='germ')L.push(GERM_NOTE);
     return withLibraries(L,libAt).join('\n');
   }
+  if(q==='ctrl'&&!D.ctrlFew&&lot){   // ロットごとの対照（docs/58 の 6.4）
+    if(kOf(S)===1)L.push('# (1) 試験の成立確認：対照が1つのため、検定は行わず (2) でロットごとの対照の値を並べて確かめます');
+    else if(lv==='C')L.push(`# (1) 試験の成立確認：対照どうしの比較。検定は行わず (2) で対照の値を並べて確かめます（理由：${why}）`);
+    else{L.push('# (1) 試験の成立確認：対照どうしの比較（ロットをブロックとして）','ctl <- droplevels(subset(a, 区分 == "対照"))');
+      L.push(...fitLines(S,F,'系統',rnd,'ctl'));
+      if(F.f!=='surv')L.push('emmeans(m, pairwise ~ 系統, adjust = "tukey")');}
+    L.push('','# (2) 系統の値を、同じロットの対照の値と並べて区分する',
+      `lv <- a |> filter(区分 == "系統") |> group_by(接種回, 系統) |> summarise(値 = mean(${val}, na.rm = TRUE), 株数 = n(), .groups = "drop")`,
+      `cv <- a |> filter(区分 == "対照") |> group_by(接種回, 系統) |> summarise(値 = mean(${val}, na.rm = TRUE), .groups = "drop")`,
+      'cv   # ロットごとの対照の値。区分の境目は、結果を見る前に決めておく',
+      'ggplot(lv, aes(値)) + geom_histogram(bins = 30) +','  geom_vline(data = cv, aes(xintercept = 値, colour = 系統), linewidth = 1) + facet_wrap(~ 接種回, ncol = 1)');
+    if(F.how==='germ')L.push(GERM_NOTE);
+    return withLibraries(L,libAt).join('\n');
+  }
   if(q==='ctrl'&&!D.ctrlFew){
     if(lv==='C')L.push(`# (1) 試験の成立確認：対照どうしの比較。対照が各${c}${u}のため、検定は行わず (2) で対照の値を並べて確かめます（理由：${why}）`);
     else{L.push('# (1) 試験の成立確認：対照どうしの比較','ctl <- droplevels(subset(a, 区分 == "対照"))');
@@ -991,6 +1175,8 @@ function rPheno(S,D,A){
     return withLibraries(L,libAt).join('\n');
   }
   const fixed=q==='ctrl'?'系統':q==='pop'?'集団':q==='group'?'群':markers(S).join(' + ');
+  if(lot&&q==='ctrl'&&D.ctrlFew)L.push('# (0) ロット（接種回）ごとの成立確認：対照が想定どおりの値になったか',
+    `aggregate(${F.f==='surv'?'cbind(日数, 状態)':Y} ~ 系統 + 接種回, data = droplevels(subset(a, 区分 == "対照")), FUN = mean)   # ロットごとの対照の値。成立の基準は、結果を見る前に決めておく`,'');   // docs/60 の L-5
   L.push(`# (1) ${D.type}`);
   if(q==='ctrl')L.push(`${X}$系統 <- relevel(${X}$系統, ref = "${cS}")   # 比べる相手（基準）にする対照。名前はCSVに合わせる`);
   L.push(...fitLines(S,F,fixed,rnd,X));
@@ -1071,10 +1257,22 @@ function layoutPheno(S){
     if(col===S.col){if(S.trait==='score')return S.rep?[1,3,0,4][i]:[1,0,3,4][i];if(S.trait==='binary')return S.rep?[0,1,0,1][i]:[0,0,1,1][i];if(S.trait==='count')return [12,9,15,4][i];if(S.trait==='days')return [45,52,60,38][i];return [12.4,11.8,14.1,10.2][i];}
     return '';
   };
-  const rows=spec.map((s,i)=>cols.map(c=>v(c,s,i)));
+  let rows=spec.map((s,i)=>cols.map(c=>v(c,s,i)));
+  if(lotOn(S)){   // ロットごとの対照（docs/58 の 5.2）：ロットごとに 系統 → 対照。値の例は行の番号を4で割った余りで引く
+    const c=cOf(S),j2=lotFirst(S,2),k2=kOf(S)===2,R=S.rep;
+    const sp=R?[['L',1,1,0,1],['L',1,1,1,1],['S',0,1,0,1],['L',j2,1,0,2],['S',0,c+1,0,2]]
+      :[['L',1,1,0,1],S.nPer>1?['L',1,2,0,1]:['L',2,1,0,1],...(k2?[['R',0,1,0,1]]:[]),['S',0,1,0,1],['L',j2,1,0,2],['S',0,c+1,0,2]];
+    // ロットが1つ・系統が1つ・1ロット1系統のときは、合わない行を出さない
+    rows=sp.filter(([kd,li,,,lt])=>!(lt===2&&bOf(S)<2)&&!(kd==='L'&&li>S.nLines)&&!(kd==='L'&&lt===1&&lotOfLine(S,li)!==1)).map(([kd,li,pl,t,lt],i)=>{const ctl=kd!=='L',ln=kd==='R'?S.ctrlR:kd==='S'?S.ctrlS:lineName(S,li),w=i%4;
+      return cols.map(col=>{
+        if(col==='系統')return ln;if(col==='区分')return ctl?'対照':'系統';if(col==='集団')return ctl?'—':popName(S,1);
+        if(col==='株'||col==='シャーレ')return pl;if(col==='接種回')return lt;
+        return v(col,[ctl?1:0,pl,t,0],w);});});
+  }
   const notes=yy?['1行＝1'+unitOf(S)+'×1年'+(S.rep?'×1回の調査':'')+'（縦長の形）。年を横に並べない。']:['1行＝1'+unitOf(S)+(S.rep?'×1回の調査（縦長の形）。調査日を横に並べない':'')+'。'];
   if(S.trait!=='prop')notes.push('1株の中で葉・果実などをいくつか調べたときは、株ごとに1つの値（平均、または調査の前に決めた代表の値：いちばん重い葉など）にまとめてから入れます。葉や果実を反復として数えると、反復を水増しすることになります。');   // W-SUB（claude/55b の 6.）
-  if(kb)notes.push(`対照（${S.ctrlR}・${S.ctrlS}）も同じ表に入れ、「区分」列で「対照／系統」を分けます。`);
+  if(kb)notes.push(`対照（${ctrlNames(S).join('・')}）も同じ表に入れ、「区分」列で「対照／系統」を分けます。`);
+  if(lotOn(S))notes.push(`ロット（接種回）ごとに、系統 → 対照の順に並べます。対照の${unitOf(S)}の番号は、ロットをまたいで通し番号にします。系統の割り振りは例です（「接種回」の列を書き換えて使えます）。`);
   if(F.f==='surv'&&S.trait==='days')notes.push('「状態」は 1＝起きた（開花・発芽など）、0＝調査終了まで起きなかった。0の株の「日数」は調査終了日。');
   if(q==='assoc')notes.push('マーカーの遺伝子型は1列1マーカー。判定不能は空欄。');
   if(q==='group')notes.push(`「群」は「${S.grpHi}／${S.grpLo}」。「予測値」は交配組合せごとの予測値。`);
@@ -1095,9 +1293,12 @@ function nestParts(S,D){
     if(S.trait==='prop')parts.push({k:'粒',v:'×'+S.nSeed});
     if(yOf(S)>1)parts.push({k:`年（同じ${u}を調べ直す）`,v:'×'+yOf(S),unit:yrU});
   }
+  if(D.ef&&D.ef.mode==='lot_single'&&D.ef.level!=='C')parts.push({k:`対照の${u}（ロットごと）`,v:`×${cOf(S)}（${bOf(S)}ロット × 対照${kOf(S)}つ）`,unit:true});   // 1系統1株・ロットごとの対照：比べるときの反復は対照の株（docs/58 の 4.2）
   if(S.rep)parts.push({k:'調査',v:'×'+S.nSurvey});
   const plants=q==='group'?S.nPop*S.nLines:S.nPop*S.nLines*S.nPer;
-  return{parts,label:q==='group'?'後代':u,plants,rows:plants*(S.rep?S.nSurvey:1)*yOf(S),ctrlPer:cOf(S),ctrlN:2*cOf(S)};
+  const o={parts,label:q==='group'?'後代':u,plants,rows:plants*(S.rep?S.nSurvey:1)*yOf(S),ctrlPer:cOf(S),ctrlN:2*cOf(S)};
+  if(lotOn(S)){const b=bOf(S),k=kOf(S);o.ctrlN=k*cOf(S)*b;o.lot={b,k,per:Math.ceil(S.nPop*S.nLines/b)};}   // docs/58 の 5.3
+  return o;
 }
 
 /* ---------- 表現型：生成AIへの頼み方・論文 ---------- */
@@ -1109,7 +1310,8 @@ function aiPheno(S,D,A){
   L.push(`・調べたもの：${S.col}（${TR[S.trait].n}）${S.rep?`。同じ${u}を${S.interval}日ごとに${S.nSurvey}回調べました`:''}。`);
   if(yOf(S)>1)L.push(`・同じ${u}を${yOf(S)}年（作期）調べています（列「年」）。`);
   if(S.trait==='days'&&S.censor)L.push('・調査終了までに起きなかった株があり、列「状態」が0になっています。');
-  if(S.hasCtrl)L.push(`・対照（${S.ctrlR}・${S.ctrlS}）も同じ条件で、各${cOf(S)}${u}入れています（列「区分」が「対照」）。`);
+  if(lotOn(S))L.push(`・対照（${ctrlNames(S).join('・')}）を、ロット（接種回）ごとに各${cOf(S)}${u}入れています（列「区分」が「対照」、列「接種回」がロット）。`);
+  else if(S.hasCtrl)L.push(`・対照（${S.ctrlR}・${S.ctrlS}）も同じ条件で、各${cOf(S)}${u}入れています（列「区分」が「対照」）。`);
   if(S.blocks)L.push('・処理（接種・播種）は複数回・複数の場所に分けて行いました（列「接種回」）。');
   if(q==='assoc')L.push(`・各系統のDNAマーカー${S.nM}個の遺伝子型が列 ${markers(S).join('、')} に入っています。`);
   const goal={line:'系統ごとの値をあとの解析（GWAS・選抜など）に使いたいので、系統ごとの値と、その値がどれだけ遺伝で決まっているか（遺伝率）を出してください。',pop:'集団どうしで違いがあるかを知りたいです。',ctrl:`対照（${S.ctrlS}）と比べて、各系統が違うかどうかを判断したいです。`,group:'予測が上位の交配の後代が、下位の交配の後代より優れているか、予測値と実測値が対応しているかを知りたいです。',assoc:'マーカーの遺伝子型によって表現型に違いがあるか、どのマーカーが効いているかを知りたいです。'}[q];
@@ -1147,11 +1349,23 @@ function paperPheno(S,D,A){
       ctrl_norep:[`各系統1${u}の調査であったため，統計的検定は行わず，系統の値を対照の値とともに示した。`,`Because each line was represented by a single ${ue2}, no statistical test was performed and line values are presented together with those of the controls.`],
       ctrlm_norep:[`各系統の値を対照（${S.ctrlR}，${S.ctrlS}）の値と比較して区分した。対照は各1${u}であったため，対照間の差の検定は行わなかった。`,`Lines were classified relative to the control values; the difference between the controls was not tested because each control was represented by a single ${ue2}.`],
       assoc_norep:['供試系統数が少ないため，統計的検定は行わず，遺伝子型ごとの値と個体数を示した。','Because of the small number of lines, no statistical test was performed and values and counts are presented for each genotype.'],
-      line_one:['供試系統は1系統であり，遺伝率は算出しなかった。','Heritability was not estimated because a single line was examined.']}[A.reason];
+      line_one:['供試系統は1系統であり，遺伝率は算出しなかった。','Heritability was not estimated because a single line was examined.'],
+      line_lot_noerr:['各系統の調査値を系統の値とし，ロット（接種回）ごとに対照の値とともに示した。','Observed values are presented for each line together with those of the controls in each batch.'],
+      line_lot_scale:['各系統の調査値を系統の値とし，ロット（接種回）ごとに対照の値とともに示した。','Observed values are presented for each line together with those of the controls in each batch.'],
+      line_lotone:['各系統の調査値を系統の値とし，ロット（接種回）ごとに対照の値とともに示した。','Observed values are presented for each line together with those of the controls in each batch.'],
+      ctrlm_onekind:[`各系統の値を，同じロットの対照（${S.ctrlS}）の値と比較して区分した。試験の成立は，ロットごとに対照の値で確認した。`,'Lines were classified relative to the value of the control in the same batch; the validity of each batch was confirmed by the value of the control.']}[A.reason];
     qq[0]=CQ[0];qq[1]=CQ[1];}
   // 交互作用の文（claude/55 の 3.2）
   if(q==='assoc'&&S.nM===2&&F.f!=='surv'&&A.level!=='C'&&D.ef.Eint>=1){qq[0]+='2つのマーカーの交互作用は，主効果のみのモデルとのモデル比較で検定した。';qq[1]+=' The interaction between the two markers was tested by comparing models with and without the interaction term.';}
-  const useBlk=S.blocks&&!(q==='line'&&S.nPer>1&&yN===1);
+  if(lotOn(S)){   // ロットごとの対照（docs/58 の 5.5）。Federer は原典の照合が済むまで論文の文に入れない
+    const pe=S.trait==='prop'?'dishes':'plants';
+    if(q==='line'&&A.level!=='C'){if(S.nPer>1){qq[0]='各ロットに置いた対照を固定効果，系統およびロット（接種回）を変量効果とする線形混合モデルから系統の最良線形不偏予測値（BLUP）を推定し，広義の遺伝率を H² = σ²g /（σ²g + σ²e / r）として求めた（Holland et al., 2003）。';qq[1]='BLUPs of lines were obtained from a linear mixed model with the controls placed in every batch as fixed effects and line and batch as random effects, and broad-sense heritability was calculated as H² = σ²g / (σ²g + σ²e/r) (Holland et al., 2003).';}
+      else{qq[0]=`各系統1${uj}を調査し，各ロットに置いた対照を固定効果，系統およびロット（接種回）を変量効果とする線形混合モデルから，ロット間の差を補正した系統の値（BLUP）を求めた。対照の${uj}間分散を環境分散とみなし，個体あたりの広義の遺伝率の目安を σ²g /（σ²g + σ²e）として求めた。`;qq[1]=`Each line was represented by ${ue}. Batch-adjusted values of lines (BLUPs) were obtained from a linear mixed model with the controls placed in every batch as fixed effects and line and batch as random effects. Taking the variance among replicate ${pe} of the controls as the environmental variance, an approximate broad-sense heritability on a single-plant basis was calculated as σ²g / (σ²g + σ²e).`;}}
+    else if(q==='line'){qq[0]='各系統の調査値を系統の値とし，ロット（接種回）ごとに対照の値とともに示した。';qq[1]='Observed values are presented for each line together with those of the controls in each batch.';}
+    else if(q==='ctrl'&&!D.ctrlFew&&kOf(S)===1){qq[0]=`各系統の値を，同じロットの対照（${S.ctrlS}）の値と比較して区分した。試験の成立は，ロットごとに対照の値で確認した。`;qq[1]='Lines were classified relative to the value of the control in the same batch; the validity of each batch was confirmed by the value of the control.';}
+    else{qq[0]+='対照は各ロット（接種回）に置き，ロットごとに試験の成立を確認した。';qq[1]+=' Controls were included in every batch to confirm the validity of each batch.';}
+  }
+  const useBlk=S.blocks&&!(q==='line'&&S.nPer>1&&yN===1)&&!(lotOn(S)&&q==='line');
   return{ja:[ja,qq[0],useBlk?blk[0]:''].filter(Boolean).join(''),en:[en,qq[1],useBlk?blk[1]:''].filter(Boolean).join(' ')};
 }
 
@@ -1356,12 +1570,260 @@ function compute(raw){
   o.refs=[...o.D.refs].map(k=>REFS[k]);
   return o;
 }
+
+/* ================= 声で野帳Pro の野帳のひな形・設計ファイル・試験設計書（claude/52、ver. 2.3）=================
+   ここも判定ロジックの区間（LOGIC-START〜LOGIC-END）の中。画面（DOM）に触れない。
+   統計の中身（段階・検定・雛形）は変えない。ひな形と設計書は、compute() の出力（S・D・A・記入表）を並べ直すだけ。
+   PRO_TPL_HOME は、このページでただ1つの外部のアドレス。リンクの文字を作るのに使うだけで、ナビからは通信しない */
+const PRO_TPL_APP='koe-yacho-v2-template',BIO_DESIGN_APP='shiken-navi-bio-design';
+const PRO_TPL_HOME='https://tochigitfruits.github.io/koe-yacho/pro.html';
+const PRO_LINK_MAX=2900,PRO_LIST_MAX=5000,PRO_ITEM_MAX=200;
+const PRO_CSV_HEADS=['調査日','No.','状態','除外日','理由'];   // Pro の CSV が自分で付ける見出し。項目の名前と重ねない
+const DOC_BLANK='（記入）';
+/* 形質の英数字の id（claude/52 の D-5）。辞書にない名前は t1。年をまたいで同じになることは保証しない */
+const BIO_TRAIT_ID={発病度:'dis_score',病斑数:'lesion',枯死:'dead',発病:'dis',発芽:'germ',開花までの日数:'flw_days',開花日:'flw_date',硬度:'firm',糖度:'brix',果実重:'fwt',測定値:'val',計数:'cnt'};
+const bioTraitId=S=>BIO_TRAIT_ID[S.col]||'t1';
+/* ひな形を出す目的：表現型・マーカーと表現型（claude/52 の 1.）。数を数えて入れる目的（一致・分離比・2つの検出法）は記入表で記録する */
+const bioHasTpl=S=>S.purpose==='pheno'||S.purpose==='assoc';
+
+/* 記録する列（ひな形の items）。名前は記入表・Rの雛形の列名と同じにする（Pro の CSV の見出しが、そのまま雛形の列名になる）。
+   Pro の見出し（調査日・状態など）と重なるときだけ、名前を変えて、Rで読むときに付け替える（bioProRead） */
+function bioProCols(S){
+  const q=qOf(S),u=unitOf(S),out=[],names=new Set(PRO_CSV_HEADS),ids=new Set();
+  const add=(id,col,type,role,ex)=>{let n=col,j=2;while(names.has(n))n=col+'（'+(j++)+'）';names.add(n);let i=id,k=2;while(ids.has(i))i=id+'_'+(k++);ids.add(i);out.push(Object.assign({id:i,name:n,col,type,role},ex||{}));};
+  if(q==='group'){add('grp','群','text','id');add('cross','交配組合せ','text','id');}
+  else if(S.nPop>1||q==='pop')add('pop','集団','text','id');
+  add('line','系統','text','id');
+  if(needKubun(S))add('kubun','区分','text','id');
+  add(u==='シャーレ'?'dish':'plant',u,'num','id',{dec:0});
+  if(S.blocks)add('batch','接種回','num','id',lotOn(S)?{dec:0}:{dec:0,blank:true});   // 接種回：ロットごとの対照のときは割り振り（番号順の例）を入れて渡す。ほかは Pro で入れる（空欄で渡す）
+  if(q==='assoc')markers(S).forEach((m,i)=>add('M'+(i+1),m,'choice','id',{options:S.geno==='3'?['AA','AB','BB']:['有','無'],blank:true}));   // 遺伝子型は検査室の結果。空欄で渡す
+  if(q==='group')add('pred','予測値','num','id',{dec:2,blank:true});
+  const tid=bioTraitId(S);
+  if(S.trait==='prop'){add('n_seed','置床数','num','id',{dec:0,fixed:S.nSeed});add(tid,S.rep?'累積発芽数':'発芽数','count','meas');}
+  else if(S.trait==='days'){add(tid==='flw_days'?'flw_date':tid+'_date','起きた日','date','meas',{days:true});}   // 日数は、起きた日と基準日からRで計算する（claude/52 の D-8）
+  else if(S.trait==='binary')add(tid,S.col,'choice','meas',{options:['あり','なし']});
+  else if(S.trait==='count')add(tid,S.col,'count','meas');
+  else add(tid,S.col,'num','meas',{dec:S.trait==='score'?0:1});
+  return out;
+}
+/* 個体の並び（記入表と同じ順）：集団 → 系統 → 株、最後に対照。系統の名前は全体で通し番号（集団が違っても重ねない）。
+   each：作り方（入れ子の繰り返し。claude/53 の 3.2 の gen の形）。list はこれを広げたもの */
+function bioGen(S){
+  const q=qOf(S),C=bioProCols(S),has=id=>C.some(c=>c.id===id),uid=C.find(c=>c.id==='plant'||c.id==='dish').id,rows=[],w=()=>3;   // 系統の名前は記入表と同じ lineName（頭＋3桁。1000 からは4桁のまま）
+  const prefill=C.filter(c=>c.fixed!=null);   // 決まった値を入れる列（置床数）
+  const set0=Object.fromEntries(prefill.map(c=>[c.id,c.fixed]));
+  if(q==='group'){
+    const nHi=Math.ceil(S.nPop/2),lw=w(S.nPop*S.nLines);
+    [[S.grpHi,1,nHi],[S.grpLo,nHi+1,S.nPop]].forEach(([g,a,b])=>{if(b<a)return;const l0=(a-1)*S.nLines+1;
+      rows.push({each:[{id:'cross',seq:{from:a,to:b,fmt:S.preCross+'{n:2}'}},{id:'line',seq:{from:l0,to:l0+S.nLines-1,fmt:S.preLine+`{n:${lw}}`,cont:true}},{id:uid,seq:{from:1,to:1}}],set:Object.assign({grp:g},set0)});});   // 交配の予測の検証は、後代1個体＝1株（記入表・個体数と同じ）
+  } else if(lotOn(S)){   // ロットごとに 系統 → 対照（docs/58 の 5.4）。集団はどれも、すべてのロットに分かれる
+    const b=bOf(S),c=cOf(S),lw=w(S.nPop*S.nLines),P=has('pop');
+    for(let j=1;j<=b;j++){const a0=lotFirst(S,j),a1=lotFirst(S,j+1)-1;
+      for(let p=1;p<=S.nPop;p++){if(a1<a0)continue;const off=(p-1)*S.nLines;
+        rows.push({each:[{id:'line',seq:{from:off+a0,to:off+a1,fmt:S.preLine+`{n:${lw}}`}},{id:uid,seq:{from:1,to:S.nPer}}],set:Object.assign({kubun:'系統',batch:j},P?{pop:S.prePop+pad(p,2)}:{},set0)});}
+      rows.push({each:[{id:'line',vals:ctrlNames(S)},{id:uid,seq:{from:(j-1)*c+1,to:j*c}}],set:Object.assign({kubun:'対照',batch:j},P?{pop:'—'}:{},set0)});}
+    return {rows};
+  } else {
+    const lw=w(S.nPop*S.nLines),e=[];
+    if(has('pop'))e.push({id:'pop',seq:{from:1,to:S.nPop,fmt:S.prePop+'{n:2}'}});
+    e.push({id:'line',seq:{from:1,to:has('pop')?S.nLines:S.nPop*S.nLines,fmt:S.preLine+`{n:${lw}}`,cont:has('pop')}},{id:uid,seq:{from:1,to:S.nPer}});
+    rows.push({each:e,set:Object.assign(has('kubun')?{kubun:'系統'}:{},set0)});
+  }
+  if(needKubun(S)&&q!=='group'){const vals=S.hasCtrl?[S.ctrlR,S.ctrlS]:[S.ctrlS];
+    rows.push({each:[{id:'line',vals},{id:uid,seq:{from:1,to:cOf(S)}}],set:Object.assign({kubun:'対照'},has('pop')?{pop:'—'}:{},set0)});}
+  return {rows};
+}
+/* gen を行に広げる（ひな形の list と、検査で記入表と突き合わせるときに使う）。fmt の {n:3} は3桁にそろえる */
+function bioGenExpand(gen,max){
+  const out=[],lim=max||Infinity;
+  const fmt=(f,n)=>f==null?n:String(f).replace(/\{n(?::(\d+))?\}/,(_,d)=>pad(n,+d||1));
+  for(const g of gen.rows){
+    const E=g.each,cont={};
+    const rec=(i,cur)=>{if(out.length>lim)return;
+      if(i===E.length){out.push(Object.assign({},cur,g.set||{}));return;}
+      const e=E[i];
+      if(e.vals){e.vals.forEach(v=>rec(i+1,Object.assign({},cur,{[e.id]:v})));return;}
+      const s=e.seq;
+      if(s.cont){const key=e.id;if(cont[key]==null)cont[key]=s.from;   // 外側が変わっても番号を続ける（from から通しで、1回に to−from+1 個）
+        for(let n=s.from;n<=s.to;n++){const no=cont[key]++;rec(i+1,Object.assign({},cur,{[e.id]:fmt(s.fmt,no)}));}
+        return;}
+      for(let n=s.from;n<=s.to;n++)rec(i+1,Object.assign({},cur,{[e.id]:fmt(s.fmt,n)}));
+    };
+    rec(0,{});
+  }
+  return out;
+}
+/* 作り方から行の数を数える（広げない） */
+const bioGenCount=gen=>gen.rows.reduce((a,g)=>a+g.each.reduce((m,e)=>m*(e.vals?e.vals.length:e.seq.to-e.seq.from+1),1),0);
+const bioRowCount=S=>{const q=qOf(S);return (q==='group'?S.nPop*S.nLines:S.nPop*S.nLines*S.nPer)+(lotOn(S)?kOf(S)*cOf(S)*bOf(S):needKubun(S)&&q!=='group'?(S.hasCtrl?2:1)*cOf(S):0);};
+/* 行のまとめ方（claude/52 の 3.1・claude/53 の 2.2）。Pro がまだ受け取らないので、S の外（ひな形の一番上）に置く。今の Pro は捨てる */
+function bioFold(S){
+  const q=qOf(S),C=bioProCols(S),has=id=>C.some(c=>c.id===id),alt=[];
+  const by=q==='group'?['grp','cross']:has('pop')?(S.nPer>1?['pop','line']:['pop']):(S.nPer>1?['line']:[]);
+  if(lotOn(S)){if(by.length)alt.unshift(by);if(has('kubun'))alt.push(['kubun']);if(has('M1'))alt.push(['M1']);return {by:S.nPer>1?['batch','line']:['batch'],open:'first',alt};}   // ロット → 系統（docs/58 の 5.4）
+  if(has('kubun'))alt.push(['kubun']);if(has('M1'))alt.push(['M1']);if(has('batch'))alt.push(['batch']);
+  return by.length?{by,open:'first',alt}:null;
+}
+function bioDesignId(raw){const t=JSON.stringify(raw);let h=0x811c9dc5;for(let i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,0x01000193);}return('0000000'+(h>>>0).toString(16)).slice(-8);}
+function bioDesignName(S,doc,today){const t=String((doc&&doc.title)||'').trim();if(t)return t.slice(0,80);return [S.col||'',{pheno:'表現型',assoc:'マーカーと表現型',agree:'判定の一致',segr:'分離比',method:'検出法の比較'}[S.purpose],today||''].filter(Boolean).join(' ').slice(0,80);}
+/* 野帳のひな形。opt：{raw, doc, today}。行が Pro の上限を超えるときは list を入れず、作り方（gen）だけで渡す */
+function bioTemplate(o,opt){
+  opt=opt||{};const S=o.S;if(!bioHasTpl(S))return null;
+  const C=bioProCols(S),name=bioDesignName(S,opt.doc,opt.today);
+  const items=C.slice(0,PRO_ITEM_MAX).map(c=>{const it={id:c.id,name:c.name,type:c.type,role:c.role};if(c.type==='num')it.dec=c.dec||0;if(c.options)it.options=c.options.slice();return it;});
+  const S0={name,items,ts:!!S.rep,dir:'row'};
+  if(S.rep){S0.outFmt='long';S0.plan={on:false,mode:'every',start:'',every:Math.max(1,Math.min(365,S.interval)),count:Math.max(0,Math.min(200,S.nSurvey)),until:'',list:[],time:'',alarms:['eve','morn']};}
+  const t={app:PRO_TPL_APP,v:1,ver:`試験設計ナビ 生物工学版 ver. ${VERSION.ver}（${VERSION.date}）`,name,S:S0};
+  const gen=bioGen(S),n=bioRowCount(S);
+  if(n<=PRO_LIST_MAX)t.list=bioGenExpand(gen).map(r=>{const x={};Object.keys(r).forEach(k=>{if(r[k]!==''&&r[k]!=null)x[k]=r[k];});return x;});
+  t.gen=gen;const fd=bioFold(S);if(fd)t.fold=fd;   // Pro の改良（claude/53）を待つキー。今の Pro は知らないキーを捨てるので、渡しても害はない
+  t.meta={contract:'nav-bio-1',src:'shiken-navi-bio',srcVer:VERSION.ver,design:opt.raw?bioDesignId(opt.raw):'',made:opt.today||'',rows:n};
+  return t;
+}
+/* Pro の CSV を読む行（雛形の read.csv の行と置き換える）。Pro の見出しと重なって名前を変えた列・日付の列だけを付け替える */
+function bioProRead(S){
+  const C=bioProCols(S),L=[],ren=C.filter(c=>c.name!==c.col&&!c.days);
+  L.push('d <- read.csv("data.csv", fileEncoding = "UTF-8-BOM", check.names = FALSE, na.strings = c("", "NA"))   # 声で野帳Pro の書き出し'+(S.rep?'（縦持ち〔R用〕のCSV）':'')+'を data.csv として保存');
+  L.push('if ("状態" %in% names(d)) d <- d[is.na(d[["状態"]]) | d[["状態"]] == "", ]   # Pro で除外した個体の行を外す（除外の理由と数は、別に記録しておく）');
+  L.push('d <- d[, setdiff(names(d), c("No.", "状態", "除外日", "理由"'+(S.rep?'':', "調査日"')+')), drop = FALSE]   # Pro が付ける列を外す');
+  if(ren.length)L.push(`names(d)[match(c(${ren.map(c=>`"${rq(c.name)}"`).join(', ')}), names(d))] <- c(${ren.map(c=>`"${rq(c.col)}"`).join(', ')})`);
+  if(S.trait==='binary')L.push(`d$${S.col} <- ifelse(d$${S.col} == "あり", 1L, ifelse(d$${S.col} == "なし", 0L, NA))   # あり → 1、なし → 0`);
+  const base=S.trait==='prop'?'置床日':'接種日（播種日）',inPlace=(from,to,expr)=>[`d[["${from}"]] <- ${expr}`,`names(d)[names(d) == "${from}"] <- "${to}"`];
+  // 基準日・終了日は、書き換えるまで止まる形（書き換え忘れで、発芽の T50 や日数が黙って違う値にならないように。docs/60 の L-4）
+  const baseL=[`基準日 <- as.Date(NA)   # ← ${base}を as.Date("2026-12-01") の形で入れる`,`if (is.na(基準日)) stop("基準日（${base}）を入れてから実行します")`];
+  const neg=col=>`if (any(d[["${col}"]] < 0, na.rm = TRUE)) stop("基準日より前の日付があります。基準日を確かめます")`;
+  if(S.rep){const tc=S.trait==='prop'?'調査日数':(S.trait==='score'||S.trait==='binary')?'接種後日数':null;
+    if(tc)L.push(...baseL,...inPlace('調査日',tc,`as.integer(as.Date(d[["調査日"]]) - 基準日)   # Pro の調査日 → ${base}からの日数`),neg(tc));}
+  if(S.trait==='days'){L.push(...baseL);
+    if(S.censor)L.push('終了日 <- as.Date(NA)   # ← 調査を終えた日を as.Date("2027-03-31") の形で入れる','if (is.na(終了日)) stop("終了日（調査を終えた日）を入れてから実行します")',
+      'if (any(as.Date(d[["起きた日"]]) > 終了日, na.rm = TRUE)) stop("終了日より後の「起きた日」があります。終了日を確かめます")',
+      '.ev <- ifelse(is.na(d[["起きた日"]]), 0L, 1L)   # 1＝起きた、0＝調査の終わりまで起きなかった',
+      ...inPlace('起きた日','日数','as.integer(ifelse(.ev == 1, as.Date(d[["起きた日"]]) - 基準日, 終了日 - 基準日))'),'d$状態 <- .ev',neg('日数'),
+      'table(起きた = d$状態)   # 0 の数が「調査の終わりまで起きなかった株」の数と合うかを確かめる。枯れた株・欠株は Pro で「除外」にしておく（空欄のままだと、終わりまで起きなかった株として数えられる）');
+    else L.push(...inPlace('起きた日',S.col,'as.integer(as.Date(d[["起きた日"]]) - 基準日)   # 起きた日 → 日数'),neg(S.col));}
+  if(qOf(S)==='assoc')L.push(`# 遺伝子型（${markers(S).join('・')}）は、検査室の結果を系統の名前で突き合わせて入れる（Pro では空欄で渡している）`);
+  if(yOf(S)>1)L.push('# 年ごとに Pro の野帳を分けて書き出したときは、CSV を1つにつなぎ、年の列を足してから読む（例：d$年 <- 2026）');
+  return L;
+}
+/* 設計ファイル（端末に保存するだけ）。raw：画面の入力そのもの。読み戻すときは normalize が整える */
+function bioDesignFile(o,raw,doc,today){
+  const S=o.S,f={app:BIO_DESIGN_APP,v:1,ver:`試験設計ナビ 生物工学版 ver. ${VERSION.ver}（${VERSION.date}）`,made:today||'',name:bioDesignName(S,doc,today),id:bioDesignId(raw)};
+  f.raw=JSON.parse(JSON.stringify(raw));f.doc=bioDocClean(doc);
+  f.result={purpose:S.purpose,level:o.A.level,levelTitle:o.A.levelTitle,type:o.D.type,method:o.D.method,test:o.D.test};
+  if(bioHasTpl(S)){f.cols=bioProCols(S).map(c=>({id:c.id,name:c.name,col:c.col,type:c.type,role:c.role}));f.rows=bioRowCount(S);}
+  else if(o.lay&&o.lay.cols)f.cols=o.lay.cols.map(c=>({name:c,col:c}));
+  return f;
+}
+const BIO_DOC_KEYS=['title','purpose','place','period','material','method'];
+function bioDocClean(d){d=d&&typeof d==='object'?d:{};const o={};BIO_DOC_KEYS.forEach(k=>{o[k]=String(d[k]==null?'':d[k]).slice(0,2000);});return o;}
+/* 設計ファイルを読む。確かめるのは形だけ。入力の値は文字・数・真偽だけを残し、知らない形は捨てる */
+function bioDesignRead(f){
+  if(!f||typeof f!=='object'||f.app!==BIO_DESIGN_APP)throw new Error('試験設計ナビ（生物工学版）の設計ファイルではありません。');
+  if(!(+f.v>=1)||+f.v>1)throw new Error('この設計ファイルは、新しい版のナビで保存されたものです。新しい版のナビで開くと読み込めます。');
+  if(!f.raw||typeof f.raw!=='object')throw new Error('設計ファイルに、設計の入力が入っていません。');
+  const raw={};Object.keys(f.raw).slice(0,200).forEach(k=>{if(!/^[A-Za-z][A-Za-z0-9_]{0,30}$/.test(k))return;const v=f.raw[k];
+    if(typeof v==='boolean'||(typeof v==='number'&&isFinite(v)))raw[k]=v;else if(typeof v==='string')raw[k]=v.slice(0,200);else if(v===null)raw[k]=null;
+    else if(Array.isArray(v)&&(k==='sn'||k==='sc'))raw[k]=v.slice(0,20).map(x=>String(x==null?'':x).slice(0,60));});
+  return {raw,doc:bioDocClean(f.doc),name:String(f.name||'').slice(0,80),made:String(f.made||'').slice(0,20),id:String(f.id||'').slice(0,20)};
+}
+
+/* ---------- 試験設計書（claude/52 の 3.2。一般版の設計書と同じ出し方：本体＋別紙）。中身は今の入力と判定の出力だけ ---------- */
+function bioDesignDoc(o,doc,opt){
+  opt=opt||{};const S=o.S,D=o.D,A=o.A,d=bioDocClean(doc),B=v=>(v&&String(v).trim())?String(v).trim():DOC_BLANK,q=qOf(S),u=unitOf(S),pheno=o.kind==='pheno';
+  const R={title:'試験設計書',head:[],main:[],annex:[]};
+  R.head.push({t:'tier',lv:0,k:'課題名',v:B(d.title)});
+  const para=(v,dflt)=>{const t=(v&&String(v).trim())?String(v).trim():'';return (t?t.split(/\s*\n\s*/).filter(Boolean):[dflt]).map(x=>({t:'p',text:x,ind:1}));};
+  const draft=pheno?`${S.col}を調べ、${D.type}${q==='line'?'を求める':'を行う'}。（案。書き換えて使う）`:`${D.type}を行う。（案。書き換えて使う）`;
+  R.main.push({h:'１　目的',blocks:para(d.purpose,draft)});
+  const M={h:'２　試験方法',blocks:[]};R.main.push(M);
+  let kn=0;const Z='０１２３４５６７８９',zen=n=>String(n).replace(/\d/g,c=>Z[+c]),kv=(k,v)=>M.blocks.push({t:'kv',k,v,n:`（${zen(++kn)}）`}),pad1=t=>M.blocks.push({t:'p',text:t,pad:1});
+  kv('実施場所',B(d.place));
+  if(pheno){
+    const nL=S.nPop*S.nLines,L=i=>lineName(S,i);
+    let mat;
+    if(q==='group')mat=`交配組合せ${S.nPop}（${S.preCross}01〜${S.preCross}${pad(S.nPop,2)}。${S.grpHi}${Math.ceil(S.nPop/2)}・${S.grpLo}${S.nPop-Math.ceil(S.nPop/2)}）、1組合せあたり後代${S.nLines}個体（${L(1)}〜${L(nL)}）`;
+    else mat=`${S.nPop>1||q==='pop'?`集団${S.nPop}（${S.prePop}01〜${S.prePop}${pad(S.nPop,2)}）、1集団あたり`:''}系統${S.nLines}（${L(1)}〜${L(nL)}）、1系統${S.nPer}${u}`;
+    kv('供試材料',d.material&&d.material.trim()?d.material.trim():mat);
+    const lt=lotOn(S),b=bOf(S),k=kOf(S);
+    if(lt)pad1(`対照：${ctrlNames(S).join('・')}（ロットごとに各${cOf(S)}${u}、${b}ロットで計${k*cOf(S)*b}${u}）`);
+    else if(needKubun(S)&&q!=='group')pad1(`対照：${S.hasCtrl?`${S.ctrlR}・${S.ctrlS}`:S.ctrlS}（各${cOf(S)}${u}）`);
+    if(q==='assoc')pad1(`マーカー：${markers(S).join('・')}（${S.geno==='3'?'3型：AA／AB／BB':'2型：有／無'}）`);
+    const N=o.nest;
+    kv('試験規模',`${N.label}${bioRowCount(S).toLocaleString()}（${q==='group'?`${S.nPop}組合せ×${S.nLines}個体`:`${nL.toLocaleString()}系統×${S.nPer}${u}`}${lt?`＋対照${k}×${cOf(S)}${u}×${b}ロット`:needKubun(S)&&q!=='group'?`＋対照${S.hasCtrl?2:1}×${cOf(S)}${u}`:''}）${yOf(S)>1?`、${yOf(S)}年`:''}${lt?`、接種・播種は${b}ロット（接種回）に分け、各ロットに対照を置く（1ロットあたり系統およそ${Math.ceil(nL/b)}）`:S.blocks?'、接種・播種は複数回（接種回）に分ける':''}`);
+    kv('試験の方法',B(d.method));
+    pad1(`${S.trait==='prop'?'置床日':'接種日（播種日）'}：${DOC_BLANK}`);
+    kv('調査項目',`${S.col}（${TR[S.trait].n}${S.trait==='prop'?`、1シャーレ${S.nSeed}粒`:''}）${S.rep?`。同じ${u}を${S.interval}日ごとに${S.nSurvey}回調べる`:''}${S.trait==='days'&&S.censor?'。調査の終わりまでに起きなかった' + u + 'も記録する':''}`);
+  } else {
+    const mt={agree:`判定を比べる個体（${S.purpose==='agree'?'2つの判定で同じ個体を調べる':''}）`,segr:'分離集団の個体',method:'2つの検出法で調べる個体・サンプル'}[S.purpose];
+    kv('供試材料',d.material&&d.material.trim()?d.material.trim():B(''));
+    kv('試験の方法',B(d.method));
+    kv('調べるもの',D.type+(mt?`（${mt}）`:''));
+  }
+  R.main.push({h:'３　試験実施期間',inline:B(d.period),blocks:[]});
+  // 別紙1 解析方法：画面と同じ文だけ（段階の見出し・解析の方法・比べ方・論文の文）
+  const A1={h:'別紙1　解析方法',blocks:[{t:'p',text:`解析の段階：${A.levelTitle}。`},
+    {t:'table',head:['項目','内容'],rows:[['試験の型',D.type+(D.unitSm?`（${D.unitSm}）`:'')],['解析の方法',D.method+(D.methodSm?`（${D.methodSm}）`:'')],['比べ方・検定',D.test+(D.testSm?`（${D.testSm}）`:'')]]}]};
+  if(o.paper&&o.paper.ja)A1.blocks.push({t:'h',text:'論文での書き方（案）'},{t:'p',text:o.paper.ja});
+  if(o.refs&&o.refs.length)A1.blocks.push({t:'h',text:'引用文献（使う前に、原典で該当箇所を確かめる）'},{t:'ul',items:o.refs.slice()});
+  R.annex.push(A1);
+  const A2={h:'別紙2　この設計で言えること・注意',blocks:[]};
+  if(A.can.length)A2.blocks.push({t:'h',text:'今の設計でできること'},{t:'ul',items:A.can.slice()});
+  if(A.cannot.length)A2.blocks.push({t:'h',text:'この処理はかけられない'},{t:'ul',items:A.cannot.map(c=>`${c.t}：${c.why}`)});
+  (A.summary||[]).forEach(m=>A2.blocks.push({t:'h',text:m.title},{t:'ul',items:m.how.concat(m.dont.length?['この設計では書かないこと：'+m.dont.join('／')]:[])}));
+  if(A.next.length)A2.blocks.push({t:'h',text:'あと一歩（次の試験・設計の見直しに向けて）'},{t:'ul',items:A.next.map(n=>n.t)});
+  const cau=D.W.filter(w=>w.lv==='caution').map(w=>w.t),memo=D.W.filter(w=>w.lv==='memo').map(w=>w.t);
+  if(cau.length)A2.blocks.push({t:'h',text:'注意'},{t:'ul',items:cau});
+  if(memo.length)A2.blocks.push({t:'h',text:'メモ'},{t:'ul',items:memo});
+  R.annex.push(A2);
+  const rec=[];
+  if(o.lay&&o.lay.cols&&o.lay.cols.length)rec.push(`記入表の列：${o.lay.cols.join('、')}（1行の決まりは記入表の注意のとおり）。`);
+  if(bioHasTpl(S)){const C=bioProCols(S),n=bioRowCount(S);
+    rec.push(opt.record==='pro'?`声で野帳Pro の野帳のひな形（試験設計ナビで作成）を使い、音声で記録する。項目：${C.map(c=>c.name).join('、')}。行：${n.toLocaleString()}（${n>PRO_LIST_MAX?'作り方で渡す。受け取れる版の Pro が要る':'1行ずつ渡す'}）。`:`記入表に記録する（声で野帳Pro の野帳のひな形も作れる：項目 ${C.length}、行 ${n.toLocaleString()}）。`);}
+  rec.push('測れなかった値・判定できなかった個体は空欄のままにする（0 を入れない）。','除外する個体は、消さずに、理由を備考（声で野帳Pro では除外の理由）に書く。');
+  R.annex.push({h:'別紙3　記録の取り方',blocks:[{t:'ul',items:rec}]});
+  R.annex.push({h:'付　作成の記録',blocks:[{t:'p',text:`試験設計ナビ 生物工学版 ver. ${VERSION.ver}（${VERSION.date}）で作成。作成日：${opt.today||''}。${opt.file?'設計ファイル：'+opt.file+'。':''}例の名前と数値は架空。`}]});
+  return R;
+}
+function bioDocBlockHTML(b){
+  const e=esc;
+  if(b.t==='p')return `<p${b.ind?' class="di"':(b.pad?' class="dp"':'')}>${e(b.text)}</p>`;
+  if(b.t==='kv')return `<p class="dk">${e((b.n||'')+b.k)}　${e(b.v)}</p>`;
+  if(b.t==='h')return `<h4>${e(b.text)}</h4>`;
+  if(b.t==='ul')return `<ul>${b.items.map(x=>`<li>${e(x)}</li>`).join('')}</ul>`;
+  if(b.t==='table'){const TH='border:none;border-top:3px double #000;border-bottom:1px solid #000',TD='border:none',TL='border:none;border-bottom:1px solid #000',n=b.rows.length;
+    return `<table class="dt" cellspacing="0" cellpadding="3"><tr>${b.head.map(x=>`<th style="${TH}">${e(x)}</th>`).join('')}</tr>${b.rows.map((r,i)=>`<tr>${r.map(x=>`<td style="${i===n-1?TL:TD}">${e(x)}</td>`).join('')}</tr>`).join('')}</table>`;}
+  return '';
+}
+function bioDocHTML(R,word){
+  const e=esc,sec=(s,m)=>`<section class="dsec${m?' dm':''}"><h3${m?' class="dmh"':''}>${e(s.h)}${s.inline!=null?'　'+e(s.inline):''}</h3>${s.blocks.map(bioDocBlockHTML).join('')}</section>`;
+  const head=R.head.map(h=>`<p class="dtier">${e(h.k)}　${e(h.v)}</p>`).join('')+'<p class="dgap">&nbsp;</p>';
+  return `<div class="dhead">${head}</div>${R.main.map(x=>sec(x,1)).join('')}${word?'<br clear="all" style="page-break-before:always">'+R.annex.map(x=>sec(x)).join(''):`<div class="dannex">${R.annex.map(x=>sec(x)).join('')}</div>`}`;
+}
+function bioDocText(R){
+  const L=[],sp=n=>'　'.repeat(n);R.head.forEach(h=>L.push(`${sp(1)}${h.k}　${h.v}`));L.push('');
+  const blk=b=>{if(b.t==='p')L.push((b.ind?sp(1):(b.pad?sp(8):''))+b.text);if(b.t==='kv')L.push((b.n||'')+b.k+'　'+b.v);if(b.t==='h')L.push('　'+b.text);if(b.t==='ul')b.items.forEach(x=>L.push('・'+x));
+    if(b.t==='table'){L.push(b.head.join('／'));b.rows.forEach(r=>L.push(r.join('／')));}};
+  R.main.concat(R.annex).forEach(s=>{L.push(s.h+(s.inline!=null?'　'+s.inline:''));s.blocks.forEach(blk);L.push('');});
+  return L.join('\n');
+}
+const BIO_DOC_WORD_CSS='@page WordSection1{size:595.3pt 841.9pt;margin:70.9pt 70.9pt 70.9pt 70.9pt}div.WordSection1{page:WordSection1}'
+  +'body,p,li,td,th,h3,h4{font-family:"Times New Roman",serif;mso-fareast-font-family:"ＭＳ 明朝"}'
+  +'body{font-size:10.5pt;line-height:1.6}p{margin:0}h3{font-size:11pt;margin:12pt 0 4pt}h4{font-size:10.5pt;margin:6pt 0 2pt}h3.dmh{font-size:10.5pt;font-weight:normal;margin:8pt 0 0}'
+  +'p.di{text-indent:10.5pt}p.dk{margin-left:84pt;text-indent:-84pt}p.dp{margin-left:84pt}'
+  +'table{border-collapse:collapse}th,td{padding:1pt 4pt;font-size:9.5pt;line-height:1.3;vertical-align:top;text-align:left}tr{page-break-inside:avoid}';
+function bioDocWord(R){return '﻿<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>'+esc(R.title)+'</title><style>'+BIO_DOC_WORD_CSS+'</style></head><body><div class="WordSection1">'+bioDocHTML(R,true)+'</div></body></html>';}
+/* リンク用の符号（base64url）。圧縮（deflate-raw）は画面側で行う */
+const B64U='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+function b64uEncode(u8){let s='';for(let i=0;i<u8.length;i+=3){const a=u8[i],b=u8[i+1],c=u8[i+2],n=(a<<16)|((b||0)<<8)|(c||0);
+  s+=B64U[n>>18&63]+B64U[n>>12&63]+(i+1<u8.length?B64U[n>>6&63]:'')+(i+2<u8.length?B64U[n&63]:'');}return s;}
+function proLink(code){return PRO_TPL_HOME+'#tpl='+code;}
 /*LOGIC-END*/
 
 /* ================= 画面 ================= */
 const $=s=>document.querySelector(s);
-const FORM=$('#form'),STORE_KEY='shiken-navi-bio-state-v2',RADIOS=['purpose','trait','q','akind','paired','mEvent'];
-let TAB='r',OUT=null,LAST='';
+const FORM=$('#form'),STORE_KEY='shiken-navi-bio-state-v2',RADIOS=['purpose','trait','q','akind','paired','mEvent','ctrlPlace'];
+let TAB='r',OUT=null,LAST='',VIEW='entry',HAS_SAVED=false,FROM_GUIDE=false;
 $('#ver').textContent=`${VERSION.ver}（${VERSION.date}）`;
 /* ---------- 使う前の確認（試行版）。了承した文面の版を、この端末のブラウザに記録する。文面を変えたら TOS_VER を変える ---------- */
 const TOS_VER='2026-11-24',TOS_KEY='shiken-navi-bio-tos';
@@ -1371,8 +1833,27 @@ function tosOK(){if(TOS_MEM||window.__navTosOK===TOS_VER)return true;   // __nav
 function tosSync(){document.body.classList.toggle('tos-wait',!tosOK());}
 (function(){const c=$('#tosChk'),b=$('#tosGo');c.checked=false;b.disabled=true;
   c.addEventListener('change',()=>{b.disabled=!c.checked;});
-  b.addEventListener('click',()=>{if(!c.checked)return;TOS_MEM=true;try{localStorage.setItem(TOS_KEY,TOS_VER);}catch(e){}tosSync();window.scrollTo(0,0);});
+  b.addEventListener('click',()=>{if(!c.checked)return;TOS_MEM=true;try{localStorage.setItem(TOS_KEY,TOS_VER);}catch(e){}tosSync();setView('entry');});
   tosSync();})();
+
+/* ---------- 画面の切り替え（一般版と同じ流れ）：最初の画面 → かんたんガイド／詳しい画面 → 試験設計書 ---------- */
+function setView(v){
+  if(!tosOK())v='entry';   // 了承するまでは、確認の囲みだけ
+  VIEW=v;document.body.classList.remove('v-entry','v-guide','v-detail','v-doc');document.body.classList.add('v-'+v);
+  if(v!=='guide')GD=null;
+  if(v==='entry')$('#resume').hidden=!HAS_SAVED;
+  if(v==='detail'){LAST='';render();HAS_SAVED=true;}
+  if(v==='doc')renderDoc();
+  try{history.replaceState(null,'',(v==='detail'||v==='doc')?'#'+v:location.pathname+location.search);}catch(e){/* file: などで書き換えられないときは何もしない */}
+  window.scrollTo(0,0);
+}
+let COMPOSING=false;
+document.addEventListener('compositionstart',()=>{COMPOSING=true;},true);document.addEventListener('compositionend',()=>{COMPOSING=false;},true);
+// 題字：押すと最初の画面へ。日本語の変換中は移らない。変換の確定の反映（compositionend の setTimeout）を待ってから移る
+$('#goHome').addEventListener('click',e=>{if(COMPOSING||(e&&e.isComposing))return;setTimeout(()=>setView('entry'),0);});
+$('#goDetail').addEventListener('click',()=>{FROM_GUIDE=false;setView('detail');});
+$('#goResume').addEventListener('click',()=>{FROM_GUIDE=false;setView('detail');});
+$('#backEntry').addEventListener('click',()=>setView('entry'));
 
 /* ---------- 入力の読み書き ---------- */
 function readRaw(){
@@ -1403,7 +1884,11 @@ function syncVisibility(S){
   $('#censorBox').hidden=S.trait!=='days';
   $('#seedBox').hidden=S.trait!=='prop';
   $('#lbPerT').textContent=S.trait==='prop'?'1系統のシャーレ数':'1系統の株数';
-  $('#ctrlPerBox').hidden=!(S.hasCtrl||S.q==='ctrl');$('#lbCtrlPer').textContent=S.trait==='prop'?'対照1つあたりのシャーレ数':'対照1つあたりの株数';
+  const lotOK=S.hasCtrl&&S.blocks&&(S.purpose==='pheno'||S.purpose==='assoc')&&qOf(S)!=='group'&&yOf(S)===1,lt=lotOn(S),uu=S.trait==='prop'?'シャーレ':'株';   // ロットごとの対照（docs/58 の 3.）
+  $('#ctrlPerBox').hidden=!(S.hasCtrl||S.q==='ctrl');$('#lbCtrlPer').textContent=lt?`1ロットあたり、対照1つの${uu}数`:S.trait==='prop'?'対照1つあたりのシャーレ数':'対照1つあたりの株数';
+  $('#lotBox').hidden=!lotOK;$('#lotIn').hidden=!lt;$('#smCtrlPer').textContent=lt?'1ロットに1株だけ置くときは 1 と入れます。空欄は「1系統の株数」と同じ':'空欄は「1系統の株数」と同じ。対照だけ多めに置くときに入れます';
+  if(S.ctrlPlace==='lot'&&lotOK&&S.nLines<2){$('#lotIn').hidden=false;$('#lotPer').textContent='1集団の系統が1つのときは、ロットを分けられないので、「試験全体で1組」として扱います';}   // docs/60 の L-2
+  if(lt){$('#lotPer').textContent=`1ロットあたりの系統は およそ${Math.ceil(S.nPop*S.nLines/bOf(S))}`;$('#ck2').textContent=`2つ（${S.ctrlR}・${S.ctrlS}）`;$('#ck1').textContent=`1つ（${S.ctrlS}）`;}
   $('#customBox').hidden=S.ratio!=='custom';
   $('#pairBox').hidden=S.paired!=='yes';
   $('#yearBox').hidden=!(S.purpose==='pheno'&&S.q==='line');
@@ -1430,7 +1915,7 @@ function adviceHtml(A){
 const tableHtml=L=>`<div class="tscroll"><table class="t"><tr>${L.cols.map(c=>`<th>${esc(c)}</th>`).join('')}</tr>${L.rows.map(r=>`<tr>${r.map(v=>`<td>${esc(v)}</td>`).join('')}</tr>`).join('')}</table></div><ul class="note" style="margin:8px 0 0;padding-left:18px">${L.notes.map(n=>`<li>${esc(n)}</li>`).join('')}</ul>`;
 function nestHtml(N,S){
   const ar='<span class="arr" aria-hidden="true">›</span>';
-  return`<div class="nest">${N.parts.map(p=>`<div class="nb${p.unit?' unit':''}"><span class="k">${esc(p.k)}</span><span class="v">${esc(p.v)}</span>${p.unit?'<span class="u">反復の単位</span>':''}</div>`).join(ar)}</div><p class="note" style="margin:10px 0 0">${esc(N.label)}の合計 ${N.plants.toLocaleString()}　｜　データの行数 ${N.rows.toLocaleString()}${S.hasCtrl?`（対照 2 × ${N.ctrlPer}${esc(N.label)}＝${N.ctrlN}${esc(N.label)} は別に加算）`:''}</p>`;
+  return`<div class="nest">${N.parts.map(p=>`<div class="nb${p.unit?' unit':''}"><span class="k">${esc(p.k)}</span><span class="v">${esc(p.v)}</span>${p.unit?'<span class="u">反復の単位</span>':''}</div>`).join(ar)}</div><p class="note" style="margin:10px 0 0">${esc(N.label)}の合計 ${N.plants.toLocaleString()}　｜　データの行数 ${N.rows.toLocaleString()}${N.lot?`（対照 ${N.lot.k} × ${N.ctrlPer}${esc(N.label)} × ${N.lot.b}ロット＝${N.ctrlN}${esc(N.label)} は別に加算。1ロットあたりの系統は およそ${N.lot.per}）`:S.hasCtrl?`（対照 2 × ${N.ctrlPer}${esc(N.label)}＝${N.ctrlN}${esc(N.label)} は別に加算）`:''}</p>`;
 }
 function render(){
   const raw=readRaw(),key=TAB+JSON.stringify(raw);
@@ -1439,17 +1924,20 @@ function render(){
   const {S,D,A}=OUT;syncVisibility(S);
   const calcSec=OUT.kind==='calc'?`<section class="card sec"><h3>計算結果 <span class="term">この画面で計算</span></h3><p class="sub">入力した数からその場で計算しています。報告の前にRの結果と照合すると確実です。</p><div class="tscroll">${D.calc}</div></section>`:'';
   const nestSec=OUT.kind==='pheno'?`<section class="card sec"><h3>材料の入れ子構造 <span class="term">どこが反復か</span></h3><p class="sub">金色の枠が「比べるときの反復」です。その下の階層は反復を水増ししない（平均するか、モデルで変量効果に入れる）。</p>${nestHtml(OUT.nest,S)}</section>`:'';
-  const tabs={r:'Rの雛形',lay:'データの並べ方',ai:'生成AIへの頼み方',pap:'論文での書き方'};
+  const tabs={r:'Rの雛形',lay:'データの並べ方',pro:'声で野帳Pro',ai:'生成AIへの頼み方',pap:'論文での書き方'};
   const hasLay=OUT.lay&&OUT.lay.cols.length;
   const body={
     r:OUT.r?`<pre class="code" id="cRaw" tabindex="0">${esc(OUT.r)}</pre>`:`<p class="note">${esc(D.rNote||'数を入れると、ここに雛形が出ます。')}</p>`,
     lay:hasLay?tableHtml(OUT.lay):`<p class="note">${esc(D.rNote||'—')}</p>`,
     ai:OUT.ai?`<pre class="txt" id="cAi" tabindex="0">${esc(OUT.ai)}</pre><p class="note" style="margin:8px 0 0">未発表のデータや系統名を生成AIに送るときは、所属機関のルールに沿って扱います。AIが出したコードと結果は、ご自分で確かめてから使います。</p>`:'<p class="note">—</p>',
+    pro:proTabHtml(),
     pap:OUT.paper&&OUT.paper.ja?`<div class="paper"><span class="lab">日本語</span><p>${esc(OUT.paper.ja)}</p><span class="lab">English</span><p>${esc(OUT.paper.en)}</p></div><div class="refs"><b>引用文献（報告に使う前に、原典で該当箇所を確かめます）</b>${OUT.refs.map(x=>`<span>${esc(x)}</span>`).join('')}</div>`:'<p class="note">—</p>'};
   const tools={r:OUT.r?'<button type="button" class="btn primary" data-act="copy">コピー</button><button type="button" class="btn" data-act="save">ファイルに保存（.R）</button>':'',
     lay:hasLay?'<button type="button" class="btn primary" data-act="copy">表をコピー（Excelに貼り付け）</button><button type="button" class="btn" data-act="save">ファイルに保存（.csv）</button>':'',
-    ai:OUT.ai?'<button type="button" class="btn primary" data-act="copy">コピー</button>':'',pap:''}[TAB];
-  $('#out').innerHTML=`
+    ai:OUT.ai?'<button type="button" class="btn primary" data-act="copy">コピー</button>':'',pap:'',pro:''}[TAB];
+  const done=FROM_GUIDE?`<section class="card sec done" id="done"><h3>できあがり <span class="term">かんたんガイドの答えから</span></h3><p class="sub">ガイドの答えから、設計ができました。下の「この設計で言えること」で中身を確かめ、左の入力で直せます。持ち帰るものは次のとおりです。</p>
+    <div class="toolbar" style="margin-top:6px"><button type="button" class="btn primary" data-go="doc">試験設計書を見る</button>${bioHasTpl(S)?'<button type="button" class="btn" data-go="pro">声で野帳Pro のひな形</button>':''}<button type="button" class="btn" data-go="lay">記入表（データの並べ方）</button><button type="button" class="btn" data-file="save">設計ファイルを保存</button></div></section>`:'';
+  $('#out').innerHTML=`${done}
   <section class="verdict">
     <div class="lab">解析の段階</div>
     <div class="lvhead lv${A.level}">${esc(A.levelTitle)}</div>
@@ -1464,18 +1952,20 @@ function render(){
   ${adviceHtml(A)}
   ${calcSec}${nestSec}
   <section class="card sec"><h3>確認ポイント</h3><p class="sub">試験の計画を書く段階で確かめておくことです。</p>${warnHtml(D.W)}</section>
-  <section class="card sec"><h3>持ち帰り</h3>
+  <section class="card sec" id="takeout"><h3>持ち帰り <button type="button" class="btn ghost" data-go="doc" style="margin-left:8px">試験設計書</button></h3>
     <div class="tabs" role="tablist">${Object.entries(tabs).map(([k,v])=>`<button type="button" role="tab" data-tab="${k}" class="${TAB===k?'on':''}" aria-selected="${TAB===k}">${v}</button>`).join('')}</div>
     <div>${body[TAB]}</div>
     ${tools?`<div class="toolbar">${tools}<span class="note" id="copied" role="status"></span></div>`:''}
   </section>`;
   try{localStorage.setItem(STORE_KEY,JSON.stringify(raw));}catch(e){/* 保存できない環境では何もしない */}
 }
-function download(name,text,type){
+function download(name,text,type){   // 保存するファイル名・中身・種類
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 }
 $('#out').addEventListener('click',e=>{
   const t=e.target.closest('[data-tab]');if(t){TAB=t.dataset.tab;render();const b=$(`#out [data-tab="${TAB}"]`);if(b)b.focus();return;}
+  const g=e.target.closest('[data-go]');if(g){const k=g.dataset.go;if(k==='doc'){setView('doc');return;}TAB=k;LAST='';render();const tk=$('#takeout');if(tk)tk.scrollIntoView({block:'start'});return;}
+  const pa=e.target.closest('[data-pro]');if(pa&&OUT){proAct(pa.dataset.pro);return;}
   const u=e.target.closest('[data-use]');if(u&&OUT){const n=OUT.A.next[+u.dataset.use];if(n&&n.set){writeRaw(n.set);markPreset(null);render();const a=$('#advice');if(a)a.scrollIntoView({block:'nearest'});}return;}
   const act=e.target.closest('[data-act]');if(!act||!OUT)return;
   const say=m=>{const c=$('#copied');if(c)c.textContent=m;};
@@ -1488,9 +1978,78 @@ $('#out').addEventListener('click',e=>{
   if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(()=>say('コピーしました'),fallback);else fallback();
 });
 
+/* ---------- 声で野帳Pro の野帳のひな形（claude/52 の 3.1・3.3）---------- */
+function todayStr(){const d=new Date(),z=n=>String(n).padStart(2,'0');return`${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}`;}
+let PRO={url:'',len:0,msg:''};
+function tplNow(){return OUT?bioTemplate(OUT,{raw:readRaw(),doc:DOCF,today:todayStr()}):null;}
+function proTabHtml(){
+  if(!OUT)return'';const S=OUT.S;
+  if(!bioHasTpl(S))return'<p class="note">この目的は、数を数えて入れる試験です。個体ごとの記録は「データの並べ方」の記入表で取ります（声で野帳Pro のひな形は、表現型・マーカーと表現型の試験で作れます）。</p>';
+  const t=tplNow(),n=t.meta.rows,its=t.S.items,big=n>PRO_LIST_MAX;
+  return`<p class="sub" style="margin-top:0">声で野帳Pro（音声で記録する野帳のアプリ）で、この設計の野帳を作るための「ひな形」です。系統・株などの名前を入れた行と、調べる項目が入っています。ナビは連携なしでも使えます。</p>
+  <div class="tscroll"><table class="t"><tr><th>項目</th><th>種類</th><th>入れ方</th></tr>${its.map(i=>`<tr><td>${esc(i.name)}</td><td>${esc({num:'数値',text:'文字',choice:'選ぶ',count:'数える',date:'日付'}[i.type]||i.type)}</td><td>${i.role==='id'?(['batch','pred'].includes(i.id)||/^M\d/.test(i.id)?'事前の列（空欄で渡す。あとで入れる）':'事前の列（名前・番号を入れて渡す）'):'音声で入れる'}</td></tr>`).join('')}</table></div>
+  <p class="note" style="margin:8px 0 0">行：${n.toLocaleString()}（${big?`Pro が1行ずつ受け取れる ${PRO_LIST_MAX.toLocaleString()} 行を超えるので、行の作り方だけを渡します。作り方を受け取れる版の Pro で開くと、行が並びます`:'1行ずつ渡します'}）。${S.rep?`調査：${S.interval}日ごとに${S.nSurvey}回（予定の開始日は Pro で入れます）。`:''}${t.fold?`行のまとめ方：${t.fold.by.map(id=>(its.find(i=>i.id===id)||{}).name).join(' → ')}（受け取れる版の Pro で、まとめて開け閉めできます）。`:''}</p>
+  <div class="toolbar"><button type="button" class="btn primary" data-pro="file">ひな形を保存（.json）</button><button type="button" class="btn" data-pro="link">声で野帳Pro で開くリンクを作る</button>${PRO.url?'<button type="button" class="btn" data-pro="copy">リンクをコピー</button>':''}<span class="note" id="proMsg" role="status">${esc(PRO.msg)}</span></div>
+  ${PRO.url?`<p class="note" style="word-break:break-all;margin:6px 0 0"><a href="${esc(PRO.url)}" target="_blank" rel="noopener">声で野帳Pro で開く</a>（${PRO.len.toLocaleString()}バイト）</p>`:''}
+  <h4 style="margin:14px 0 4px">Pro の CSV を Rの雛形で読むとき</h4><p class="note" style="margin:0 0 6px">「Rの雛形」の read.csv の1行を、次の行に置き換えます。列の名前は記入表と同じなので、あとの行はそのまま動きます。${S.trait==='days'||S.rep?'基準日（接種日・置床日など）を入れるまでは、止まる形にしています。':''}${S.trait==='days'&&S.censor?'起きた日が空欄の株は、調査の終わりまで起きなかった株として読みます。枯れた株・欠株は Pro で除外にすると、数に入りません。':''}</p>
+  <pre class="code" id="cPro" tabindex="0">${esc(bioProRead(S).join('\n'))}</pre><div class="toolbar"><button type="button" class="btn" data-pro="rcopy">コピー</button></div>`;
+}
+async function tplEncode(t){
+  const raw=new TextEncoder().encode(JSON.stringify(t));
+  if(typeof CompressionStream==='function'){try{const buf=await new Response(new Blob([raw]).stream().pipeThrough(new CompressionStream('deflate-raw'))).arrayBuffer();return'z.'+b64uEncode(new Uint8Array(buf));}catch(e){}}
+  return'j.'+b64uEncode(raw);
+}
+function copyText(txt,el,okMsg){const say=m=>{const c=$('#proMsg')||$('#copied');if(c)c.textContent=m;};
+  const fb=()=>{if(!el){say('コピーできませんでした');return;}const r=document.createRange();r.selectNodeContents(el);const s=getSelection();s.removeAllRanges();s.addRange(r);say('選択しました。Ctrl+C でコピーできます');};
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(()=>say(okMsg),fb);else fb();}
+async function proAct(a){
+  const t=tplNow();if(!t&&a!=='rcopy')return;
+  if(a==='file'){download(`${t.name.replace(/[\\/:*?"<>|]/g,'_')}_ひな形.json`,JSON.stringify(t),'application/json');PRO.msg='ひな形のファイルを保存しました。声で野帳Pro の「ひな形のファイルから作る」で読み込めます。';}
+  if(a==='link'){const url=proLink(await tplEncode(t)),len=new TextEncoder().encode(url).length;PRO.url=url;PRO.len=len;
+    PRO.msg=len>PRO_LINK_MAX?`リンクを作りました。QRコードに載る長さ（${PRO_LINK_MAX.toLocaleString()}バイト）を超えるので、ほかの端末へは、ファイルで渡すのが確実です。`:'リンクを作りました。';}
+  if(a==='copy'){copyText(PRO.url,null,'リンクをコピーしました。');return;}
+  if(a==='rcopy'){copyText(bioProRead(OUT.S).join('\n'),$('#cPro'),'コピーしました');return;}
+  LAST='';render();
+}
+
+/* ---------- 設計ファイル（保存・読み戻し）。端末に保存するだけで、どこにも送らない ---------- */
+const DOC_KEY='shiken-navi-bio-doc-v1';
+let DOCF=(()=>{try{return bioDocClean(JSON.parse(localStorage.getItem(DOC_KEY)||'null'));}catch(e){return bioDocClean(null);}})();
+function docSave(){try{localStorage.setItem(DOC_KEY,JSON.stringify(DOCF));}catch(e){}}
+function fileMsg(m){const el=VIEW==='entry'?$('#fileMsgE'):VIEW==='doc'?$('#docMsg'):$('#fileMsg');if(el)el.textContent=m;}
+function designSave(){if(!OUT)render();const raw=readRaw(),f=bioDesignFile(OUT,raw,DOCF,todayStr());
+  const nm=`試験設計_${String(f.name||'試験').replace(/[\\/:*?"<>|\s]+/g,'_').slice(0,40)}_${todayStr()}.json`;download(nm,JSON.stringify(f,null,1),'application/json');
+  fileMsg(`設計ファイル（${nm}）を保存しました。保存先は、ブラウザのダウンロードの場所です。続きから直すときは「開く」か、最初の画面の「設計ファイルから続ける」で選びます。`);}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-file]');if(!b)return;if(b.dataset.file==='open'){$('#designFileIn').click();return;}designSave();});
+$('#designFileIn').addEventListener('change',async e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;
+  try{const o=bioDesignRead(JSON.parse(await f.text()));writeRaw(Object.assign({nCtrlPer:'',nYear:1,mEvent:'und'},o.raw));if(o.raw.sn||o.raw.sc)renderClasses(o.raw.sn,o.raw.sc);DOCF=o.doc;docSave();markPreset(null);FROM_GUIDE=false;setView('detail');fileMsg(`設計ファイル「${o.name}」を開きました（${o.made}）。`);}
+  catch(err){fileMsg('開けませんでした：'+(err&&err.message?err.message:'ファイルの形が違います。'));}});
+
+/* ---------- 試験設計書の画面（claude/52 の 3.2）。入力欄は作り直さず、下の見本だけを描き直す ---------- */
+const DOC_FIELDS=[['title','課題名','',1],['purpose','目的','空欄のときは、案の文が入ります',3],['place','実施場所','',1],['material','供試材料','空欄のときは、入力した数と名前から作ります',2],['method','試験の方法','接種・播種・置床のやり方など',3],['period','試験実施期間','例：2026-12〜2027-03',1]];
+function docNow(){if(!OUT)render();return bioDesignDoc(OUT,DOCF,{today:todayStr(),record:bioHasTpl(OUT.S)?'pro':'sheet'});}
+function renderDoc(){
+  if(!OUT)render();
+  $('#docView').innerHTML=`<div class="card dbar" style="display:flex"><button type="button" class="btn" id="docBack">詳しい画面に戻る</button><span class="sp"></span><button type="button" class="btn primary" data-doc="print">印刷</button><button type="button" class="btn" data-doc="word">Word で開けるファイル（.doc）</button><button type="button" class="btn" data-doc="text">文をコピー</button><span class="note" id="docMsg" role="status"></span></div>
+  <div class="grid"><form class="col-in" id="docForm" onsubmit="return false" autocomplete="off"><section class="card"><h2>設計書に書くこと <span class="term">空欄は「（記入）」で出ます</span></h2>
+    ${DOC_FIELDS.map(([k,l,sm,rows])=>`<label class="f" style="margin-top:8px">${l}${sm?`<small>${sm}</small>`:''}${rows>1?`<textarea id="doc_${k}" rows="${rows}">${esc(DOCF[k]||'')}</textarea>`:`<input type="text" id="doc_${k}" value="${esc(DOCF[k]||'')}">`}</label>`).join('')}
+    <p class="note" style="margin:10px 0 0">統計の部分（試験規模・解析方法・この設計で言えること）は、詳しい画面の入力から作ります。書き換えるときは、詳しい画面で直します。</p></section></form>
+    <div class="col-out"><section class="card docpaper" id="docPrev"></section></div></div>`;
+  docPreview();
+  $('#docBack').onclick=()=>setView('detail');
+  const f=$('#docForm'),upd=e=>{if(e&&e.isComposing)return;DOC_FIELDS.forEach(([k])=>{const x=$('#doc_'+k);if(x)DOCF[k]=x.value;});docSave();docPreview();};
+  f.addEventListener('input',upd);f.addEventListener('compositionend',()=>setTimeout(()=>upd(null),0));
+}
+function docPreview(){const p=$('#docPrev');if(p)p.innerHTML=bioDocHTML(docNow(),false);}
+$('#docView').addEventListener('click',e=>{const b=e.target.closest('[data-doc]');if(!b)return;const R=docNow(),a=b.dataset.doc;
+  if(a==='print'){window.print();return;}
+  if(a==='word'){download(`試験設計書_${(DOCF.title||'試験').replace(/[\\/:*?"<>|\s]+/g,'_').slice(0,40)}_${todayStr()}.doc`,bioDocWord(R),'application/msword');$('#docMsg').textContent='保存しました（Word で開けます）。';return;}
+  if(a==='text')copyText(bioDocText(R),$('#docPrev'),'コピーしました');});
+$('#goDocBar').addEventListener('click',()=>setView('doc'));
+
 /* ---------- 例題 ---------- */
 function markPreset(k){document.querySelectorAll('#presets button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));}
-function applyPreset(k){writeRaw(Object.assign({nCtrlPer:'',nYear:1,mEvent:'und'},PRESETS[k].v));markPreset(k);render();}
+function applyPreset(k){writeRaw(Object.assign({nCtrlPer:'',nYear:1,mEvent:'und',ctrlPlace:'all',nLot:2,ctrlKinds:'2'},PRESETS[k].v));markPreset(k);render();}
 $('#presets').insertAdjacentHTML('beforeend',Object.entries(PRESETS).map(([k,p])=>`<button type="button" data-k="${k}">${esc(p.l)}</button>`).join('')+'<small>例題の名前と数値はすべて架空です。</small>');
 $('#presets').addEventListener('click',e=>{const b=e.target.closest('button');if(b)applyPreset(b.dataset.k);});
 
@@ -1507,13 +2066,12 @@ FORM.addEventListener('compositionend',()=>setTimeout(()=>onEdit(null),0));
 /* ---------- かんたんガイド（claude/48b の 9.1・05 の 9.）：1画面に1つの質問。答えは GD.G に持ち、できあがりで詳しい画面の入力に写す ---------- */
 /* 「おまかせ」の初期値は、どの道でも段階A になる値（claude/48b の 9.1。検査：tests_bio/gen.js の g_*、ui_check.py） */
 const GUIDE_MAT={line:{nPop:1,nLines:20,nPer:3},pop:{nPop:3,nLines:10,nPer:1},ctrl:{nPop:1,nLines:5,nPer:3},group:{nPop:12,nLines:20,nPer:1},assoc:{nPop:1,nLines:50,nPer:1,nM:1,geno:'3'}};
-const GUIDE_DEF={purpose:'pheno',trait:'score',q:'line',rep:false,censor:false,hasCtrl:true,nCtrlPer:3,blocks:false,nSurvey:5,interval:7,nSeed:50,nYear:1};
+const GUIDE_DEF={purpose:'pheno',trait:'score',q:'line',rep:false,censor:false,hasCtrl:true,nCtrlPer:3,blocks:false,nSurvey:5,interval:7,nSeed:50,nYear:1,ctrlPlace:'all',nLot:2,ctrlKinds:2};   // おまかせの置き方は「試験全体で1組」（docs/58 の 3.1）
 let GD=null;
 const gq=()=>GD.G.purpose==='assoc'?'assoc':GD.G.q;
 function guideSteps(){const G=GD.G,calc=!['pheno','assoc'].includes(G.purpose);
   return calc?['B1']:['B1','B2',...(G.purpose==='pheno'?['B3']:[]),'B4','B5','B6'];}
-function guideOpen(){GD={i:0,G:Object.assign({},GUIDE_DEF)};document.body.classList.add('v-guide');renderGuide();window.scrollTo(0,0);}
-function guideClose(){GD=null;document.body.classList.remove('v-guide');}
+function guideOpen(){setView('guide');GD={i:0,G:Object.assign({},GUIDE_DEF)};renderGuide();}
 const gopt=(name,val,cur,b,sp)=>`<label class="opt"><input type="radio" name="g_${name}" value="${val}"${String(cur)===String(val)?' checked':''}><div><b>${b}</b><span>${sp}</span></div></label>`;
 const gnum=(id,lab,sm,v,min,max)=>`<label class="f">${lab}<small>${sm}</small><input type="number" id="g_${id}" min="${min}" max="${max}" inputmode="numeric" value="${esc(v)}"></label>`;
 function renderGuide(){
@@ -1536,7 +2094,9 @@ function renderGuide(){
     if(G.purpose==='pheno'&&G.q==='line')h+=`<h3 style="margin:14px 0 6px;font-size:15px">同じ${u}を、年を変えて調べますか</h3><div class="opts">${gopt('yr','0',G.nYear>1?'1':'0','いいえ（1年だけ）','')}${gopt('yr','1',G.nYear>1?'1':'0','はい','果樹の実生など、同じ個体を毎年調べる')}</div><div class="gfields">${gnum('nYear','調べる年数','はい のとき（2〜10）',G.nYear>1?G.nYear:2,2,10)}</div>`;}
   if(k==='B6'){title='対照と、処理の回';hint='抵抗性・罹病性の品種などを対照として同じ条件で入れると、処理が効いたか（試験の成立）を確かめられます。';
     h=`<label class="chk"><input type="checkbox" id="g_hasCtrl"${G.hasCtrl?' checked':''}> <span>対照（抵抗性・罹病性の品種、交配親など）を入れる</span></label><div class="gfields">${gnum('nCtrlPer',`対照1つあたりの${u}数`,'3以上あると、対照どうしの差を検定で確かめられます',G.nCtrlPer,1,50)}</div>
-      <label class="chk"><input type="checkbox" id="g_blocks"${G.blocks?' checked':''}> <span>接種・播種を複数回、または複数の場所に分ける</span></label>`;}
+      <label class="chk"><input type="checkbox" id="g_blocks"${G.blocks?' checked':''}> <span>接種・播種を複数回、または複数の場所に分ける</span></label>
+      <div id="g_lotBox" class="lotbox"${G.hasCtrl&&G.blocks&&gq()!=='group'&&!(G.purpose==='pheno'&&G.q==='line'&&G.nYear>1)?'':' hidden'}><div class="lab2">対照はどこに置きますか</div><div class="opts two">${gopt('ctrlPlace','all',G.ctrlPlace,'試験全体で1組','これまでどおり')}${gopt('ctrlPlace','lot',G.ctrlPlace,'ロットごとに置く','接種回・トレイ・培養ロットごとに、対照を入れる')}</div>
+        <div class="gfields">${gnum('nLot','ロット（接種回）の数','ロットごとに置くとき',G.nLot,2,200)}<label class="f">各ロットに置く対照<small>ロットごとに置くとき</small><select id="g_ctrlKinds"><option value="2"${G.ctrlKinds!==1?' selected':''}>2つ（抵抗性・罹病性）</option><option value="1"${G.ctrlKinds===1?' selected':''}>1つ（罹病性だけ）</option></select></label></div></div>`;}
   const last=GD.i===steps.length-1;
   $('#guide').innerHTML=`<div class="card gcard"><div class="gprog">かんたんガイド　${GD.i+1} / ${steps.length}</div><h2>${title}</h2><p class="hint">${hint}</p>${h}
     <div class="gnav"><button type="button" class="btn" data-g="back">${GD.i?'戻る':'やめる'}</button><span class="sp"></span><button type="button" class="btn" data-g="auto">おまかせ</button><button type="button" class="btn primary" data-g="next">${last?'できあがりを見る':'次へ'}</button></div>
@@ -1552,7 +2112,8 @@ function guideRead(auto){const G=GD.G,k=guideSteps()[GD.i],q=gq(),num=(id,d)=>{c
   if(k==='B4'){const M=Object.assign({},GUIDE_MAT[q]);if(!auto){M.nPop=num('nPop',M.nPop);M.nLines=num('nLines',M.nLines);if(q!=='group')M.nPer=num('nPer',M.nPer);if(q==='assoc'){M.nM=num('nM',M.nM);M.geno=$('#g_geno').value;}if(G.trait==='prop')G.nSeed=num('nSeed',G.nSeed);}else G.nSeed=GUIDE_DEF.nSeed;G.mat=M;}
   if(k==='B5'){if(G.trait==='days')G.censor=auto?GUIDE_DEF.censor:rad('censor')==='1';else{G.rep=auto?GUIDE_DEF.rep:rad('rep')==='1';G.nSurvey=auto?GUIDE_DEF.nSurvey:num('nSurvey',G.nSurvey);G.interval=auto?GUIDE_DEF.interval:num('interval',G.interval);}
     if(G.purpose==='pheno'&&G.q==='line')G.nYear=auto?GUIDE_DEF.nYear:rad('yr')==='1'?Math.min(10,Math.max(2,num('nYear',2))):1;}
-  if(k==='B6'){G.hasCtrl=auto?GUIDE_DEF.hasCtrl:$('#g_hasCtrl').checked;G.nCtrlPer=auto?GUIDE_DEF.nCtrlPer:num('nCtrlPer',G.nCtrlPer);G.blocks=auto?GUIDE_DEF.blocks:$('#g_blocks').checked;}}
+  if(k==='B6'){G.hasCtrl=auto?GUIDE_DEF.hasCtrl:$('#g_hasCtrl').checked;G.nCtrlPer=auto?GUIDE_DEF.nCtrlPer:num('nCtrlPer',G.nCtrlPer);G.blocks=auto?GUIDE_DEF.blocks:$('#g_blocks').checked;
+    G.ctrlPlace=auto?GUIDE_DEF.ctrlPlace:(rad('ctrlPlace')||'all');G.nLot=auto?GUIDE_DEF.nLot:Math.min(200,Math.max(2,num('nLot',2)));G.ctrlKinds=auto?GUIDE_DEF.ctrlKinds:($('#g_ctrlKinds')&&$('#g_ctrlKinds').value==='1'?1:2);}}
 /* ガイドの答え → 詳しい画面の入力。ガイドが受け持たない欄（名前など）は残す */
 function guideToRaw(G){
   if(!['pheno','assoc'].includes(G.purpose)){const v={purpose:G.purpose};   // 数を入れる画面へ（段階N から始まる）
@@ -1563,31 +2124,35 @@ function guideToRaw(G){
   const q=G.purpose==='assoc'?'assoc':G.q,M=Object.assign({},GUIDE_MAT[q],G.mat||{});
   return{purpose:G.purpose,trait:G.trait,...(G.purpose==='pheno'?{q:G.q}:{}),traitName:TR[G.trait].def,nPop:M.nPop,nLines:M.nLines,nPer:q==='group'?1:M.nPer,
     ...(q==='assoc'?{nM:M.nM,geno:M.geno}:{}),rep:G.trait==='days'?false:G.rep,nSurvey:G.nSurvey,interval:G.interval,censor:G.trait==='days'&&G.censor,nSeed:G.nSeed,
-    hasCtrl:G.hasCtrl,nCtrlPer:G.hasCtrl?G.nCtrlPer:'',blocks:G.blocks,nYear:q==='line'?G.nYear:1};
+    hasCtrl:G.hasCtrl,nCtrlPer:G.hasCtrl?G.nCtrlPer:'',blocks:G.blocks,nYear:q==='line'?G.nYear:1,ctrlPlace:G.ctrlPlace,nLot:G.nLot,ctrlKinds:String(G.ctrlKinds)};
 }
-function guideFinish(){const v=guideToRaw(GD.G);guideClose();writeRaw(v);if(v.sc)FORM.querySelectorAll('.scount').forEach(e=>e.value='');markPreset(null);TAB='r';render();
+function guideFinish(){const v=guideToRaw(GD.G);writeRaw(v);if(v.sc)FORM.querySelectorAll('.scount').forEach(e=>e.value='');markPreset(null);TAB='r';FROM_GUIDE=true;setView('detail');
   const a=$('#out');if(a)a.scrollIntoView({block:'start'});}
-$('#goGuide').addEventListener('click',guideOpen);
+$('#goGuide').addEventListener('click',guideOpen);$('#goGuide2').addEventListener('click',guideOpen);
+// B6：「対照を入れる」と「複数回に分ける」の両方を選んだときだけ、対照の置き方を出す（欄は作り直さない）
+$('#guide').addEventListener('change',e=>{if(!GD||!['g_hasCtrl','g_blocks'].includes(e.target.id))return;const b=$('#g_lotBox');if(b)b.hidden=!($('#g_hasCtrl').checked&&$('#g_blocks').checked&&gq()!=='group'&&!(GD.G.purpose==='pheno'&&GD.G.q==='line'&&GD.G.nYear>1));});
 $('#guide').addEventListener('click',e=>{const b=e.target.closest('[data-g]');if(!b||!GD)return;const a=b.dataset.g;
-  if(a==='scope'){e.preventDefault();guideClose();const sc=$('#scope');if(sc)sc.scrollIntoView({block:'start'});return;}
-  if(a==='back'){if(!GD.i){guideClose();return;}GD.i--;renderGuide();return;}
+  if(a==='scope'){e.preventDefault();setView('entry');const sc=$('#scope');if(sc)sc.scrollIntoView({block:'start'});return;}
+  if(a==='back'){if(!GD.i){setView('entry');return;}GD.i--;renderGuide();return;}
   guideRead(a==='auto');const s2=guideSteps();   // B1 の答えで、質問の数が変わる
   if(GD.i>=s2.length-1){guideFinish();return;}GD.i++;renderGuide();window.scrollTo(0,0);});
 
 /* ---------- 初期化：どの目的の欄にも例の値を入れておき、最初の例題で開く ---------- */
 function init(useSaved){
-  writeRaw(NAME_DEFAULTS);writeRaw({ratioCustom:'',mPre:'M',geno:'3',nM:1,nSeed:50,nYear:1,mEvent:'und'});
+  writeRaw(NAME_DEFAULTS);writeRaw({ratioCustom:'',mPre:'M',geno:'3',nM:1,nSeed:50,nYear:1,mEvent:'und',ctrlPlace:'all',nLot:2,ctrlKinds:'2'});
   ['ex_12','ex_11','ex_09'].forEach(k=>writeRaw(PRESETS[k].v));
   let saved=null;
   if(useSaved){try{saved=JSON.parse(localStorage.getItem(STORE_KEY)||'null');}catch(e){saved=null;}}
   if(saved&&typeof saved==='object'){
     writeRaw(PRESETS.ex_01.v);
-    try{if(saved.ratio)writeRaw({ratio:saved.ratio,ratioCustom:saved.ratioCustom||''});writeRaw(saved);markPreset(null);render();return;}catch(e){/* 壊れた保存内容は捨てる */}
+    try{if(saved.ratio)writeRaw({ratio:saved.ratio,ratioCustom:saved.ratioCustom||''});writeRaw(saved);markPreset(null);render();HAS_SAVED=true;return;}catch(e){/* 壊れた保存内容は捨てる */}
   }
   applyPreset('ex_01');
 }
 $('#reset').addEventListener('click',()=>{try{localStorage.removeItem(STORE_KEY);}catch(e){}TAB='r';init(false);});
 init(true);
+// 最初に開く画面：アドレスの #detail（詳しい画面）・#guide（ガイド）。ほかは最初の画面
+{const h=(location.hash||'').replace('#','');if(h==='guide')guideOpen();else setView(h==='detail'||h==='doc'?h:'entry');}
 </script>
 </body>
 </html>
